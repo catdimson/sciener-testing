@@ -112,7 +112,7 @@ INSERT INTO comment(text, create_date, edit_date, new, "user")
             + interval '1 hour' * round(random() * 24) + interval '1 second' * round(random() * 60),
         (SELECT min(id) FROM new) + trunc(random() * 50),
         (SELECT min(id) FROM "user") + trunc(random() * 10)
-    FROM generate_series(1, 150);
+    FROM generate_series(1, 20);
 
 -- Данные для таблицы image
 INSERT INTO image(title, path, new)
@@ -120,7 +120,7 @@ INSERT INTO image(title, path, new)
         'title_' || iter,
         '/part' || iter || '/_' || md5(random()::text) || '/_' || md5(random()::text) || '/_' || md5(random()::text),
         (SELECT min(id) FROM new) + trunc(random() * 50)
-    FROM generate_series(1, 80) as iter;
+    FROM generate_series(1, 25) as iter;
 
 -- Данные для таблицы log
 INSERT INTO log(content, "user", action, action_time)
