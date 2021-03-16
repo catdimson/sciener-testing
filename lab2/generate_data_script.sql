@@ -17,9 +17,21 @@ INSERT INTO session(session_key, session_data, expire_date)
     FROM generate_series(1, 15);
 
 -- Данные для таблицы content
-INSERT INTO content(entity)
-    SELECT
-        (array['user', 'tag', 'category', 'new', 'image', 'page', 'comment', 'log', 'mailing', 'session', 'permission'])[iter]
-    FROM generate_series(1, 11) as iter;
+-- INSERT INTO content(entity)
+--     SELECT
+--         (array['user', 'tag', 'category', 'new', 'image', 'page', 'comment', 'log', 'mailing', 'session', 'permission'])[iter]
+--     FROM generate_series(1, 11) as iter;
 
---
+-- Данные для таблицы категорий
+INSERT INTO category(title)
+    SELECT
+        (array['спорт', 'политика', 'кинематограф', 'искусство', 'экономика', 'наука', 'музыка'])[iter]
+    FROM generate_series(1, 7) as iter;
+
+-- Данные для таблицы категорий
+INSERT INTO tag(title)
+    SELECT
+        (array['ufc', 'футбол', 'хоккей', 'внешняя политика', 'внутренняя политика', 'конфликт', 'премьеры фильмов',
+            'зарубежные фильмы', 'театр', 'балет', 'внешняя экономика', 'внутренняя экономика', 'кризис',
+            'гаджеты', 'IT', 'программирование', 'поп-музыка', 'концерты'])[iter]
+    FROM generate_series(1, 18) as iter;
