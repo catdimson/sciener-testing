@@ -5,7 +5,7 @@
 --     LC_CTYPE = 'Russian_Russia.1251'
 
 -- Создание таблица user
-CREATE TABLE "user" (
+CREATE TABLE IF NOT EXISTS "user"  (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     password character varying(128) NOT NULL,
     username character varying(150) NOT NULL,
@@ -22,21 +22,21 @@ CREATE TABLE "user" (
 );
 
 -- Создание таблица category
-CREATE TABLE category (
+CREATE TABLE IF NOT EXISTS category (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     title character varying(50) NOT NULL,
     CONSTRAINT category_pk PRIMARY KEY (id)
 );
 
 -- Создание таблица tag
-CREATE TABLE tag (
+CREATE TABLE IF NOT EXISTS tag (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     title character varying(50) NOT NULL,
     CONSTRAINT tag_pk PRIMARY KEY (id)
 );
 
 -- Создание таблица content
-CREATE TABLE content (
+CREATE TABLE IF NOT EXISTS content (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     entity character varying(50) NOT NULL,
     CONSTRAINT content_pk PRIMARY KEY (id),
@@ -44,7 +44,7 @@ CREATE TABLE content (
 );
 
 -- Создание таблица mailing
-CREATE TABLE mailing (
+CREATE TABLE IF NOT EXISTS mailing (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     email character varying(80) NOT NULL,
     CONSTRAINT mailing_pk PRIMARY KEY (id),
@@ -52,16 +52,16 @@ CREATE TABLE mailing (
 );
 
 -- Создание таблица session
-CREATE TABLE session (
+CREATE TABLE IF NOT EXISTS session (
     session_key character varying(40) NOT NULL,
     session_data text NOT NULL,
     expire_date timestamp NOT NULL,
     CONSTRAINT session_key_pk PRIMARY KEY (session_key)
 );
-CREATE INDEX session_index ON session (expire_date);
+CREATE INDEX IF NOT EXISTS session_index ON session (expire_date);
 
 -- Создание таблица new
-CREATE TABLE new (
+CREATE TABLE IF NOT EXISTS new (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     title character varying(250) NOT NULL,
     lead character varying(350) NOT NULL,
@@ -81,11 +81,11 @@ CREATE TABLE new (
         ON UPDATE CASCADE
         ON DELETE RESTRICT
 );
-CREATE INDEX fk_index_category_id ON new (category);
-CREATE INDEX fk_index_new_user_id ON new ("user");
+CREATE INDEX IF NOT EXISTS fk_index_category_id ON new (category);
+CREATE INDEX IF NOT EXISTS fk_index_new_user_id ON new ("user");
 
 -- Создание таблица image
-CREATE TABLE image (
+CREATE TABLE IF NOT EXISTS image (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     title character varying(80) NOT NULL,
     path character varying(500) NOT NULL,
@@ -96,10 +96,10 @@ CREATE TABLE image (
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
-CREATE INDEX fk_index_image_new_id ON image (new);
+CREATE INDEX IF NOT EXISTS fk_index_image_new_id ON image (new);
 
 -- Создание таблица page
-CREATE TABLE page (
+CREATE TABLE IF NOT EXISTS page (
      id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
      title character varying(80) NOT NULL,
      meta_charset character varying(350) NOT NULL,
@@ -117,10 +117,10 @@ CREATE TABLE page (
          ON UPDATE CASCADE
          ON DELETE CASCADE
 );
-CREATE INDEX fk_index_page_content_id ON page (content);
+CREATE INDEX IF NOT EXISTS fk_index_page_content_id ON page (content);
 
 -- Создание таблица log
-CREATE TABLE log (
+CREATE TABLE IF NOT EXISTS log (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     content integer NOT NULL,
     "user" integer NOT NULL,
@@ -136,11 +136,11 @@ CREATE TABLE log (
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
-CREATE INDEX fk_index_log_content_id ON log (content);
-CREATE INDEX fk_index_log_user_id ON log ("user");
+CREATE INDEX IF NOT EXISTS fk_index_log_content_id ON log (content);
+CREATE INDEX IF NOT EXISTS fk_index_log_user_id ON log ("user");
 
 -- Создание таблица comment
-CREATE TABLE comment (
+CREATE TABLE IF NOT EXISTS comment (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     text character varying(3000),
     create_date timestamp NOT NULL,
@@ -157,11 +157,11 @@ CREATE TABLE comment (
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
-CREATE INDEX fk_index_comment_new_id ON comment (new);
-CREATE INDEX fk_index_comment_user_id ON comment ("user");
+CREATE INDEX IF NOT EXISTS fk_index_comment_new_id ON comment (new);
+CREATE INDEX IF NOT EXISTS fk_index_comment_user_id ON comment ("user");
 
 -- Создание таблица permission
-CREATE TABLE permission (
+CREATE TABLE IF NOT EXISTS permission (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     content integer NOT NULL,
     action character varying(50) NOT NULL,
@@ -172,10 +172,10 @@ CREATE TABLE permission (
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
-CREATE INDEX fk_index_permission_content_id ON permission (content);
+CREATE INDEX IF NOT EXISTS fk_index_permission_content_id ON permission (content);
 
 -- Создание таблица user_permission для реализации связи многие-ко-многим
-CREATE TABLE user_permission (
+CREATE TABLE IF NOT EXISTS user_permission (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     "user" integer NOT NULL,
     permission integer NOT NULL,
@@ -190,11 +190,11 @@ CREATE TABLE user_permission (
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
-CREATE INDEX fk_index_user_permission_user_id ON user_permission ("user");
-CREATE INDEX fk_index_user_permission_permission_id ON user_permission (permission);
+CREATE INDEX IF NOT EXISTS fk_index_user_permission_user_id ON user_permission ("user");
+CREATE INDEX IF NOT EXISTS fk_index_user_permission_permission_id ON user_permission (permission);
 
 -- Создание таблица new_tag для реализации связи многие-ко-многим
-CREATE TABLE new_tag (
+CREATE TABLE IF NOT EXISTS new_tag (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     new integer NOT NULL,
     tag integer NOT NULL,
@@ -209,5 +209,5 @@ CREATE TABLE new_tag (
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
-CREATE INDEX fk_index_new_tag_new_id ON new_tag (new);
-CREATE INDEX fk_index_new_tag_tag_id ON new_tag (tag);
+CREATE INDEX IF NOT EXISTS fk_index_new_tag_new_id ON new_tag (new);
+CREATE INDEX IF NOT EXISTS fk_index_new_tag_tag_id ON new_tag (tag);
