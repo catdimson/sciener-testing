@@ -123,9 +123,26 @@ INSERT INTO image(title, path, new)
     FROM generate_series(1, 80) as iter;
 
 -- Данные для таблицы логов
--- INSERT INTO log(content, user, action, action_time)
---     SELECT
---         'title_' || iter,
---         '/part' || iter || '/_' || md5(random()::text) || '/_' || md5(random()::text) || '/_' || md5(random()::text),
---         (SELECT min(id) FROM new) + trunc(random() * 50)
---     FROM generate_series(1, 80) as iter;
+INSERT INTO log(content, "user", action, action_time)
+    SELECT
+        (SELECT min(id) FROM content) + trunc(random() * 12),
+        (SELECT min(id) FROM "user") + trunc(random() * 10),
+        (array['create ', 'delete ', 'update '])[trunc(random() * 3) + 1] || (array['user', 'tag', 'category', 'new',
+            'image', 'page', 'comment', 'log', 'mailing', 'session', 'permission', 'group'])[trunc(random() * 12) + 1],
+        now() - interval '1 day' * round(random() * 50 + 51) + interval '1 minute' * round(random() * 60)
+            + interval '1 hour' * round(random() * 24) + interval '1 second' * round(random() * 60)
+    FROM generate_series(1, 150) as iter;
+
+-- Данные для таблицы страниц
+INSERT INTO page(title, meta_charset, meta_description, meta_keywords, title_menu, favicon_path, is_published, url, content)
+    SELECT
+        'title_' || iter,
+        'meta_charset_' || iter,
+        'meta_description_' || iter,
+        'meta_keywords_' || iter,
+        'title_menu_' || iter,
+        '/path/' || iter || '/favicon.ico',
+        (array[TRUE, FALSE])[round(random()) + 1],
+        '/url' || iter,
+        (SELECT min(id) FROM content) + trunc(random() * 12)
+    FROM generate_series(1, 25) as iter;
