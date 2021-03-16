@@ -5,6 +5,13 @@
 --     LC_CTYPE = 'Russian_Russia.1251'
 
 -- Создание таблица user
+CREATE TABLE IF NOT EXISTS "group" (
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    title character varying(40) NOT NULL,
+    CONSTRAINT group_pk PRIMARY KEY (id),
+    CONSTRAINT title_unique UNIQUE (title)
+);
+
 CREATE TABLE IF NOT EXISTS "user"  (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     password character varying(128) NOT NULL,
@@ -12,13 +19,18 @@ CREATE TABLE IF NOT EXISTS "user"  (
     first_name character varying(150) NOT NULL,
     last_name character varying(150),
     email character varying(254) NOT NULL,
+    "group" integer NOT NULL,
     last_login timestamp NOT NULL,
     date_joined timestamp NOT NULL,
     is_superuser boolean NOT NULL DEFAULT false,
     is_staff boolean NOT NULL DEFAULT false,
     is_active boolean NOT NULL DEFAULT true,
     CONSTRAINT user_pk PRIMARY KEY (id),
-    CONSTRAINT username_unique UNIQUE (username)
+    CONSTRAINT username_unique UNIQUE (username),
+    CONSTRAINT fk_user_group FOREIGN KEY ("group")
+        REFERENCES "group" (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
 );
 
 -- Создание таблица category
@@ -174,15 +186,15 @@ CREATE TABLE IF NOT EXISTS permission (
 );
 CREATE INDEX IF NOT EXISTS fk_index_permission_content_id ON permission (content);
 
--- Создание таблица user_permission для реализации связи многие-ко-многим
-CREATE TABLE IF NOT EXISTS user_permission (
+-- Создание таблица group_permission для реализации связи многие-ко-многим
+CREATE TABLE IF NOT EXISTS group_permission (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
-    "user" integer NOT NULL,
+    "group" integer NOT NULL,
     permission integer NOT NULL,
-    CONSTRAINT user_permission_pk PRIMARY KEY (id),
-    CONSTRAINT user_permission_unique UNIQUE ("user", permission),
-    CONSTRAINT fk_user FOREIGN KEY ("user")
-        REFERENCES "user" (id) MATCH SIMPLE
+    CONSTRAINT group_permission_pk PRIMARY KEY (id),
+    CONSTRAINT group_permission_unique UNIQUE ("group", permission),
+    CONSTRAINT fk_group FOREIGN KEY ("group")
+        REFERENCES "group" (id) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT fk_permission FOREIGN KEY (permission)
@@ -190,8 +202,8 @@ CREATE TABLE IF NOT EXISTS user_permission (
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
-CREATE INDEX IF NOT EXISTS fk_index_user_permission_user_id ON user_permission ("user");
-CREATE INDEX IF NOT EXISTS fk_index_user_permission_permission_id ON user_permission (permission);
+CREATE INDEX IF NOT EXISTS fk_index_group_permission_user_id ON group_permission ("group");
+CREATE INDEX IF NOT EXISTS fk_index_group_permission_permission_id ON group_permission (permission);
 
 -- Создание таблица new_tag для реализации связи многие-ко-многим
 CREATE TABLE IF NOT EXISTS new_tag (
