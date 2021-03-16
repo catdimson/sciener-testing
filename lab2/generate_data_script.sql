@@ -186,13 +186,13 @@ INSERT INTO new_tag(new, tag)
     FROM generate_series(1, 25) as iter;
 
 -- Данные для таблицы реализации связи многие-ко-многим group_permission
-/*INSERT INTO group_permission("group", permission)
-    SELECT
-        (SELECT min(id) FROM new) + iter - 1,
-        (SELECT min(id) FROM tag) + trunc(random() * 9)
-    FROM generate_series(1, 4) as iter;
 INSERT INTO group_permission("group", permission)
     SELECT
-        (SELECT min(id) FROM new) + iter - 1 + 24,
-        (SELECT min(id) FROM tag) + trunc(random() * 9) + 9
-    FROM generate_series(1, 25) as iter;*/
+        (SELECT min(id) FROM "group"),
+        (SELECT min(id) FROM permission) + iter -1
+    FROM generate_series(1, 48) as iter;
+INSERT INTO group_permission("group", permission)
+    SELECT
+        (SELECT min(id) FROM "group") + 1,
+        (SELECT min(id) FROM permission) + iter -1
+FROM generate_series(1, 24) as iter;
