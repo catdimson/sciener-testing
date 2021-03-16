@@ -30,3 +30,27 @@ SELECT
 FROM comment
 RIGHT JOIN "user" ON comment."user" = "user".id
 
+
+/*--- GROUP BY ---*/
+-- вывести из таблицы логов контент, и количество действий, которое над ним совершалось
+SELECT
+    log.content AS log_content,
+    COUNT(*) AS actions_count
+FROM log
+GROUP BY content;
+
+-- вывести групп каждого типа среди пользователей
+SELECT
+    "user"."group" AS user_group,
+    COUNT(*) AS group_count
+FROM "user"
+GROUP BY "group";
+
+-- отобрать кол-во опубликованных страниц, если кол-во типа контента на них >= 3
+SELECT
+    page.content AS page_content,
+    COUNT(*) AS content_count
+FROM page
+WHERE is_published = TRUE
+GROUP BY content
+HAVING COUNT(*) >= 3
