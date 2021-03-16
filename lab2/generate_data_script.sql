@@ -147,6 +147,32 @@ INSERT INTO page(title, meta_charset, meta_description, meta_keywords, title_men
         (SELECT min(id) FROM content) + trunc(random() * 12)
     FROM generate_series(1, 25) as iter;
 
+-- Данные для таблицы permission
+INSERT INTO permission(content, action, permission)
+    SELECT
+        (SELECT min(id) FROM content) + iter - 1,
+        'can create',
+        TRUE
+    FROM generate_series(1, 12) as iter;
+INSERT INTO permission(content, action, permission)
+    SELECT
+        (SELECT min(id) FROM content) + iter - 1,
+        'can delete',
+        TRUE
+    FROM generate_series(1, 12) as iter;
+INSERT INTO permission(content, action, permission)
+    SELECT
+        (SELECT min(id) FROM content) + iter - 1,
+        'can update',
+        TRUE
+    FROM generate_series(1, 12) as iter;
+INSERT INTO permission(content, action, permission)
+    SELECT
+        (SELECT min(id) FROM content) + iter - 1,
+        'can view',
+        TRUE
+    FROM generate_series(1, 12) as iter;
+
 -- Данные для таблицы реализации связи многие-ко-многим new_tag
 INSERT INTO new_tag(new, tag)
     SELECT
@@ -160,12 +186,12 @@ INSERT INTO new_tag(new, tag)
     FROM generate_series(1, 25) as iter;
 
 -- Данные для таблицы реализации связи многие-ко-многим group_permission
-/*INSERT INTO new_tag(new, tag)
+/*INSERT INTO group_permission("group", permission)
     SELECT
         (SELECT min(id) FROM new) + iter - 1,
         (SELECT min(id) FROM tag) + trunc(random() * 9)
-    FROM generate_series(1, 25) as iter;
-INSERT INTO new_tag(new, tag)
+    FROM generate_series(1, 4) as iter;
+INSERT INTO group_permission("group", permission)
     SELECT
         (SELECT min(id) FROM new) + iter - 1 + 24,
         (SELECT min(id) FROM tag) + trunc(random() * 9) + 9
