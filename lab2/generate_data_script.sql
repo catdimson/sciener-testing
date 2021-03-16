@@ -40,13 +40,13 @@ INSERT INTO content(entity)
         'permission', 'group'])[iter]
     FROM generate_series(1, 12) as iter;
 
--- Данные для таблицы категорий
+-- Данные для таблицы category
 INSERT INTO category(title)
     SELECT
         (array['спорт', 'политика', 'кинематограф', 'искусство', 'экономика', 'наука', 'музыка'])[iter]
     FROM generate_series(1, 7) as iter;
 
--- Данные для таблицы тэгов
+-- Данные для таблицы tag
 INSERT INTO tag(title)
     SELECT
         (array['ufc', 'футбол', 'хоккей', 'внешняя политика', 'внутренняя политика', 'конфликт', 'премьеры фильмов',
@@ -54,13 +54,13 @@ INSERT INTO tag(title)
             'гаджеты', 'IT', 'программирование', 'поп-музыка', 'концерты'])[iter]
     FROM generate_series(1, 18) as iter;
 
--- Данные для таблицы групп
+-- Данные для таблицы group
 INSERT INTO "group"(title)
     SELECT
         (array['admin', 'editor', 'seo', 'guest'])[iter]
     FROM generate_series(1, 4) as iter;
 
--- Данные для таблицы пользователей
+-- Данные для таблицы user
 INSERT INTO "user"(password, username, first_name, last_name, email, "group", last_login, date_joined, is_superuser,
                    is_staff, is_active)
     SELECT
@@ -79,7 +79,7 @@ INSERT INTO "user"(password, username, first_name, last_name, email, "group", la
         (array[TRUE, FALSE])[round(random()) + 1]
     FROM generate_series(1, 10) as iter;
 
--- Данные для таблицы новостей
+-- Данные для таблицы new
 INSERT INTO new(title, lead, create_date, edit_date, text, is_published, category, "user")
     SELECT
         'title_' || iter,
@@ -98,7 +98,7 @@ INSERT INTO new(title, lead, create_date, edit_date, text, is_published, categor
         (SELECT min(id) FROM "user") + trunc(random() * 10)
     FROM generate_series(1, 50) as iter;
 
--- Данные для таблицы комментариев
+-- Данные для таблицы comment
 INSERT INTO comment(text, create_date, edit_date, new, "user")
     SELECT
         'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. ' ||
@@ -114,7 +114,7 @@ INSERT INTO comment(text, create_date, edit_date, new, "user")
         (SELECT min(id) FROM "user") + trunc(random() * 10)
     FROM generate_series(1, 150);
 
--- Данные для таблицы изображений
+-- Данные для таблицы image
 INSERT INTO image(title, path, new)
     SELECT
         'title_' || iter,
@@ -122,7 +122,7 @@ INSERT INTO image(title, path, new)
         (SELECT min(id) FROM new) + trunc(random() * 50)
     FROM generate_series(1, 80) as iter;
 
--- Данные для таблицы логов
+-- Данные для таблицы log
 INSERT INTO log(content, "user", action, action_time)
     SELECT
         (SELECT min(id) FROM content) + trunc(random() * 12),
@@ -133,7 +133,7 @@ INSERT INTO log(content, "user", action, action_time)
             + interval '1 hour' * round(random() * 24) + interval '1 second' * round(random() * 60)
     FROM generate_series(1, 150) as iter;
 
--- Данные для таблицы страниц
+-- Данные для таблицы page
 INSERT INTO page(title, meta_charset, meta_description, meta_keywords, title_menu, favicon_path, is_published, url, content)
     SELECT
         'title_' || iter,
@@ -146,3 +146,27 @@ INSERT INTO page(title, meta_charset, meta_description, meta_keywords, title_men
         '/url' || iter,
         (SELECT min(id) FROM content) + trunc(random() * 12)
     FROM generate_series(1, 25) as iter;
+
+-- Данные для таблицы реализации связи многие-ко-многим new_tag
+INSERT INTO new_tag(new, tag)
+    SELECT
+        (SELECT min(id) FROM new) + iter - 1,
+        (SELECT min(id) FROM tag) + trunc(random() * 9)
+    FROM generate_series(1, 25) as iter;
+INSERT INTO new_tag(new, tag)
+    SELECT
+        (SELECT min(id) FROM new) + iter - 1 + 24,
+        (SELECT min(id) FROM tag) + trunc(random() * 9) + 9
+    FROM generate_series(1, 25) as iter;
+
+-- Данные для таблицы реализации связи многие-ко-многим group_permission
+/*INSERT INTO new_tag(new, tag)
+    SELECT
+        (SELECT min(id) FROM new) + iter - 1,
+        (SELECT min(id) FROM tag) + trunc(random() * 9)
+    FROM generate_series(1, 25) as iter;
+INSERT INTO new_tag(new, tag)
+    SELECT
+        (SELECT min(id) FROM new) + iter - 1 + 24,
+        (SELECT min(id) FROM tag) + trunc(random() * 9) + 9
+    FROM generate_series(1, 25) as iter;*/
