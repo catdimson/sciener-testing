@@ -4,6 +4,7 @@
 --     LC_COLLATE = 'Russian_Russia.1251'
 --     LC_CTYPE = 'Russian_Russia.1251'
 
+-- Создание таблица user
 CREATE TABLE "user" (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     password character varying(128) NOT NULL,
@@ -20,18 +21,21 @@ CREATE TABLE "user" (
     CONSTRAINT username_unique UNIQUE (username)
 );
 
+-- Создание таблица category
 CREATE TABLE category (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     title character varying(50) NOT NULL,
     CONSTRAINT category_pk PRIMARY KEY (id)
 );
 
+-- Создание таблица tag
 CREATE TABLE tag (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     title character varying(50) NOT NULL,
     CONSTRAINT tag_pk PRIMARY KEY (id)
 );
 
+-- Создание таблица content
 CREATE TABLE content (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     entity character varying(50) NOT NULL,
@@ -39,6 +43,7 @@ CREATE TABLE content (
     CONSTRAINT entity_unique UNIQUE (entity)
 );
 
+-- Создание таблица mailing
 CREATE TABLE mailing (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     email character varying(80) NOT NULL,
@@ -46,14 +51,16 @@ CREATE TABLE mailing (
     CONSTRAINT email_unique UNIQUE (email)
 );
 
+-- Создание таблица session
 CREATE TABLE session (
-    id character varying(40) NOT NULL,
+    session_key character varying(40) NOT NULL,
     session_data text NOT NULL,
     expire_date timestamp NOT NULL,
-    CONSTRAINT session_pk PRIMARY KEY (id)
+    CONSTRAINT session_key_pk PRIMARY KEY (session_key)
 );
 CREATE INDEX session_index ON session (expire_date);
 
+-- Создание таблица new
 CREATE TABLE new (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     title character varying(250) NOT NULL,
@@ -77,6 +84,7 @@ CREATE TABLE new (
 CREATE INDEX fk_index_category_id ON new (category);
 CREATE INDEX fk_index_new_user_id ON new ("user");
 
+-- Создание таблица image
 CREATE TABLE image (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     title character varying(80) NOT NULL,
@@ -90,6 +98,7 @@ CREATE TABLE image (
 );
 CREATE INDEX fk_index_image_new_id ON image (new);
 
+-- Создание таблица page
 CREATE TABLE page (
      id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
      title character varying(80) NOT NULL,
@@ -110,6 +119,7 @@ CREATE TABLE page (
 );
 CREATE INDEX fk_index_page_content_id ON page (content);
 
+-- Создание таблица log
 CREATE TABLE log (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     content integer NOT NULL,
@@ -129,6 +139,7 @@ CREATE TABLE log (
 CREATE INDEX fk_index_log_content_id ON log (content);
 CREATE INDEX fk_index_log_user_id ON log ("user");
 
+-- Создание таблица comment
 CREATE TABLE comment (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     text character varying(3000),
@@ -149,6 +160,7 @@ CREATE TABLE comment (
 CREATE INDEX fk_index_comment_new_id ON comment (new);
 CREATE INDEX fk_index_comment_user_id ON comment ("user");
 
+-- Создание таблица permission
 CREATE TABLE permission (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     content integer NOT NULL,
@@ -162,6 +174,7 @@ CREATE TABLE permission (
 );
 CREATE INDEX fk_index_permission_content_id ON permission (content);
 
+-- Создание таблица user_permission для реализации связи многие-ко-многим
 CREATE TABLE user_permission (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     "user" integer NOT NULL,
@@ -180,6 +193,7 @@ CREATE TABLE user_permission (
 CREATE INDEX fk_index_user_permission_user_id ON user_permission ("user");
 CREATE INDEX fk_index_user_permission_permission_id ON user_permission (permission);
 
+-- Создание таблица new_tag для реализации связи многие-ко-многим
 CREATE TABLE new_tag (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     new integer NOT NULL,
