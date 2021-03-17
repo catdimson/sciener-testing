@@ -53,4 +53,37 @@ SELECT
 FROM page
 WHERE is_published = TRUE
 GROUP BY content
-HAVING COUNT(*) >= 3
+HAVING COUNT(*) >= 3;
+
+
+/*--- CTE ---*/
+-- тяжело было подобрать что-то осмысленное для данной структуры БД
+WITH category_news AS (
+    SELECT category, COUNT(*) AS category_count
+    FROM new
+    GROUP BY category
+), more_popular_categories_news AS (
+    SELECT category
+    FROM category_news
+    WHERE category_count >= 7
+)
+SELECT
+    new.title AS new_title,
+    new.lead AS new_lead,
+    new.text AS new_text
+FROM new
+WHERE category IN (SELECT category FROM more_popular_categories_news);
+
+WITH users_comment AS (
+    SELECT "user", COUNT(*) AS comment_count
+    FROM comment
+    GROUP BY "user"
+), melee_active_users AS (
+    SELECT "user"
+    FROM users_comment
+    WHERE comment_count < 2
+)
+SELECT
+    new.title AS new_title
+FROM new
+WHERE new."user" IN (SELECT "user" FROM melee_active_users)
