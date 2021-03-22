@@ -19,9 +19,10 @@ public class User {
     boolean isStaff;
     boolean isActive;
 
-    User(String password, String username, String firstName, String lastName, String email,
+    User(int id, String password, String username, String firstName, String lastName, String email,
          Group group, Date lastLogin, Date dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive)
             throws NoSuchAlgorithmException {
+        this.id = id;
         this.password = md5(password);
         this.username = username;
         this.firstName = firstName;

@@ -11,6 +11,9 @@ class UserTest {
     private static Date dateJoined;
     private static Group group;
 
+    /**
+     * Инициализация данных общих для всех тестов
+     */
     @BeforeAll
     static void beforeAll() {
         lastLogin = new Date();
@@ -19,11 +22,11 @@ class UserTest {
     }
 
     /**
-    * Проверяем работу конструктора User
+    * Проверка работы конструктора User
     */
     @Test
     void User() throws NoSuchAlgorithmException {
-        User user = new User("qwerty12", "admin", "alexandr", "kanonenko",
+        User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
                 "admin@gmail.com", group, lastLogin, dateJoined, true, true, true);
         SoftAssertions soft = new SoftAssertions();
 
@@ -45,11 +48,11 @@ class UserTest {
     }
 
     /**
-     * Получаем фамилию и имя
+     * Получение фамилии и имени пользователя
      */
     @Test
     void getFullName() throws NoSuchAlgorithmException {
-        User user = new User("qwerty12", "admin", "alexandr", "kanonenko",
+        User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
                 "admin@gmail.com", group, lastLogin, dateJoined, true, true, true);
         user.changeFirstName("Олег");
         user.changeLastName("Бочаров");
@@ -60,11 +63,11 @@ class UserTest {
     }
 
     /**
-     * Изменяем данные аккаунта: логин, пароль и email
+     * Изменение данных аккаунта: логин, пароль и email
      */
     @Test
     void changePersonalData() throws NoSuchAlgorithmException {
-        User user = new User("qwerty12", "admin", "alexandr", "kanonenko",
+        User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
                 "admin@gmail.com", group, lastLogin, dateJoined, true, true, true);
         SoftAssertions soft = new SoftAssertions();
 
@@ -81,11 +84,11 @@ class UserTest {
     }
 
     /**
-     * Деактивировать пользователя, убрать права суперпользователя, сделать его НЕ персоналом
+     * Деактивация пользователя, убрать права суперпользователя, сделать его НЕ персоналом
      */
     @Test
     void allDeactivateUser() throws NoSuchAlgorithmException {
-        User user = new User("qwerty12", "admin", "alexandr", "kanonenko",
+        User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
                 "admin@gmail.com", group, lastLogin, dateJoined, true, true, true);
         SoftAssertions soft = new SoftAssertions();
 
@@ -101,11 +104,11 @@ class UserTest {
     }
 
     /**
-     * Активировать пользователя, добавить права суперпользователя, сделать его персоналом
+     * Активировация пользователя, добавить права суперпользователя, сделать его персоналом
      */
     @Test
     void allActivateUser() throws NoSuchAlgorithmException {
-        User user = new User("qwerty12", "admin", "alexandr", "kanonenko",
+        User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
                 "admin@gmail.com", group, lastLogin, dateJoined, false, false, false);
         SoftAssertions soft = new SoftAssertions();
 
@@ -114,9 +117,9 @@ class UserTest {
         user.activate();
 
         soft.assertThat(user)
-                .hasFieldOrPropertyWithValue("isSuperuser", true)
-                .hasFieldOrPropertyWithValue("isStaff", true)
-                .hasFieldOrPropertyWithValue("isActive", true);
+            .hasFieldOrPropertyWithValue("isSuperuser", true)
+            .hasFieldOrPropertyWithValue("isStaff", true)
+            .hasFieldOrPropertyWithValue("isActive", true);
         soft.assertAll();
     }
 }
