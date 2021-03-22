@@ -24,9 +24,8 @@ public class New {
         this.user = user;
     }
 
-    public void edit(int id, String title, String lead, Date editDate, String text, boolean isPublished,
+    public void edit(String title, String lead, Date editDate, String text, boolean isPublished,
                      Category category, User user) {
-        this.id = id;
         this.title = title;
         this.lead = lead;
         this.editDate = editDate;

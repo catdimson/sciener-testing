@@ -22,8 +22,8 @@ class UserTest {
     }
 
     /**
-    * Проверка работы конструктора User
-    */
+     * Проверка работы конструктора User
+     */
     @Test
     void User() throws NoSuchAlgorithmException {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
@@ -33,17 +33,17 @@ class UserTest {
         String expectedPassword = user.md5("qwerty12");
 
         soft.assertThat(user)
-            .hasFieldOrPropertyWithValue("password", expectedPassword)
-            .hasFieldOrPropertyWithValue("username", "admin")
-            .hasFieldOrPropertyWithValue("firstName", "alexandr")
-            .hasFieldOrPropertyWithValue("lastName", "kanonenko")
-            .hasFieldOrPropertyWithValue("email", "admin@gmail.com")
-            .hasFieldOrPropertyWithValue("group", group)
-            .hasFieldOrPropertyWithValue("lastLogin", lastLogin)
-            .hasFieldOrPropertyWithValue("dateJoined", dateJoined)
-            .hasFieldOrPropertyWithValue("isSuperuser", true)
-            .hasFieldOrPropertyWithValue("isStaff", true)
-            .hasFieldOrPropertyWithValue("isActive", true);
+                .hasFieldOrPropertyWithValue("password", expectedPassword)
+                .hasFieldOrPropertyWithValue("username", "admin")
+                .hasFieldOrPropertyWithValue("firstName", "alexandr")
+                .hasFieldOrPropertyWithValue("lastName", "kanonenko")
+                .hasFieldOrPropertyWithValue("email", "admin@gmail.com")
+                .hasFieldOrPropertyWithValue("group", group)
+                .hasFieldOrPropertyWithValue("lastLogin", lastLogin)
+                .hasFieldOrPropertyWithValue("dateJoined", dateJoined)
+                .hasFieldOrPropertyWithValue("isSuperuser", true)
+                .hasFieldOrPropertyWithValue("isStaff", true)
+                .hasFieldOrPropertyWithValue("isActive", true);
         soft.assertAll();
     }
 
@@ -77,9 +77,9 @@ class UserTest {
         String expectedPassword = user.md5("newpas12");
 
         soft.assertThat(user)
-            .hasFieldOrPropertyWithValue("username", "Иванов")
-            .hasFieldOrPropertyWithValue("password", expectedPassword)
-            .hasFieldOrPropertyWithValue("email", "newemail@mail.ru");
+                .hasFieldOrPropertyWithValue("username", "Иванов")
+                .hasFieldOrPropertyWithValue("password", expectedPassword)
+                .hasFieldOrPropertyWithValue("email", "newemail@mail.ru");
         soft.assertAll();
     }
 
@@ -97,9 +97,9 @@ class UserTest {
         user.deactivate();
 
         soft.assertThat(user)
-            .hasFieldOrPropertyWithValue("isSuperuser", false)
-            .hasFieldOrPropertyWithValue("isStaff", false)
-            .hasFieldOrPropertyWithValue("isActive", false);
+                .hasFieldOrPropertyWithValue("isSuperuser", false)
+                .hasFieldOrPropertyWithValue("isStaff", false)
+                .hasFieldOrPropertyWithValue("isActive", false);
         soft.assertAll();
     }
 
@@ -117,9 +117,9 @@ class UserTest {
         user.activate();
 
         soft.assertThat(user)
-            .hasFieldOrPropertyWithValue("isSuperuser", true)
-            .hasFieldOrPropertyWithValue("isStaff", true)
-            .hasFieldOrPropertyWithValue("isActive", true);
+                .hasFieldOrPropertyWithValue("isSuperuser", true)
+                .hasFieldOrPropertyWithValue("isStaff", true)
+                .hasFieldOrPropertyWithValue("isActive", true);
         soft.assertAll();
     }
 }

@@ -48,12 +48,11 @@ class PageTest {
                 "/news/all", content);
         SoftAssertions soft = new SoftAssertions();
 
-        page.edit(2, "title 2", "meta charset 2", "meta description 2",
+        page.edit("title 2", "meta charset 2", "meta description 2",
                 "meta keywords 2", "title 2", "/static/path/favicon.ico", true,
                 "/news/hot", content);
 
         soft.assertThat(page)
-                .hasFieldOrPropertyWithValue("id", 2)
                 .hasFieldOrPropertyWithValue("title", "title 2")
                 .hasFieldOrPropertyWithValue("metaCharset", "meta charset 2")
                 .hasFieldOrPropertyWithValue("metaDescription", "meta description 2")

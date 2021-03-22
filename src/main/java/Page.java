@@ -1,5 +1,3 @@
-
-
 public class Page {
     int id;
     String title;
@@ -26,9 +24,8 @@ public class Page {
         this.content = content;
     }
 
-    public void edit(int id, String title, String metaCharset, String metaDescription, String metaKeywords, String titleMenu,
+    public void edit(String title, String metaCharset, String metaDescription, String metaKeywords, String titleMenu,
                      String faviconPath, boolean isPublished, String url, Content content) {
-        this.id = id;
         this.title = title;
         this.metaCharset = metaCharset;
         this.metaDescription = metaDescription;

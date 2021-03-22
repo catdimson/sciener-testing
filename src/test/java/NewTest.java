@@ -14,8 +14,8 @@ class NewTest {
     private static Date createDate;
 
     /**
-    * Инициализация данных общих для всех тестов
-    */
+     * Инициализация данных общих для всех тестов
+     */
     @BeforeAll
     static void beforeAll() throws NoSuchAlgorithmException {
         Date lastLogin = new Date();
@@ -40,39 +40,38 @@ class NewTest {
         SoftAssertions soft = new SoftAssertions();
 
         soft.assertThat(article)
-            .hasFieldOrPropertyWithValue("id", 1)
-            .hasFieldOrPropertyWithValue("title", "title 1")
-            .hasFieldOrPropertyWithValue("lead", "lead 1")
-            .hasFieldOrPropertyWithValue("createDate", createDate)
-            .hasFieldOrPropertyWithValue("editDate", editDate)
-            .hasFieldOrPropertyWithValue("text", "description article 1")
-            .hasFieldOrPropertyWithValue("isPublished", true)
-            .hasFieldOrPropertyWithValue("category", category)
-            .hasFieldOrPropertyWithValue("user", user);
+                .hasFieldOrPropertyWithValue("id", 1)
+                .hasFieldOrPropertyWithValue("title", "title 1")
+                .hasFieldOrPropertyWithValue("lead", "lead 1")
+                .hasFieldOrPropertyWithValue("createDate", createDate)
+                .hasFieldOrPropertyWithValue("editDate", editDate)
+                .hasFieldOrPropertyWithValue("text", "description article 1")
+                .hasFieldOrPropertyWithValue("isPublished", true)
+                .hasFieldOrPropertyWithValue("category", category)
+                .hasFieldOrPropertyWithValue("user", user);
         soft.assertAll();
     }
 
     /**
-    * Проверка метода редактирования новости
-    */
+     * Проверка метода редактирования новости
+     */
     @Test
     void editArticle() {
         New article = new New(1, "title 1", "lead 1", createDate, editDate,
                 "description article 1", true, category, user);
         SoftAssertions soft = new SoftAssertions();
 
-        article.edit(2, "title 2", "lead 2", editDate,
+        article.edit("title 2", "lead 2", editDate,
                 "description article 2", false, category, user);
 
         soft.assertThat(article)
-            .hasFieldOrPropertyWithValue("id", 2)
-            .hasFieldOrPropertyWithValue("title", "title 2")
-            .hasFieldOrPropertyWithValue("lead", "lead 2")
-            .hasFieldOrPropertyWithValue("editDate", editDate)
-            .hasFieldOrPropertyWithValue("text", "description article 2")
-            .hasFieldOrPropertyWithValue("isPublished", false)
-            .hasFieldOrPropertyWithValue("category", category)
-            .hasFieldOrPropertyWithValue("user", user);
+                .hasFieldOrPropertyWithValue("title", "title 2")
+                .hasFieldOrPropertyWithValue("lead", "lead 2")
+                .hasFieldOrPropertyWithValue("editDate", editDate)
+                .hasFieldOrPropertyWithValue("text", "description article 2")
+                .hasFieldOrPropertyWithValue("isPublished", false)
+                .hasFieldOrPropertyWithValue("category", category)
+                .hasFieldOrPropertyWithValue("user", user);
         soft.assertAll();
     }
 }
