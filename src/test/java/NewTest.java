@@ -65,14 +65,14 @@ class NewTest {
                 "description article 2", false, category, user);
 
         soft.assertThat(article)
-                .hasFieldOrPropertyWithValue("id", 2)
-                .hasFieldOrPropertyWithValue("title", "title 2")
-                .hasFieldOrPropertyWithValue("lead", "lead 2")
-                .hasFieldOrPropertyWithValue("editDate", editDate)
-                .hasFieldOrPropertyWithValue("text", "description article 2")
-                .hasFieldOrPropertyWithValue("isPublished", false)
-                .hasFieldOrPropertyWithValue("category", category)
-                .hasFieldOrPropertyWithValue("user", user);
+            .hasFieldOrPropertyWithValue("id", 2)
+            .hasFieldOrPropertyWithValue("title", "title 2")
+            .hasFieldOrPropertyWithValue("lead", "lead 2")
+            .hasFieldOrPropertyWithValue("editDate", editDate)
+            .hasFieldOrPropertyWithValue("text", "description article 2")
+            .hasFieldOrPropertyWithValue("isPublished", false)
+            .hasFieldOrPropertyWithValue("category", category)
+            .hasFieldOrPropertyWithValue("user", user);
         soft.assertAll();
     }
 }
