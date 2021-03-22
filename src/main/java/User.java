@@ -1,4 +1,9 @@
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+
 
 public class User {
     String password;
@@ -14,8 +19,9 @@ public class User {
     boolean isActive;
 
     User(String password, String username, String firstName, String lastName, String email,
-         int group, Date lastLogin, Date dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive) {
-        this.password = password;
+         int group, Date lastLogin, Date dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive)
+            throws NoSuchAlgorithmException {
+        this.password = md5(password);
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -37,7 +43,25 @@ public class User {
     }
 
     public String getFullName() {
-        return this.firstName + " " + this.lastName.trim();
+        return this.firstName + " " + this.lastName;
+    }
+
+    public String md5(String password) throws NoSuchAlgorithmException {
+        MessageDigest md5 = MessageDigest.getInstance("MD5");
+        md5.update(StandardCharsets.UTF_8.encode(password));
+        return String.format("%032x", new BigInteger(1, md5.digest()));
+    }
+
+    public void changeUsername(String newUsername) {
+        this.username = newUsername;
+    }
+
+    public void encodeAndChangePassword(String newPassword) throws NoSuchAlgorithmException {
+        this.password = md5(newPassword);
+    }
+
+    public void changeEmail(String newEmail) {
+        this.email = newEmail;
     }
 
 }
