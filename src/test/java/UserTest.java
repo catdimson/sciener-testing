@@ -9,11 +9,13 @@ import java.util.Date;
 class UserTest {
     private static Date lastLogin;
     private static Date dateJoined;
+    private static Group group;
 
     @BeforeAll
     static void beforeAll() {
         lastLogin = new Date();
         dateJoined = new Date(16_000_000_000_00L);
+        group = new Group(1, "editor");
     }
 
     /**
@@ -22,7 +24,7 @@ class UserTest {
     @Test
     void User() throws NoSuchAlgorithmException {
         User user = new User("qwerty12", "admin", "alexandr", "kanonenko",
-                "admin@gmail.com", 1, lastLogin, dateJoined, true, true, true);
+                "admin@gmail.com", group, lastLogin, dateJoined, true, true, true);
         SoftAssertions soft = new SoftAssertions();
 
         String expectedPassword = user.md5("qwerty12");
@@ -33,7 +35,7 @@ class UserTest {
             .hasFieldOrPropertyWithValue("firstName", "alexandr")
             .hasFieldOrPropertyWithValue("lastName", "kanonenko")
             .hasFieldOrPropertyWithValue("email", "admin@gmail.com")
-            .hasFieldOrPropertyWithValue("group", 1)
+            .hasFieldOrPropertyWithValue("group", group)
             .hasFieldOrPropertyWithValue("lastLogin", lastLogin)
             .hasFieldOrPropertyWithValue("dateJoined", dateJoined)
             .hasFieldOrPropertyWithValue("isSuperuser", true)
@@ -48,7 +50,7 @@ class UserTest {
     @Test
     void getFullName() throws NoSuchAlgorithmException {
         User user = new User("qwerty12", "admin", "alexandr", "kanonenko",
-                "admin@gmail.com", 1, lastLogin, dateJoined, true, true, true);
+                "admin@gmail.com", group, lastLogin, dateJoined, true, true, true);
         user.changeFirstName("Олег");
         user.changeLastName("Бочаров");
 
@@ -63,7 +65,7 @@ class UserTest {
     @Test
     void changePersonalData() throws NoSuchAlgorithmException {
         User user = new User("qwerty12", "admin", "alexandr", "kanonenko",
-                "admin@gmail.com", 1, lastLogin, dateJoined, true, true, true);
+                "admin@gmail.com", group, lastLogin, dateJoined, true, true, true);
         SoftAssertions soft = new SoftAssertions();
 
         user.changeUsername("Иванов");
@@ -79,11 +81,43 @@ class UserTest {
     }
 
     /**
-     * Деактивировать пользователя
+     * Деактивировать пользователя, убрать права суперпользователя, сделать его НЕ персоналом
      */
     @Test
-    void deativateUser() {
+    void allDeactivateUser() throws NoSuchAlgorithmException {
+        User user = new User("qwerty12", "admin", "alexandr", "kanonenko",
+                "admin@gmail.com", group, lastLogin, dateJoined, true, true, true);
+        SoftAssertions soft = new SoftAssertions();
 
+        user.offSuperuser();
+        user.offStaff();
+        user.deactivate();
+
+        soft.assertThat(user)
+            .hasFieldOrPropertyWithValue("isSuperuser", false)
+            .hasFieldOrPropertyWithValue("isStaff", false)
+            .hasFieldOrPropertyWithValue("isActive", false);
+        soft.assertAll();
+    }
+
+    /**
+     * Активировать пользователя, добавить права суперпользователя, сделать его персоналом
+     */
+    @Test
+    void allActivateUser() throws NoSuchAlgorithmException {
+        User user = new User("qwerty12", "admin", "alexandr", "kanonenko",
+                "admin@gmail.com", group, lastLogin, dateJoined, false, false, false);
+        SoftAssertions soft = new SoftAssertions();
+
+        user.onSuperuser();
+        user.onStaff();
+        user.activate();
+
+        soft.assertThat(user)
+                .hasFieldOrPropertyWithValue("isSuperuser", true)
+                .hasFieldOrPropertyWithValue("isStaff", true)
+                .hasFieldOrPropertyWithValue("isActive", true);
+        soft.assertAll();
     }
 }
 

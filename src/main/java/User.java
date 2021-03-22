@@ -6,12 +6,13 @@ import java.util.Date;
 
 
 public class User {
+    int id;
     String password;
     String username;
     String firstName;
     String lastName;
     String email;
-    int group;
+    Group group;
     Date lastLogin;
     Date dateJoined;
     boolean isSuperuser;
@@ -19,7 +20,7 @@ public class User {
     boolean isActive;
 
     User(String password, String username, String firstName, String lastName, String email,
-         int group, Date lastLogin, Date dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive)
+         Group group, Date lastLogin, Date dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive)
             throws NoSuchAlgorithmException {
         this.password = md5(password);
         this.username = username;
@@ -64,4 +65,33 @@ public class User {
         this.email = newEmail;
     }
 
+    public boolean deactivate() {
+        this.isActive = false;
+        return false;
+    }
+
+    public boolean activate() {
+        this.isActive = true;
+        return true;
+    }
+
+    public boolean offSuperuser() {
+        this.isSuperuser = false;
+        return false;
+    }
+
+    public boolean onSuperuser() {
+        this.isSuperuser = true;
+        return true;
+    }
+
+    public boolean offStaff() {
+        this.isStaff = false;
+        return false;
+    }
+
+    public boolean onStaff() {
+        this.isStaff = true;
+        return true;
+    }
 }

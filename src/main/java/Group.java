@@ -1,7 +1,9 @@
 public class Group {
+    int id;
     String title;
 
-    Group(String title) {
+    Group(int id, String title) {
+        this.id = id;
         this.title = title;
     }
 

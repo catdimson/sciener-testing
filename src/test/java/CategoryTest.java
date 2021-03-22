@@ -6,7 +6,7 @@ class CategoryTest {
 
     @Test
     void changeTitle() {
-        Category category = new Category("sport");
+        Category category = new Category(1, "sport");
         category.changeTitle("politic");
 
         String actual = category.getTitle();

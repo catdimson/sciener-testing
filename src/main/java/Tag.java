@@ -1,7 +1,9 @@
 public class Tag {
+    int id;
     String title;
 
-    Tag(String title) {
+    Tag(int id, String title) {
+        this.id = id;
         this.title = title;
     }
 

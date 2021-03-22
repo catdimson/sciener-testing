@@ -6,7 +6,7 @@ public class GroupTest {
 
     @Test
     void changeTitle() {
-        Group group = new Group("admin");
+        Group group = new Group(1, "admin");
         group.changeTitle("editor");
 
         String actual = group.getTitle();
