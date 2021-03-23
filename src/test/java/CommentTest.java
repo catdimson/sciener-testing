@@ -1,10 +1,10 @@
+import domain.*;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
-
 
 class CommentTest {
     private static New article;
@@ -42,24 +42,6 @@ class CommentTest {
         // данные для создания комментария
         editDate = new Date();
         createDate = new Date(16_000_000_000_00L);
-    }
-
-    /**
-     * Проверка работы конструктора Comment
-     */
-    @Test
-    void Comment() {
-        Comment comment = new Comment(1, "comment 1", createDate, editDate, article, user);
-        SoftAssertions soft = new SoftAssertions();
-
-        soft.assertThat(comment)
-                .hasFieldOrPropertyWithValue("id", 1)
-                .hasFieldOrPropertyWithValue("text", "comment 1")
-                .hasFieldOrPropertyWithValue("createDate", createDate)
-                .hasFieldOrPropertyWithValue("editDate", editDate)
-                .hasFieldOrPropertyWithValue("article", article)
-                .hasFieldOrPropertyWithValue("user", user);
-        soft.assertAll();
     }
 
     /**

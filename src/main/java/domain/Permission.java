@@ -1,20 +1,22 @@
+package domain;
+
 import java.util.List;
 
 public class Permission {
-    int id;
-    String action;
-    boolean permission;
-    Content content;
-    List<Group> groups;
+    final private int id;
+    final private String action;
+    private boolean permission;
+    final private Content content;
+    private List<Group> groups;
 
-    Permission(int id, String action, boolean permission, Content content) {
+    public Permission(int id, String action, boolean permission, Content content) {
         this.id = id;
         this.action = action;
         this.permission = permission;
         this.content = content;
     }
 
-    public boolean checkPermission() {
+    public boolean getPermission() {
         return this.permission;
     }
 

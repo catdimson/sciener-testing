@@ -1,11 +1,13 @@
+package domain;
+
 import java.util.List;
 
 public class Content {
-    int id;
-    String entity;
-    List<Log> logs;
+    final private int id;
+    private String entity;
+    private List<Log> logs;
 
-    Content(int id, String title) {
+    public Content(int id, String title) {
         this.id = id;
         this.entity = title;
     }

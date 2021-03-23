@@ -1,3 +1,4 @@
+import domain.*;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -27,22 +28,6 @@ class ImageTest {
         article = new New(1, "title 1", "lead 1", createDate, editDate,
                 "description article 1", true, category, user);
 
-    }
-
-    /**
-     * Проверка работы конструктора Image
-     */
-    @Test
-    void Image() {
-        Image image = new Image(1, "image 1", "/static/news/", article);
-        SoftAssertions soft = new SoftAssertions();
-
-        soft.assertThat(image)
-                .hasFieldOrPropertyWithValue("id", 1)
-                .hasFieldOrPropertyWithValue("title", "image 1")
-                .hasFieldOrPropertyWithValue("path", "/static/news/")
-                .hasFieldOrPropertyWithValue("article", article);
-        soft.assertAll();
     }
 
     /**

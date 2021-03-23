@@ -1,3 +1,4 @@
+import domain.Content;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,9 +10,9 @@ class ContentTest {
         Content content = new Content(1, "Group");
         content.changeEntity("Category");
 
-        String actual = content.getEntity();
-        String expected = "Category";
+        String actualEntity = content.getEntity();
+        String expectedEntity = "Category";
 
-        assertEquals(expected, actual);
+        assertEquals(expectedEntity, actualEntity);
     }
 }

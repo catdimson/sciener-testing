@@ -1,10 +1,12 @@
-public class Image {
-    int id;
-    String title;
-    String path;
-    New article;
+package domain;
 
-    Image(int id, String title, String path, New article) {
+public class Image {
+    final private int id;
+    private String title;
+    private String path;
+    private New article;
+
+    public Image(int id, String title, String path, New article) {
         this.id = id;
         this.title = title;
         this.path = path;

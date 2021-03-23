@@ -1,21 +1,23 @@
+package domain;
+
 import java.util.Date;
 import java.util.List;
 
 public class New {
-    int id;
-    String title;
-    String lead;
-    Date createDate;
-    Date editDate;
-    String text;
-    boolean isPublished;
-    Category category;
-    User user;
-    List<Tag> tags;
-    List<Image> images;
-    List<Comment> comments;
+    final private int id;
+    private String title;
+    private String lead;
+    final private Date createDate;
+    private Date editDate;
+    private String text;
+    private boolean isPublished;
+    private Category category;
+    private User user;
+    private List<Tag> tags;
+    private List<Image> images;
+    private List<Comment> comments;
 
-    New(int id, String title, String lead, Date createDate, Date editDate, String text, boolean isPublished,
+    public New(int id, String title, String lead, Date createDate, Date editDate, String text, boolean isPublished,
         Category category, User user) {
         this.id = id;
         this.title = title;

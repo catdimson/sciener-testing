@@ -1,3 +1,7 @@
+import domain.Category;
+import domain.Group;
+import domain.New;
+import domain.User;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -28,28 +32,6 @@ class NewTest {
 
         editDate = new Date();
         createDate = new Date(16_000_000_000_00L);
-    }
-
-    /**
-     * Проверка работы конструктора New
-     */
-    @Test
-    void New() {
-        New article = new New(1, "title 1", "lead 1", createDate, editDate,
-                "description article 1", true, category, user);
-        SoftAssertions soft = new SoftAssertions();
-
-        soft.assertThat(article)
-                .hasFieldOrPropertyWithValue("id", 1)
-                .hasFieldOrPropertyWithValue("title", "title 1")
-                .hasFieldOrPropertyWithValue("lead", "lead 1")
-                .hasFieldOrPropertyWithValue("createDate", createDate)
-                .hasFieldOrPropertyWithValue("editDate", editDate)
-                .hasFieldOrPropertyWithValue("text", "description article 1")
-                .hasFieldOrPropertyWithValue("isPublished", true)
-                .hasFieldOrPropertyWithValue("category", category)
-                .hasFieldOrPropertyWithValue("user", user);
-        soft.assertAll();
     }
 
     /**

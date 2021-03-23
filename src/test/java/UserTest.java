@@ -1,3 +1,5 @@
+import domain.Group;
+import domain.User;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,32 +21,6 @@ class UserTest {
         lastLogin = new Date();
         dateJoined = new Date(16_000_000_000_00L);
         group = new Group(1, "editor");
-    }
-
-    /**
-     * Проверка работы конструктора User
-     */
-    @Test
-    void User() throws NoSuchAlgorithmException {
-        User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
-                "admin@gmail.com", group, lastLogin, dateJoined, true, true, true);
-        SoftAssertions soft = new SoftAssertions();
-
-        String expectedPassword = user.md5("qwerty12");
-
-        soft.assertThat(user)
-                .hasFieldOrPropertyWithValue("password", expectedPassword)
-                .hasFieldOrPropertyWithValue("username", "admin")
-                .hasFieldOrPropertyWithValue("firstName", "alexandr")
-                .hasFieldOrPropertyWithValue("lastName", "kanonenko")
-                .hasFieldOrPropertyWithValue("email", "admin@gmail.com")
-                .hasFieldOrPropertyWithValue("group", group)
-                .hasFieldOrPropertyWithValue("lastLogin", lastLogin)
-                .hasFieldOrPropertyWithValue("dateJoined", dateJoined)
-                .hasFieldOrPropertyWithValue("isSuperuser", true)
-                .hasFieldOrPropertyWithValue("isStaff", true)
-                .hasFieldOrPropertyWithValue("isActive", true);
-        soft.assertAll();
     }
 
     /**

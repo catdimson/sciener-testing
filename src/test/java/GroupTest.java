@@ -1,3 +1,4 @@
+import domain.Group;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -9,9 +10,9 @@ public class GroupTest {
         Group group = new Group(1, "admin");
         group.changeTitle("editor");
 
-        String actual = group.getTitle();
-        String expected = "editor";
+        String actualTitle = group.getTitle();
+        String expectedTitle = "editor";
 
-        assertEquals(expected, actual);
+        assertEquals(expectedTitle, actualTitle);
     }
 }

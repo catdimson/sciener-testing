@@ -1,11 +1,13 @@
+package domain;
+
 import java.util.List;
 
 public class Category {
-    int id;
-    String title;
-    List<New> news;
+    final private int id;
+    private String title;
+    private List<New> news;
 
-    Category(int id, String title) {
+    public Category(int id, String title) {
         this.id = id;
         this.title = title;
     }

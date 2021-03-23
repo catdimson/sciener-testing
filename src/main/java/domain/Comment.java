@@ -1,14 +1,16 @@
+package domain;
+
 import java.util.Date;
 
 public class Comment {
-    int id;
-    String text;
-    Date createDate;
-    Date editDate;
-    New article;
-    User user;
+    final private int id;
+    private String text;
+    final private Date createDate;
+    private Date editDate;
+    private New article;
+    final private User user;
 
-    Comment(int id, String text, Date createDate, Date editDate, New article, User user) {
+    public Comment(int id, String text, Date createDate, Date editDate, New article, User user) {
         this.id = id;
         this.text = text;
         this.createDate = createDate;

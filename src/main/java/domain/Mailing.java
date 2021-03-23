@@ -1,8 +1,10 @@
-public class Mailing {
-    int id;
-    String email;
+package domain;
 
-    Mailing(int id, String email) {
+public class Mailing {
+    final private int id;
+    final private String email;
+
+    public Mailing(int id, String email) {
         this.id = id;
         this.email = email;
     }

@@ -1,3 +1,4 @@
+import domain.Category;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,9 +10,9 @@ class CategoryTest {
         Category category = new Category(1, "sport");
         category.changeTitle("politic");
 
-        String actual = category.getTitle();
-        String expected = "politic";
+        String actualTitle = category.getTitle();
+        String expectedTitle = "politic";
 
-        assertEquals(expected, actual);
+        assertEquals(expectedTitle, actualTitle);
     }
 }

@@ -1,16 +1,18 @@
-public class Page {
-    int id;
-    String title;
-    String metaCharset;
-    String metaDescription;
-    String metaKeywords;
-    String titleMenu;
-    String faviconPath;
-    boolean isPublished;
-    String url;
-    Content content;
+package domain;
 
-    Page(int id, String title, String metaCharset, String metaDescription, String metaKeywords, String titleMenu,
+public class Page {
+    final private int id;
+    private String title;
+    private String metaCharset;
+    private String metaDescription;
+    private String metaKeywords;
+    private String titleMenu;
+    private String faviconPath;
+    private boolean isPublished;
+    private String url;
+    private Content content;
+
+    public Page(int id, String title, String metaCharset, String metaDescription, String metaKeywords, String titleMenu,
          String faviconPath, boolean isPublished, String url, Content content) {
         this.id = id;
         this.title = title;

@@ -1,3 +1,5 @@
+import domain.Content;
+import domain.Page;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -12,30 +14,6 @@ class PageTest {
     @BeforeAll
     static void beforeAll() {
         content = new Content(1, "News");
-    }
-
-    /**
-     * Проверка работы конструктора Page
-     */
-    @Test
-    void Page() {
-        Page page = new Page(1, "title 1", "meta charset 1", "meta description 1",
-                "meta keywords 1", "title 1", "/static/favicon.ico", false,
-                "/news/all", content);
-        SoftAssertions soft = new SoftAssertions();
-
-        soft.assertThat(page)
-                .hasFieldOrPropertyWithValue("id", 1)
-                .hasFieldOrPropertyWithValue("title", "title 1")
-                .hasFieldOrPropertyWithValue("metaCharset", "meta charset 1")
-                .hasFieldOrPropertyWithValue("metaDescription", "meta description 1")
-                .hasFieldOrPropertyWithValue("metaKeywords", "meta keywords 1")
-                .hasFieldOrPropertyWithValue("titleMenu", "title 1")
-                .hasFieldOrPropertyWithValue("faviconPath", "/static/favicon.ico")
-                .hasFieldOrPropertyWithValue("isPublished", false)
-                .hasFieldOrPropertyWithValue("url", "/news/all")
-                .hasFieldOrPropertyWithValue("content", content);
-        soft.assertAll();
     }
 
     /**

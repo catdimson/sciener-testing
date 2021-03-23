@@ -1,3 +1,5 @@
+package domain;
+
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -5,26 +7,25 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 
-
 public class User {
-    int id;
-    String password;
-    String username;
-    String firstName;
-    String lastName;
-    String email;
-    Group group;
-    Date lastLogin;
-    Date dateJoined;
-    boolean isSuperuser;
-    boolean isStaff;
-    boolean isActive;
-    List<Comment> comments;
-    List<New> news;
-    List<Log> logs;
+    final private int id;
+    private String password;
+    private String username;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private Group group;
+    private Date lastLogin;
+    final private Date dateJoined;
+    private boolean isSuperuser;
+    private boolean isStaff;
+    private boolean isActive;
+    private List<Comment> comments;
+    private List<New> news;
+    private List<Log> logs;
 
-    User(int id, String password, String username, String firstName, String lastName, String email,
-         Group group, Date lastLogin, Date dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive)
+    public User(int id, String password, String username, String firstName, String lastName, String email,
+                Group group, Date lastLogin, Date dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive)
             throws NoSuchAlgorithmException {
         this.id = id;
         this.password = md5(password);

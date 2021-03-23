@@ -1,13 +1,15 @@
+package domain;
+
 import java.util.List;
 
 public class Group {
-    int id;
-    String title;
-    List<User> users;
-    List<Permission> permissions;
+    final private int id;
+    private String title;
+    private List<User> users;
+    private List<Permission> permissions;
 
 
-    Group(int id, String title) {
+    public Group(int id, String title) {
         this.id = id;
         this.title = title;
     }
