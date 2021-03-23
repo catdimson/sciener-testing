@@ -1,4 +1,4 @@
-package domain;
+package news;
 
 public class Page {
     final private int id;
@@ -8,8 +8,8 @@ public class Page {
     private String metaKeywords;
     private String titleMenu;
     private String faviconPath;
-    private boolean isPublished;
     private String url;
+    private boolean isPublished;
     private Content content;
 
     public Page(int id, String title, String metaCharset, String metaDescription, String metaKeywords, String titleMenu,

@@ -1,16 +1,16 @@
-import domain.Group;
-import domain.User;
+import news.Group;
+import news.User;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
+import java.time.LocalDate;
 
 class UserTest {
-    private static Date lastLogin;
-    private static Date dateJoined;
+    private static LocalDate lastLogin;
+    private static LocalDate dateJoined;
     private static Group group;
 
     /**
@@ -18,8 +18,8 @@ class UserTest {
      */
     @BeforeAll
     static void beforeAll() {
-        lastLogin = new Date();
-        dateJoined = new Date(16_000_000_000_00L);
+        lastLogin = LocalDate.now();
+        dateJoined = LocalDate.now().minusYears(2);
         group = new Group(1, "editor");
     }
 

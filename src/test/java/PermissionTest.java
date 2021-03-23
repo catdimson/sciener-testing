@@ -1,5 +1,5 @@
-import domain.Content;
-import domain.Permission;
+import news.Content;
+import news.Permission;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

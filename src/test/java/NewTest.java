@@ -1,37 +1,37 @@
-import domain.Category;
-import domain.Group;
-import domain.New;
-import domain.User;
+import news.Category;
+import news.Group;
+import news.New;
+import news.User;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
+import java.time.LocalDate;
 
 class NewTest {
     private static User user;
 
     private static Category category;
 
-    private static Date editDate;
-    private static Date createDate;
+    private static LocalDate editDate;
+    private static LocalDate createDate;
 
     /**
      * Инициализация данных общих для всех тестов
      */
     @BeforeAll
     static void beforeAll() throws NoSuchAlgorithmException {
-        Date lastLogin = new Date();
-        Date dateJoined = new Date(16_000_000_000_00L);
+        LocalDate lastLogin = LocalDate.now();
+        LocalDate dateJoined = LocalDate.now().minusYears(1);
         Group group = new Group(1, "editor");
         user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
                 "admin@gmail.com", group, lastLogin, dateJoined, true, true, true);
 
         category = new Category(1, "sport");
 
-        editDate = new Date();
-        createDate = new Date(16_000_000_000_00L);
+        editDate = LocalDate.now();
+        createDate = LocalDate.now().minusDays(6);
     }
 
     /**

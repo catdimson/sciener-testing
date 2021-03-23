@@ -1,9 +1,8 @@
-import domain.Content;
-import domain.Page;
+import news.Content;
+import news.Page;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 
 class PageTest {
     private static Content content;

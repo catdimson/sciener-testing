@@ -1,4 +1,4 @@
-package domain;
+package news;
 
 public class Mailing {
     final private int id;

@@ -1,4 +1,4 @@
-import domain.Content;
+import news.Content;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

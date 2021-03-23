@@ -1,4 +1,4 @@
-package domain;
+package news;
 
 public class Image {
     final private int id;

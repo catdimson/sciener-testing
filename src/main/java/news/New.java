@@ -1,14 +1,14 @@
-package domain;
+package news;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 public class New {
     final private int id;
+    final private LocalDate createDate;
     private String title;
     private String lead;
-    final private Date createDate;
-    private Date editDate;
+    private LocalDate editDate;
     private String text;
     private boolean isPublished;
     private Category category;
@@ -17,7 +17,7 @@ public class New {
     private List<Image> images;
     private List<Comment> comments;
 
-    public New(int id, String title, String lead, Date createDate, Date editDate, String text, boolean isPublished,
+    public New(int id, String title, String lead, LocalDate createDate, LocalDate editDate, String text, boolean isPublished,
         Category category, User user) {
         this.id = id;
         this.title = title;
@@ -30,7 +30,7 @@ public class New {
         this.user = user;
     }
 
-    public void edit(String title, String lead, Date editDate, String text, boolean isPublished,
+    public void edit(String title, String lead, LocalDate editDate, String text, boolean isPublished,
                      Category category, User user) {
         this.title = title;
         this.lead = lead;

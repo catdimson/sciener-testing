@@ -1,16 +1,16 @@
-package domain;
+package news;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Comment {
     final private int id;
-    private String text;
-    final private Date createDate;
-    private Date editDate;
-    private New article;
+    final private LocalDate createDate;
     final private User user;
+    private String text;
+    private LocalDate editDate;
+    private New article;
 
-    public Comment(int id, String text, Date createDate, Date editDate, New article, User user) {
+    public Comment(int id, String text, LocalDate createDate, LocalDate editDate, New article, User user) {
         this.id = id;
         this.text = text;
         this.createDate = createDate;
@@ -19,7 +19,7 @@ public class Comment {
         this.user = user;
     }
 
-    public void edit(String text, Date editDate, New article) {
+    public void edit(String text, LocalDate editDate, New article) {
         this.text = text;
         this.editDate = editDate;
         this.article = article;

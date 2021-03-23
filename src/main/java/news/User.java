@@ -1,22 +1,22 @@
-package domain;
+package news;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 public class User {
     final private int id;
+    final private LocalDate dateJoined;
     private String password;
     private String username;
     private String firstName;
     private String lastName;
     private String email;
     private Group group;
-    private Date lastLogin;
-    final private Date dateJoined;
+    private LocalDate lastLogin;
     private boolean isSuperuser;
     private boolean isStaff;
     private boolean isActive;
@@ -25,7 +25,7 @@ public class User {
     private List<Log> logs;
 
     public User(int id, String password, String username, String firstName, String lastName, String email,
-                Group group, Date lastLogin, Date dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive)
+                Group group, LocalDate lastLogin, LocalDate dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive)
             throws NoSuchAlgorithmException {
         this.id = id;
         this.password = md5(password);

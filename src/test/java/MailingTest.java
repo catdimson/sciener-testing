@@ -1,4 +1,4 @@
-import domain.Mailing;
+import news.Mailing;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
