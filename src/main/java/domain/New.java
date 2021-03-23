@@ -1,4 +1,5 @@
 import java.util.Date;
+import java.util.List;
 
 public class New {
     int id;
@@ -10,6 +11,9 @@ public class New {
     boolean isPublished;
     Category category;
     User user;
+    List<Tag> tags;
+    List<Image> images;
+    List<Comment> comments;
 
     New(int id, String title, String lead, Date createDate, Date editDate, String text, boolean isPublished,
         Category category, User user) {

@@ -3,6 +3,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.List;
 
 
 public class User {
@@ -18,6 +19,9 @@ public class User {
     boolean isSuperuser;
     boolean isStaff;
     boolean isActive;
+    List<Comment> comments;
+    List<New> news;
+    List<Log> logs;
 
     User(int id, String password, String username, String firstName, String lastName, String email,
          Group group, Date lastLogin, Date dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive)

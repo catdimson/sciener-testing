@@ -1,8 +1,11 @@
-public class Group {
+import java.util.List;
+
+public class Tag {
     int id;
     String title;
+    List<New> news;
 
-    Group(int id, String title) {
+    Tag(int id, String title) {
         this.id = id;
         this.title = title;
     }

@@ -1,8 +1,13 @@
-public class Category {
+import java.util.List;
+
+public class Group {
     int id;
     String title;
+    List<User> users;
+    List<Permission> permissions;
 
-    Category(int id, String title) {
+
+    Group(int id, String title) {
         this.id = id;
         this.title = title;
     }

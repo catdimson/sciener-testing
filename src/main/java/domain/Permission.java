@@ -1,8 +1,11 @@
+import java.util.List;
+
 public class Permission {
     int id;
     String action;
     boolean permission;
     Content content;
+    List<Group> groups;
 
     Permission(int id, String action, boolean permission, Content content) {
         this.id = id;
