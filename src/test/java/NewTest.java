@@ -11,9 +11,7 @@ import java.time.LocalDate;
 
 class NewTest {
     private static User user;
-
     private static Category category;
-
     private static LocalDate editDate;
     private static LocalDate createDate;
 
@@ -22,16 +20,17 @@ class NewTest {
      */
     @BeforeAll
     static void beforeAll() throws NoSuchAlgorithmException {
-        LocalDate lastLogin = LocalDate.now();
-        LocalDate dateJoined = LocalDate.now().minusYears(1);
-        Group group = new Group(1, "editor");
+        LocalDate lastLogin = LocalDate.of(2019, 5, 20);
+        LocalDate dateJoined = LocalDate.of(2020, 5, 20);
+        Group group = new Group(1, "editor", null, null);
         user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
-                "admin@gmail.com", group, lastLogin, dateJoined, true, true, true);
+                "admin@gmail.com", group, lastLogin, dateJoined, true, true, true,
+                null, null, null);
 
-        category = new Category(1, "sport");
+        category = new Category(1, "sport", null);
 
-        editDate = LocalDate.now();
-        createDate = LocalDate.now().minusDays(6);
+        editDate = LocalDate.of(2020, 5, 20);
+        createDate = LocalDate.of(2020, 5, 20);
     }
 
     /**
@@ -39,8 +38,8 @@ class NewTest {
      */
     @Test
     void editArticle() {
-        New article = new New(1, "title 1", "lead 1", createDate, editDate,
-                "description article 1", true, category, user);
+        New article = new New(1, "title 1", "lead 1", createDate, editDate, "description article 1",
+                true, category, user, null, null, null);
         SoftAssertions soft = new SoftAssertions();
 
         article.edit("title 2", "lead 2", editDate,

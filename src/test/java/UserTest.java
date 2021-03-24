@@ -18,9 +18,9 @@ class UserTest {
      */
     @BeforeAll
     static void beforeAll() {
-        lastLogin = LocalDate.now();
-        dateJoined = LocalDate.now().minusYears(2);
-        group = new Group(1, "editor");
+        lastLogin = LocalDate.of(2019, 5, 20);
+        dateJoined = LocalDate.of(2020, 5, 20);
+        group = new Group(1, "editor", null, null);
     }
 
     /**
@@ -29,7 +29,8 @@ class UserTest {
     @Test
     void getFullName() throws NoSuchAlgorithmException {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
-                "admin@gmail.com", group, lastLogin, dateJoined, true, true, true);
+                "admin@gmail.com", group, lastLogin, dateJoined, true, true, true,
+                null, null, null);
         user.changeFirstName("Олег");
         user.changeLastName("Бочаров");
 
@@ -44,7 +45,8 @@ class UserTest {
     @Test
     void changePersonalData() throws NoSuchAlgorithmException {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
-                "admin@gmail.com", group, lastLogin, dateJoined, true, true, true);
+                "admin@gmail.com", group, lastLogin, dateJoined, true, true, true,
+                null, null, null);
         SoftAssertions soft = new SoftAssertions();
 
         user.changeUsername("Иванов");
@@ -65,7 +67,8 @@ class UserTest {
     @Test
     void allDeactivateUser() throws NoSuchAlgorithmException {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
-                "admin@gmail.com", group, lastLogin, dateJoined, true, true, true);
+                "admin@gmail.com", group, lastLogin, dateJoined, true, true, true,
+                null, null, null);
         SoftAssertions soft = new SoftAssertions();
 
         user.offSuperuser();
@@ -85,7 +88,8 @@ class UserTest {
     @Test
     void allActivateUser() throws NoSuchAlgorithmException {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
-                "admin@gmail.com", group, lastLogin, dateJoined, false, false, false);
+                "admin@gmail.com", group, lastLogin, dateJoined, false, false, false,
+                null, null, null);
         SoftAssertions soft = new SoftAssertions();
 
         user.onSuperuser();

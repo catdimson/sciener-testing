@@ -7,7 +7,7 @@ class TagTest {
 
     @Test
     void changeTitle() {
-        Tag tag = new Tag(1, "it");
+        Tag tag = new Tag(1, "it", null);
         tag.changeTitle("ufc");
 
         String actual = tag.getTitle();

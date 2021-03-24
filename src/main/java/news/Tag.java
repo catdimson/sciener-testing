@@ -7,9 +7,10 @@ public class Tag {
     private String title;
     private List<New> news;
 
-    public Tag(int id, String title) {
+    public Tag(int id, String title, List<New> news) {
         this.id = id;
         this.title = title;
+        this.news = news;
     }
 
     public void changeTitle(String newTitle) {

@@ -14,18 +14,19 @@ class ImageTest {
      */
     @BeforeAll
     static void beforeAll() throws NoSuchAlgorithmException {
-        LocalDate lastLogin = LocalDate.now();
-        LocalDate dateJoined = LocalDate.now().minusMonths(5);
-        Group group = new Group(1, "editor");
+        LocalDate lastLogin = LocalDate.of(2019, 5, 20);
+        LocalDate dateJoined = LocalDate.of(2020, 5, 20);
+        Group group = new Group(1, "editor", null, null);
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
-                "admin@gmail.com", group, lastLogin, dateJoined, true, true, true);
+                "admin@gmail.com", group, lastLogin, dateJoined, true, true, true,
+                null, null, null);
 
-        LocalDate editDate = LocalDate.now();
-        LocalDate createDate = LocalDate.now().plusDays(10);
-        Category category = new Category(1, "sport");
+        LocalDate editDate = LocalDate.of(2020, 5, 20);
+        LocalDate createDate = LocalDate.of(2020, 5, 20);
+        Category category = new Category(1, "sport", null);
 
-        article = new New(1, "title 1", "lead 1", createDate, editDate,
-                "description article 1", true, category, user);
+        article = new New(1, "title 1", "lead 1", createDate, editDate, "description article 1",
+                true, category, user, null, null, null);
 
     }
 

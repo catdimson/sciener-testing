@@ -9,9 +9,11 @@ public class Group {
     private List<Permission> permissions;
 
 
-    public Group(int id, String title) {
+    public Group(int id, String title, List<User> users, List<Permission> permissions) {
         this.id = id;
         this.title = title;
+        this.users = users;
+        this.permissions = permissions;
     }
 
     public void changeTitle(String newTitle) {

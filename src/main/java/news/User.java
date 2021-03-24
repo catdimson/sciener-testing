@@ -25,7 +25,8 @@ public class User {
     private List<Log> logs;
 
     public User(int id, String password, String username, String firstName, String lastName, String email,
-                Group group, LocalDate lastLogin, LocalDate dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive)
+                Group group, LocalDate lastLogin, LocalDate dateJoined, boolean isSuperuser, boolean isStaff,
+                boolean isActive, List<Comment> comments, List<New> news, List<Log> logs)
             throws NoSuchAlgorithmException {
         this.id = id;
         this.password = md5(password);
@@ -39,6 +40,9 @@ public class User {
         this.isSuperuser = isSuperuser;
         this.isStaff = isStaff;
         this.isActive = isActive;
+        this.comments = comments;
+        this.news = news;
+        this.logs = logs;
     }
 
     public void changeFirstName(String newFirstName) {

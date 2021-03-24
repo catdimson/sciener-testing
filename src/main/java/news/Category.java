@@ -7,9 +7,15 @@ public class Category {
     private String title;
     private List<New> news;
 
-    public Category(int id, String title) {
+    public Category(int id) {
+        super();
+        this.id = id;
+    }
+
+    public Category(int id, String title, List<New> news) {
         this.id = id;
         this.title = title;
+        this.news = news;
     }
 
     public void changeTitle(String newTitle) {

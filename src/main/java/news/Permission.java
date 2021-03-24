@@ -9,11 +9,12 @@ public class Permission {
     private boolean permission;
     private List<Group> groups;
 
-    public Permission(int id, String action, boolean permission, Content content) {
+    public Permission(int id, String action, boolean permission, Content content, List<Group> groups) {
         this.id = id;
         this.action = action;
         this.permission = permission;
         this.content = content;
+        this.groups = groups;
     }
 
     public boolean getPermission() {

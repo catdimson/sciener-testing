@@ -14,7 +14,7 @@ class PermissionTest {
      */
     @BeforeAll
     static void beforeAll() {
-        content = new Content(1, "News");
+        content = new Content(1, "News", null);
     }
 
     /**
@@ -22,7 +22,7 @@ class PermissionTest {
      */
     @Test
     void offPermission() {
-        Permission permission = new Permission(1, "add new", true, content);
+        Permission permission = new Permission(1, "add new", true, content, null);
         permission.offPermission();
 
         boolean expectedPermission = false;
@@ -36,7 +36,7 @@ class PermissionTest {
      */
     @Test
     void onPermission() {
-        Permission permission = new Permission(1, "add new", false, content);
+        Permission permission = new Permission(1, "add new", false, content, null);
         permission.onPermission();
 
         boolean expectedPermission = true;

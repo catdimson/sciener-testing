@@ -7,7 +7,7 @@ class ContentTest {
 
     @Test
     void changeEntity() {
-        Content content = new Content(1, "Group");
+        Content content = new Content(1, "Group", null);
         content.changeEntity("Category");
 
         String actualEntity = content.getEntity();

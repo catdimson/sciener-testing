@@ -7,9 +7,10 @@ public class Content {
     private String entity;
     private List<Log> logs;
 
-    public Content(int id, String title) {
+    public Content(int id, String title, List<Log> logs) {
         this.id = id;
         this.entity = title;
+        this.logs = logs;
     }
 
     public void changeEntity(String newEntity) {

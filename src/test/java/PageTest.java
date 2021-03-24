@@ -12,7 +12,7 @@ class PageTest {
      */
     @BeforeAll
     static void beforeAll() {
-        content = new Content(1, "News");
+        content = new Content(1, "News", null);
     }
 
     /**
