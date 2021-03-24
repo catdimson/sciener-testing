@@ -1,19 +1,14 @@
-import news.Content;
-import news.Page;
+import news.model.Content;
+import news.model.Page;
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
 class PageTest {
-    private static Content content;
 
-    /**
-     * Инициализация данных общих для всех тестов
-     */
-    @BeforeAll
-    static void beforeAll() {
-        content = new Content(1, "News", null);
-    }
+    @Mock
+    private Content content;
 
     /**
      * Проверка метода редактирования страницы
@@ -40,5 +35,27 @@ class PageTest {
                 .hasFieldOrPropertyWithValue("url", "/news/hot")
                 .hasFieldOrPropertyWithValue("content", content);
         soft.assertAll();
+    }
+
+    @Test
+    void unpublished() {
+        Page page = new Page(1, "title 1", "meta charset 1", "meta description 1",
+                "meta keywords 1", "title 1", "/static/favicon.ico", true,
+                "/news/all", content);
+
+        page.unpublished();
+
+        Assertions.assertFalse(page.getStatusPublished());
+    }
+
+    @Test
+    void published() {
+        Page page = new Page(1, "title 1", "meta charset 1", "meta description 1",
+                "meta keywords 1", "title 1", "/static/favicon.ico", false,
+                "/news/all", content);
+
+        page.published();
+
+        Assertions.assertTrue(page.getStatusPublished());
     }
 }

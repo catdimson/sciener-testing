@@ -1,4 +1,4 @@
-package news;
+package news.model;
 
 import java.time.LocalDate;
 
@@ -8,9 +8,9 @@ public class Comment {
     final private User user;
     private String text;
     private LocalDate editDate;
-    private New article;
+    private Articles article;
 
-    public Comment(int id, String text, LocalDate createDate, LocalDate editDate, New article, User user) {
+    public Comment(int id, String text, LocalDate createDate, LocalDate editDate, Articles article, User user) {
         this.id = id;
         this.text = text;
         this.createDate = createDate;
@@ -19,7 +19,7 @@ public class Comment {
         this.user = user;
     }
 
-    public void edit(String text, LocalDate editDate, New article) {
+    public void edit(String text, LocalDate editDate, Articles article) {
         this.text = text;
         this.editDate = editDate;
         this.article = article;

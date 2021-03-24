@@ -1,20 +1,16 @@
-package news;
-
-import java.util.List;
+package news.model;
 
 public class Permission {
     final private int id;
     final private String action;
     final private Content content;
     private boolean permission;
-    private List<Group> groups;
 
-    public Permission(int id, String action, boolean permission, Content content, List<Group> groups) {
+    public Permission(int id, String action, boolean permission, Content content) {
         this.id = id;
         this.action = action;
         this.permission = permission;
         this.content = content;
-        this.groups = groups;
     }
 
     public boolean getPermission() {

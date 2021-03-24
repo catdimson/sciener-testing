@@ -1,16 +1,12 @@
-package news;
-
-import java.util.List;
+package news.model;
 
 public class Content {
     final private int id;
     private String entity;
-    private List<Log> logs;
 
-    public Content(int id, String title, List<Log> logs) {
+    public Content(int id, String title) {
         this.id = id;
         this.entity = title;
-        this.logs = logs;
     }
 
     public void changeEntity(String newEntity) {

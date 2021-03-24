@@ -1,39 +1,47 @@
-import news.Group;
-import news.User;
+import news.model.Articles;
+import news.model.Comment;
+import news.model.Group;
+import news.model.User;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 class UserTest {
     private static LocalDate lastLogin;
     private static LocalDate dateJoined;
-    private static Group group;
 
-    /**
-     * Инициализация данных общих для всех тестов
-     */
+    @Mock
+    private Group group;
+
+    @Mock
+    final private List<Comment> comments = new ArrayList<>();
+
+    @Mock
+    final private List<Articles> articles = new ArrayList<>();
+
     @BeforeAll
     static void beforeAll() {
         lastLogin = LocalDate.of(2019, 5, 20);
         dateJoined = LocalDate.of(2020, 5, 20);
-        group = new Group(1, "editor", null, null);
     }
 
     /**
      * Получение фамилии и имени пользователя
      */
     @Test
-    void getFullName() throws NoSuchAlgorithmException {
+    void rewriteFullName() throws NoSuchAlgorithmException {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
                 "admin@gmail.com", group, lastLogin, dateJoined, true, true, true,
-                null, null, null);
-        user.changeFirstName("Олег");
-        user.changeLastName("Бочаров");
+                comments, articles);
 
+        user.rewriteFullName("Олег", "Бочаров");
         String expected = "Олег Бочаров";
 
         Assertions.assertEquals(user.getFullName(), expected);
@@ -46,12 +54,10 @@ class UserTest {
     void changePersonalData() throws NoSuchAlgorithmException {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
                 "admin@gmail.com", group, lastLogin, dateJoined, true, true, true,
-                null, null, null);
+                comments, articles);
         SoftAssertions soft = new SoftAssertions();
 
-        user.changeUsername("Иванов");
-        user.encodeAndChangePassword("newpas12");
-        user.changeEmail("newemail@mail.ru");
+        user.editAccountData("Иванов", "newpas12", "newemail@mail.ru");
         String expectedPassword = user.md5("newpas12");
 
         soft.assertThat(user)
@@ -68,7 +74,7 @@ class UserTest {
     void allDeactivateUser() throws NoSuchAlgorithmException {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
                 "admin@gmail.com", group, lastLogin, dateJoined, true, true, true,
-                null, null, null);
+                comments, articles);
         SoftAssertions soft = new SoftAssertions();
 
         user.offSuperuser();
@@ -89,7 +95,7 @@ class UserTest {
     void allActivateUser() throws NoSuchAlgorithmException {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
                 "admin@gmail.com", group, lastLogin, dateJoined, false, false, false,
-                null, null, null);
+                comments, articles);
         SoftAssertions soft = new SoftAssertions();
 
         user.onSuperuser();

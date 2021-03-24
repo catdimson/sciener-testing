@@ -1,10 +1,12 @@
-package news;
+package news.model;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class User {
@@ -20,13 +22,12 @@ public class User {
     private boolean isSuperuser;
     private boolean isStaff;
     private boolean isActive;
-    private List<Comment> comments;
-    private List<New> news;
-    private List<Log> logs;
+    final private Collection<Comment> comments = new ArrayList<>();
+    final private Collection<Articles> articles = new ArrayList<>();
 
     public User(int id, String password, String username, String firstName, String lastName, String email,
                 Group group, LocalDate lastLogin, LocalDate dateJoined, boolean isSuperuser, boolean isStaff,
-                boolean isActive, List<Comment> comments, List<New> news, List<Log> logs)
+                boolean isActive, List<Comment> comments, List<Articles> articles)
             throws NoSuchAlgorithmException {
         this.id = id;
         this.password = md5(password);
@@ -40,16 +41,12 @@ public class User {
         this.isSuperuser = isSuperuser;
         this.isStaff = isStaff;
         this.isActive = isActive;
-        this.comments = comments;
-        this.news = news;
-        this.logs = logs;
+        this.comments.addAll(comments);
+        this.articles.addAll(articles);
     }
 
-    public void changeFirstName(String newFirstName) {
+    public void rewriteFullName(String newFirstName, String newLastName) {
         this.firstName = newFirstName.trim();
-    }
-
-    public void changeLastName(String newLastName) {
         this.lastName = newLastName.trim();
     }
 
@@ -63,15 +60,10 @@ public class User {
         return String.format("%032x", new BigInteger(1, md5.digest()));
     }
 
-    public void changeUsername(String newUsername) {
+    public void editAccountData(String newUsername, String newPassword, String newEmail)
+            throws NoSuchAlgorithmException {
         this.username = newUsername;
-    }
-
-    public void encodeAndChangePassword(String newPassword) throws NoSuchAlgorithmException {
         this.password = md5(newPassword);
-    }
-
-    public void changeEmail(String newEmail) {
         this.email = newEmail;
     }
 

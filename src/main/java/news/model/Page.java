@@ -1,4 +1,4 @@
-package news;
+package news.model;
 
 public class Page {
     final private int id;
@@ -37,5 +37,17 @@ public class Page {
         this.isPublished = isPublished;
         this.url = url;
         this.content = content;
+    }
+
+    public void published() {
+        this.isPublished = true;
+    }
+
+    public void unpublished() {
+        this.isPublished = false;
+    }
+
+    public boolean getStatusPublished() {
+        return this.isPublished;
     }
 }

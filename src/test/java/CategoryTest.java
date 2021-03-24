@@ -1,15 +1,35 @@
-import news.Category;
+import news.model.Category;
+import news.model.Articles;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CategoryTest {
 
-    @Test
-    void changeTitle() {
+    @Mock
+    private final List<Articles> articles = new ArrayList<>();
 
-        Category category = new Category(1, "sport", null);
-        category.changeTitle("politic");
+    @Mock
+    private Articles article;
+
+    @Test
+    void addNewArticle() {
+        Category category = new Category(1, "sport", articles);
+
+        category.addNewArticle(article);
+
+        assertTrue(category.containArticle(article));
+    }
+
+    @Test
+    void renameTitle() {
+        Category category = new Category(1, "sport");
+        category.rename("politic");
 
         String actualTitle = category.getTitle();
         String expectedTitle = "politic";

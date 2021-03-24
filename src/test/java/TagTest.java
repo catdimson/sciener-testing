@@ -1,4 +1,4 @@
-import news.Tag;
+import news.model.Tag;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -7,8 +7,8 @@ class TagTest {
 
     @Test
     void changeTitle() {
-        Tag tag = new Tag(1, "it", null);
-        tag.changeTitle("ufc");
+        Tag tag = new Tag(1, "it");
+        tag.rename("ufc");
 
         String actual = tag.getTitle();
         String expected = "ufc";

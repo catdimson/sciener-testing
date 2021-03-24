@@ -1,4 +1,4 @@
-package news;
+package news.model;
 
 public class Mailing {
     final private int id;

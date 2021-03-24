@@ -1,48 +1,33 @@
-import news.Content;
-import news.Permission;
-import org.junit.jupiter.api.BeforeAll;
+import news.model.Content;
+import news.model.Permission;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.mockito.Mock;
 
 
 class PermissionTest {
-    private static Content content;
 
-    /**
-     * Инициализация данных общих для всех тестов
-     */
-    @BeforeAll
-    static void beforeAll() {
-        content = new Content(1, "News", null);
-    }
+    @Mock
+    private Content content;
 
-    /**
-     * Функция отключения права на сущность
-     */
     @Test
     void offPermission() {
-        Permission permission = new Permission(1, "add new", true, content, null);
+        Permission permission = new Permission(1, "add new", true, content);
         permission.offPermission();
 
-        boolean expectedPermission = false;
         boolean actualPermission = permission.getPermission();
 
-        assertEquals(expectedPermission, actualPermission);
+        Assertions.assertFalse(actualPermission);
     }
 
-    /**
-     * Функция включения права на сущность
-     */
     @Test
     void onPermission() {
-        Permission permission = new Permission(1, "add new", false, content, null);
+        Permission permission = new Permission(1, "add new", false, content);
         permission.onPermission();
 
-        boolean expectedPermission = true;
         boolean actualPermission = permission.getPermission();
 
-        assertEquals(expectedPermission, actualPermission);
+        Assertions.assertTrue(actualPermission);
     }
 
 }
