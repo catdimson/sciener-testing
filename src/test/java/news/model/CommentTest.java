@@ -1,8 +1,5 @@
 package news.model;
 
-import news.model.Comment;
-import news.model.Articles;
-import news.model.User;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -18,7 +15,7 @@ class CommentTest {
     private User user;
 
     @Mock
-    private Articles article;
+    private Article article;
 
     /**
      * Инициализация данных общих для всех тестов

@@ -28,8 +28,8 @@ class UserTest {
      */
     @Test
     void rewriteFullName() throws NoSuchAlgorithmException {
-        User user = new User("qwerty12", "admin", "alexandr", "kanonenko", "admin@gmail.com", groupId, lastLogin,
-                dateJoined, true, true, true);
+        User user = new User("qwerty12", "admin", "alexandr", "kanonenko",
+                "admin@gmail.com", lastLogin, dateJoined, true, true, true, groupId);
 
         user.rewriteFullName("Олег", "Бочаров");
         String expected = "Олег Бочаров";
@@ -43,7 +43,7 @@ class UserTest {
     @Test
     void changePersonalData() throws NoSuchAlgorithmException {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
-                "admin@gmail.com", groupId, lastLogin, dateJoined, true, true, true);
+                "admin@gmail.com", lastLogin, dateJoined, true, true, true, groupId);
         SoftAssertions soft = new SoftAssertions();
 
         user.editAccountData("Иванов", "newpas12", "newemail@mail.ru");
@@ -62,7 +62,7 @@ class UserTest {
     @Test
     void allDeactivateUser() throws NoSuchAlgorithmException {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
-                "admin@gmail.com", groupId, lastLogin, dateJoined, true, true, true);
+                "admin@gmail.com", lastLogin, dateJoined, true, true, true, groupId);
         SoftAssertions soft = new SoftAssertions();
 
         user.offSuperuser();
@@ -82,7 +82,7 @@ class UserTest {
     @Test
     void allActivateUser() throws NoSuchAlgorithmException {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
-                "admin@gmail.com", groupId, lastLogin, dateJoined, false, false, false);
+                "admin@gmail.com", lastLogin, dateJoined, false, false, false, groupId);
         SoftAssertions soft = new SoftAssertions();
 
         user.onSuperuser();
@@ -94,6 +94,34 @@ class UserTest {
                 .hasFieldOrPropertyWithValue("isStaff", true)
                 .hasFieldOrPropertyWithValue("isActive", true);
         soft.assertAll();
+    }
+
+    /**
+     * Активен ли пользователь и является ли он администратором
+     */
+    @Test
+    void isPermissionOfSuperuser() throws NoSuchAlgorithmException {
+        User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
+                "admin@gmail.com", lastLogin, dateJoined, true, false, true, groupId);
+
+        user.onSuperuser();
+        user.activate();
+
+        Assertions.assertTrue(user.isPermissionOfSuperuser());
+    }
+
+    /**
+     * Активен ли пользователь и является ли он персоналом
+     */
+    @Test
+    void isPermissionOfStaff() throws NoSuchAlgorithmException {
+        User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
+                "admin@gmail.com", lastLogin, dateJoined, true, false, true, groupId);
+
+        user.onStaff();
+        user.activate();
+
+        Assertions.assertTrue(user.isPermissionOfStaff());
     }
 }
 

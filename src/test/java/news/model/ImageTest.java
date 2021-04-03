@@ -10,7 +10,7 @@ import org.mockito.Mock;
 class ImageTest {
 
     @Mock
-    private Articles article;
+    private Article article;
 
     /**
      * Редактирования изображения

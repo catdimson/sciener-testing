@@ -88,7 +88,9 @@ public class User {
         this.email = newEmail;
     }
 
-
+    /**
+     * Деактивация/активация пользователя
+     * */
     public boolean deactivate() {
         this.isActive = false;
         return false;
@@ -99,6 +101,9 @@ public class User {
         return true;
     }
 
+    /**
+     * Снятие/назначение прав администратора
+     * */
     public boolean offSuperuser() {
         this.isSuperuser = false;
         return false;
@@ -109,6 +114,9 @@ public class User {
         return true;
     }
 
+    /**
+     * Снятие/назначение прав персонала
+     * */
     public boolean offStaff() {
         this.isStaff = false;
         return false;
@@ -120,14 +128,14 @@ public class User {
     }
 
     /**
-     * Проверка, обалает ли пользователь правами админа
+     * Проверка, обалает ли пользователь правами админа и активен ли он
      * */
     public boolean isPermissionOfSuperuser() {
         return this.isActive && this.isSuperuser;
     }
 
     /**
-     * Проверка, обалает ли пользователь правами персонала
+     * Проверка, обалает ли пользователь правами персонала и активен ли он
      * */
     public boolean isPermissionOfStaff() {
         return this.isStaff && this.isActive;

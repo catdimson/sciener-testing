@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Новость
  * */
-public class Articles {
+public class Article {
     final private int id;
     final private LocalDate createDate;
     private String title;
@@ -22,8 +22,8 @@ public class Articles {
     final private Collection<Image> images = new ArrayList<>();
     final private Collection<Comment> comments = new ArrayList<>();
 
-    public Articles(int id, String title, String lead, LocalDate createDate, LocalDate editDate, String text, boolean isPublished,
-                    Category category, User user, List<Tag> tags, List<Image> images, List<Comment> comments) {
+    public Article(int id, String title, String lead, LocalDate createDate, LocalDate editDate, String text, boolean isPublished,
+                   Category category, User user, List<Tag> tags, List<Image> images, List<Comment> comments) {
         this.id = id;
         this.title = title;
         this.lead = lead;

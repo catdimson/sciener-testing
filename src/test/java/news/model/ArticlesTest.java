@@ -46,7 +46,7 @@ class ArticlesTest {
      */
     @Test
     void editArticle() {
-        Articles article = new Articles(1, "title 1", "lead 1", createDate, editDate, "description article 1",
+        Article article = new Article(1, "title 1", "lead 1", createDate, editDate, "description article 1",
                 true, category, user, tags, images, comments);
         SoftAssertions soft = new SoftAssertions();
 
@@ -66,7 +66,7 @@ class ArticlesTest {
 
     @Test
     void addNewTag() {
-        Articles article = new Articles(1, "title 1", "lead 1", createDate, editDate, "description article 1",
+        Article article = new Article(1, "title 1", "lead 1", createDate, editDate, "description article 1",
                 true, category, user, tags, images, comments);
 
         article.addNewTag(tag);
@@ -76,7 +76,7 @@ class ArticlesTest {
 
     @Test
     void addNewImage() {
-        Articles article = new Articles(1, "title 1", "lead 1", createDate, editDate, "description article 1",
+        Article article = new Article(1, "title 1", "lead 1", createDate, editDate, "description article 1",
                 true, category, user, tags, images, comments);
 
         article.addNewImage(image);
@@ -86,7 +86,7 @@ class ArticlesTest {
 
     @Test
     void unpublished() {
-        Articles article = new Articles(1, "title 1", "lead 1", createDate, editDate, "description article 1",
+        Article article = new Article(1, "title 1", "lead 1", createDate, editDate, "description article 1",
                 true, category, user, tags, images, comments);
 
         article.unpublished();
@@ -96,7 +96,7 @@ class ArticlesTest {
 
     @Test
     void published() {
-        Articles article = new Articles(1, "title 1", "lead 1", createDate, editDate, "description article 1",
+        Article article = new Article(1, "title 1", "lead 1", createDate, editDate, "description article 1",
                 true, category, user, tags, images, comments);
 
         article.published();
