@@ -1,27 +1,40 @@
 package news.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 
+/**
+ * Комментарий к новости
+ * */
 public class Comment {
     final private int id;
     final private LocalDate createDate;
-    final private User user;
     private String text;
     private LocalDate editDate;
-    private Articles article;
+    final private int userId;
+    private int articleId;
 
-    public Comment(int id, String text, LocalDate createDate, LocalDate editDate, Articles article, User user) {
+    Collection<Attachment> attachments = new ArrayList<Attachment>();
+
+    class Attachment() {
+        int id;
+        String path;
+
+    }
+
+    public Comment(int id, String text, LocalDate createDate, LocalDate editDate, int userId, int articleId) {
         this.id = id;
         this.text = text;
         this.createDate = createDate;
         this.editDate = editDate;
-        this.article = article;
-        this.user = user;
+        this.userId = userId;
+        this.articleId = articleId;
     }
 
-    public void edit(String text, LocalDate editDate, Articles article) {
+    public void edit(String text, LocalDate editDate, int articleId) {
         this.text = text;
         this.editDate = editDate;
-        this.article = article;
+        this.articleId = articleId;
     }
 }

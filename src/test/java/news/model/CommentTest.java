@@ -1,3 +1,5 @@
+package news.model;
+
 import news.model.Comment;
 import news.model.Articles;
 import news.model.User;

@@ -1,16 +1,19 @@
-import news.model.Image;
-import news.model.Articles;
+package news.model;
+
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
+/**
+ * И
+ * */
 class ImageTest {
 
     @Mock
     private Articles article;
 
     /**
-     * Проверка метода редактирования изображения
+     * Редактирования изображения
      */
     @Test
     void editImage() {

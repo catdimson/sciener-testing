@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Новость
+ * */
 public class Articles {
     final private int id;
     final private LocalDate createDate;
@@ -35,6 +38,9 @@ public class Articles {
         this.comments.addAll(comments);
     }
 
+    /**
+     * метод редактирования новости
+     * */
     public void edit(String title, String lead, LocalDate editDate, String text, boolean isPublished,
                      Category category, User user) {
         this.title = title;

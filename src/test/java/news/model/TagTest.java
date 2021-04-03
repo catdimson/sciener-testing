@@ -1,10 +1,17 @@
-import news.model.Tag;
+package news.model;
+
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Тестирование тега (Tag)
+ * */
 class TagTest {
 
+    /**
+     * Переиманование заголовка тега
+     * */
     @Test
     void changeTitle() {
         Tag tag = new Tag(1, "it");

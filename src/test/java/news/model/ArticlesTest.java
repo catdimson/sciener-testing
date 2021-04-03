@@ -1,4 +1,5 @@
-import news.model.*;
+package news.model;
+
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
