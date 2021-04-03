@@ -2,7 +2,7 @@ package news.model;
 
 /**
  * Группа пользователей
- * */
+ */
 public class Group {
     private int id;
     private String title;
@@ -18,7 +18,7 @@ public class Group {
 
     /**
      * Переименование группы
-     * */
+     */
     public void rename(String newTitle) {
         this.title = newTitle;
     }

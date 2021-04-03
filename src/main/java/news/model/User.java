@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 /**
  * Пользователь
- * */
+ */
 public class User {
     private int id;
     private String password;
@@ -59,7 +59,7 @@ public class User {
 
     /**
      * Изменить имя и фамилию
-     * */
+     */
     public void rewriteFullName(String newFirstName, String newLastName) {
         this.firstName = newFirstName.trim();
         this.lastName = newLastName.trim();
@@ -71,7 +71,7 @@ public class User {
 
     /**
      * Хэшировать пароль
-     * */
+     */
     public String md5(String password) throws NoSuchAlgorithmException {
         MessageDigest md5 = MessageDigest.getInstance("MD5");
         md5.update(StandardCharsets.UTF_8.encode(password));
@@ -80,7 +80,7 @@ public class User {
 
     /**
      * Изменить логин, пароль, email
-     * */
+     */
     public void editAccountData(String newUsername, String newPassword, String newEmail)
             throws NoSuchAlgorithmException {
         this.username = newUsername;
@@ -90,7 +90,7 @@ public class User {
 
     /**
      * Деактивация/активация пользователя
-     * */
+     */
     public boolean deactivate() {
         this.isActive = false;
         return false;
@@ -103,7 +103,7 @@ public class User {
 
     /**
      * Снятие/назначение прав администратора
-     * */
+     */
     public boolean offSuperuser() {
         this.isSuperuser = false;
         return false;
@@ -116,7 +116,7 @@ public class User {
 
     /**
      * Снятие/назначение прав персонала
-     * */
+     */
     public boolean offStaff() {
         this.isStaff = false;
         return false;
@@ -129,14 +129,14 @@ public class User {
 
     /**
      * Проверка, обалает ли пользователь правами админа и активен ли он
-     * */
+     */
     public boolean isPermissionOfSuperuser() {
         return this.isActive && this.isSuperuser;
     }
 
     /**
      * Проверка, обалает ли пользователь правами персонала и активен ли он
-     * */
+     */
     public boolean isPermissionOfStaff() {
         return this.isStaff && this.isActive;
     }

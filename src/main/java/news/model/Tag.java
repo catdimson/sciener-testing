@@ -2,7 +2,7 @@ package news.model;
 
 /**
  * Тэг новости
- * */
+ */
 public class Tag {
     private int id;
     private String title;
@@ -14,7 +14,7 @@ public class Tag {
 
     /**
      * Переименование новости
-     * */
+     */
     public void rename(String newTitle) {
         this.title = newTitle;
     }

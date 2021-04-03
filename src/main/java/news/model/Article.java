@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * Новость
- * */
+ */
 public class Article {
     final private int id;
     final private LocalDate createDate;
@@ -39,8 +39,8 @@ public class Article {
     }
 
     /**
-     * метод редактирования новости
-     * */
+     * Редактирование новости
+     */
     public void edit(String title, String lead, LocalDate editDate, String text, boolean isPublished,
                      Category category, User user) {
         this.title = title;

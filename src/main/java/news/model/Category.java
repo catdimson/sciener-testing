@@ -2,7 +2,7 @@ package news.model;
 
 /**
  * Категория новости
- * */
+ */
 public class Category {
     private int id;
     private String title;
@@ -18,7 +18,7 @@ public class Category {
 
     /**
      * Метод переименования категории
-     * */
+     */
     public void rename(String newTitle) {
         this.title = newTitle;
     }

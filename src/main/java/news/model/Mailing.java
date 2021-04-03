@@ -2,7 +2,7 @@ package news.model;
 
 /**
  * Рассылка
- * */
+ */
 public class Mailing {
     private int id;
     private String email;
@@ -20,6 +20,9 @@ public class Mailing {
         return this.email;
     }
 
+    /**
+     * Отправка письма
+     */
     public boolean sendMessage(User user) throws IllegalAccessException {
         if (user.isPermissionOfSuperuser()) {
             /* Код отправки письма */

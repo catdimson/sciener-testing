@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 /**
- * И
+ * Тестирование класса изображения !!!!!!!!!!!!!!!!!
  * */
 class ImageTest {
 

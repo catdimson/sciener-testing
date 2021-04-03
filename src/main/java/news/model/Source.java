@@ -2,7 +2,7 @@ package news.model;
 
 /**
  * Источник для новостей и афиш
- * */
+ */
 public class Source {
     private int id;
     private String url;
@@ -18,7 +18,7 @@ public class Source {
 
     /**
      * Редактирование источника
-     * */
+     */
     public void editSource(String url) {
         this.url = url;
     }

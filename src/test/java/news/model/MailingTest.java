@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Тестирование рассылки (Mailing)
- * */
+ */
 class MailingTest {
     private static LocalDate lastLogin;
     private static LocalDate dateJoined;
@@ -26,7 +26,7 @@ class MailingTest {
 
     /**
      * Изменение email
-     * */
+     */
     @Test
     void changeEmail() {
         Mailing email = new Mailing("qwerty@mail.ru");
@@ -39,7 +39,7 @@ class MailingTest {
 
     /**
      * Отправка почты админом на указанный адрес электронной почты
-     * */
+     */
     @Test
     void sendEmail() throws NoSuchAlgorithmException, IllegalAccessException {
         User user = new User("qwerty12", "admin", "alexandr", "kanonenko",

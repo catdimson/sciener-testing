@@ -2,7 +2,7 @@ package news.model;
 
 /**
  * Изображение, прикрепляемое к новости
- * */
+ */
 public class Image {
     final private int id;
     private String title;
