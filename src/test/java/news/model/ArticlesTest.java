@@ -49,6 +49,9 @@ class ArticlesTest {
         soft.assertAll();
     }
 
+    /**
+     * Добавить картинку к новости
+     * */
     @Test
     void addNewImage() {
         Article article = new Article(1, "title 1", "lead 1", createDate, editDate,
@@ -59,6 +62,9 @@ class ArticlesTest {
         Assertions.assertTrue(article.containImage(articleImage));
     }
 
+    /**
+     * Снять новость с публикации
+     * */
     @Test
     void unpublished() {
         Article article = new Article(1, "title 1", "lead 1", createDate, editDate,
@@ -69,6 +75,9 @@ class ArticlesTest {
         Assertions.assertFalse(article.getStatusPublished());
     }
 
+    /**
+     * Опубликовать новость
+     * */
     @Test
     void published() {
         Article article = new Article(1, "title 1", "lead 1", createDate, editDate,

@@ -47,6 +47,9 @@ public class Article {
         this.sourceId = sourceId;
     }
 
+    /**
+     * Изображение новости
+     */
     static class ArticleImage {
         private int id;
         private String title;
@@ -79,6 +82,9 @@ public class Article {
         this.sourceId = sourceId;
     }
 
+    /**
+     * Добавить изображение к новости
+     */
     public void addNewImage(ArticleImage articleImage) {
         this.images.add(articleImage);
     }
@@ -87,10 +93,16 @@ public class Article {
         return this.images.contains(articleImage);
     }
 
+    /**
+     * Опубликовать новость
+     */
     public void published() {
         this.isPublished = true;
     }
 
+    /**
+     * Снять с публикации
+     */
     public void unpublished() {
         this.isPublished = false;
     }
