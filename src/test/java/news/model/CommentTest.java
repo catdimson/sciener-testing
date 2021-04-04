@@ -9,14 +9,14 @@ import org.mockito.Mock;
 import java.time.LocalDate;
 
 /**
- * Тестирование комментария
+ * Тестирование комментария (Comment)
  */
 class CommentTest {
     private static LocalDate createDate;
     private static LocalDate editDate;
 
     @Mock
-    final private Comment.CommentAttachment commentAttachment = new Comment.CommentAttachment();
+    final private Comment.CommentAttachment commentAttachment = new Comment.CommentAttachment(1, "Прекрасно");
 
     @BeforeAll
     static void beforeAll() {
@@ -33,7 +33,7 @@ class CommentTest {
         LocalDate editDate2 = LocalDate.of(2020, 6, 20);
         SoftAssertions soft = new SoftAssertions();
 
-        comment.edit("comment 2", editDate2, 2);
+        comment.editArticle("comment 2", editDate2, 2);
 
         soft.assertThat(comment)
                 .hasFieldOrPropertyWithValue("text", "comment 2")

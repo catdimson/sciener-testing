@@ -14,7 +14,7 @@ public class Comment {
     private LocalDate editDate;
     final private int userId;
     private int articleId;
-    Collection<CommentAttachment> attachments = new ArrayList<>();
+    private Collection<CommentAttachment> attachments = new ArrayList<>();
 
     public Comment(int id, String text, LocalDate createDate, LocalDate editDate, int userId, int articleId) {
         this.id = id;
@@ -31,12 +31,21 @@ public class Comment {
     static class CommentAttachment {
         int id;
         String path;
+
+        public CommentAttachment(int id, String path) {
+            this.id = id;
+            this.path = path;
+        }
+
+        public CommentAttachment(String path) {
+            this.path = path;
+        }
     }
 
     /**
      * Редактирование комментария
      */
-    public void edit(String text, LocalDate editDate, int articleId) {
+    public void editArticle(String text, LocalDate editDate, int articleId) {
         this.text = text;
         this.editDate = editDate;
         this.articleId = articleId;
