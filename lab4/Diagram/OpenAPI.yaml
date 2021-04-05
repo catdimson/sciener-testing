@@ -47,6 +47,9 @@ paths:
         400:
           description: Операция не выполнена
           content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
     post:
       tags:
       - group
@@ -61,6 +64,9 @@ paths:
       responses:
         201:
           description: Группа создана
+          content: {}
+        403:
+          description: Недостаточно прав
           content: {}
         405:
           description: Ошибка добавления
@@ -87,6 +93,9 @@ paths:
                 $ref: '#/components/schemas/Group'
         400:
           description: Предоставлен неверный ID
+          content: {}
+        403:
+          description: Недостаточно прав
           content: {}
         404:
           description: Группа не найдена
@@ -119,6 +128,9 @@ paths:
         400:
           description: Предоставлен неверный ID
           content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
         404:
           description: Группа не обнаружена
           content: {}
@@ -143,6 +155,9 @@ paths:
           content: {}
         400:
           description: Предоставлен неверный ID
+          content: {}
+        403:
+          description: Недостаточно прав
           content: {}
         404:
           description: Группа не обнаружена
@@ -171,6 +186,9 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Group'
+        403:
+          description: Недостаточно прав
+          content: {}
         405:
           description: Передан некорректный параметр
           content: {}
@@ -207,6 +225,9 @@ paths:
       responses:
         201:
           description: Категория создана
+          content: {}
+        403:
+          description: Недостаточно прав
           content: {}
         405:
           description: Ошибка добавления
@@ -265,6 +286,9 @@ paths:
         400:
           description: Предоставлен неверный ID
           content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
         404:
           description: Категория не обнаружена
           content: {}
@@ -289,6 +313,9 @@ paths:
           content: {}
         400:
           description: Предоставлен неверный ID
+          content: {}
+        403:
+          description: Недостаточно прав
           content: {}
         404:
           description: Категория не обнаружена
@@ -354,6 +381,9 @@ paths:
         201:
           description: Тег создан
           content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
         405:
           description: Ошибка добавления
           content: {}
@@ -411,6 +441,9 @@ paths:
         400:
           description: Предоставлен неверный ID
           content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
         404:
           description: Тег не обнаружен
           content: {}
@@ -435,6 +468,9 @@ paths:
           content: {}
         400:
           description: Предоставлен неверный ID
+          content: {}
+        403:
+          description: Недостаточно прав
           content: {}
         404:
           description: Тег не обнаружен
@@ -467,14 +503,1005 @@ paths:
           description: Передан некорректный параметр
           content: {}
           
-  # 
-      
-      
-    
+  # Источник
+  /source:
+    get:
+      tags:
+      - source
+      summary: Получение списка источников
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Source'
+        400:
+          description: Операция не выполнена
+          content: {}
+    post:
+      tags:
+      - source
+      summary: Добавление нового источника
+      requestBody:
+        description: Объект источника, который необходимо добавить в БД
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Source'
+        required: true
+      responses:
+        201:
+          description: Источник создан
+          content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
+        405:
+          description: Ошибка добавления
+          content: {}
+  /source/{sourceId}:
+    get:
+      tags:
+      - source
+      summary: Поиск источника по id
+      parameters:
+      - name: sourceId
+        in: path
+        description: ID искомого источника
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Source'
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        404:
+          description: Источник не найден
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+    put:
+      tags:
+      - source
+      summary: Обновление созданного источника
+      parameters:
+      - name: sourceId
+        in: path
+        description: ID изменяемого источника
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        description: Хранит данные объекта, которые нужно обновить в БД
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/Source'
+      responses:
+        204:
+          description: Нет данных
+          content: {}
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
+        404:
+          description: Источник не обнаружен
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+    delete:
+      tags:
+      - source
+      summary: Удаление источника
+      parameters:
+      - name: sourceId
+        in: path
+        description: ID удаляемого источника
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        204:
+          description: Нет данных
+          content: {}
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
+        404:
+          description: Источник не обнаружен
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+  /source/{sourceTitle}:
+    get:
+      tags:
+        - source
+      summary: Поиск источника по заголовку
+      parameters:
+      - name: sourceTitle
+        in: path
+        description: Заголовок искомого источника
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Source'
+        405:
+          description: Передан некорректный параметр
+          content: {}
+  
+  # Пользователь
+  /user:
+    get:
+      tags:
+      - user
+      summary: Получение списка пользователей
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        403:
+          description: Недостаточно прав
+          content: {}
+        400:
+          description: Операция не выполнена
+          content: {}
+    post:
+      tags:
+      - user
+      summary: Добавление нового пользователя
+      requestBody:
+        description: Объект пользователя, который необходимо добавить в БД
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        201:
+          description: Пользователь создан
+          content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
+        405:
+          description: Ошибка добавления
+          content: {}
+  /user/{userId}:
+    get:
+      tags:
+      - user
+      summary: Поиск пользователя по id
+      parameters:
+      - name: userId
+        in: path
+        description: ID искомого пользователя
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
+        404:
+          description: Пользователь не найден
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+    put:
+      tags:
+      - user
+      summary: Обновление созданного пользователя
+      parameters:
+      - name: userId
+        in: path
+        description: ID изменяемого пользователя
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        description: Хранит данные объекта, которые нужно обновить в БД
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/User'
+      responses:
+        204:
+          description: Нет данных
+          content: {}
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
+        404:
+          description: Пользователь не обнаружен
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+    delete:
+      tags:
+      - user
+      summary: Удаление пользователя
+      parameters:
+      - name: userId
+        in: path
+        description: ID удаляемого пользователя
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        204:
+          description: Нет данных
+          content: {}
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
+        404:
+          description: Пользователь не обнаружен
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+  /user/{username}:
+    get:
+      tags:
+        - user
+      summary: Поиск пользователя по логину
+      parameters:
+      - name: username
+        in: path
+        description: Логин искомого пользователя
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        403:
+          description: Недостаточно прав
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}    
+  /user/login:
+    post:
+      tags:
+      - user
+      summary: Вход в систему
+      operationId: loginUser
+      requestBody:
+        description: Логин, пароль для входа в систему
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                  example: admin
+                password:
+                  type: string
+                  format: password
+                  example: qwerty123
+      responses:
+        201:
+          description: Операция успешно выполнена
+          headers:
+            X-Expires-After:
+              description: Дата в формате UTC, когда истекает срок действия сессии
+              schema:
+                type: string
+                format: date-time
+          content:
+            aaplication/json:
+              schema:
+                type: string
+        400:
+          description: Неправильный логин/пароль
+          content: {}
+  /user/logout:
+    get:
+      tags:
+      - user
+      summary: Выйти из системы (закрыть текущую сессию)
+      operationId: logoutUser
+      responses:
+        default:
+          description: Операция успешно выполнена
+          content: {}
+            
+  # Источник
+  /afisha:
+    get:
+      tags:
+      - afisha
+      summary: Получение списка афиш
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Afisha'
+        400:
+          description: Операция не выполнена
+          content: {}
+    post:
+      tags:
+      - afisha
+      summary: Добавление новой афиши
+      requestBody:
+        description: Объект афиши, который необходимо добавить в БД
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Afisha'
+        required: true
+      responses:
+        201:
+          description: Афиша создана
+          content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
+        405:
+          description: Ошибка добавления
+          content: {}
+  /afisha/{afishaId}:
+    get:
+      tags:
+      - afisha
+      summary: Поиск афиши по id
+      parameters:
+      - name: afishaId
+        in: path
+        description: ID искомой афиши
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Afisha'
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        404:
+          description: Афиша не найдена
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+    put:
+      tags:
+      - afisha
+      summary: Обновление созданной афиши
+      parameters:
+      - name: afishaId
+        in: path
+        description: ID изменяемой афиши
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        description: Хранит данные объекта, которые нужно обновить в БД
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/Afisha'
+      responses:
+        204:
+          description: Нет данных
+          content: {}
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
+        404:
+          description: Афиша не обнаружена
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+    delete:
+      tags:
+      - afisha
+      summary: Удаление афиши
+      parameters:
+      - name: afishaId
+        in: path
+        description: ID удаляемой афиши
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        204:
+          description: Нет данных
+          content: {}
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
+        404:
+          description: Афиша не обнаружена
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+  /afisha/{afishaTitle}:
+    get:
+      tags:
+        - afisha
+      summary: Поиск афиши по заголовку
+      parameters:
+      - name: afishaTitle
+        in: path
+        description: Заголовок искомой афиши
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Afisha'
+        405:
+          description: Передан некорректный параметр
+          content: {}  
+  
+  # Рассылка
+  /mailing:
+    get:
+      tags:
+      - mailing
+      summary: Получение списка email адресов
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Mailing'
+        403:
+          description: Недостаточно прав
+          content: {}
+        400:
+          description: Операция не выполнена
+          content: {}
+    post:
+      tags:
+      - mailing
+      summary: Добавление нового email
+      requestBody:
+        description: Объект email, который необходимо добавить в БД
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Mailing'
+        required: true
+      responses:
+        201:
+          description: Email добавлен на рассылку
+          content: {}
+        405:
+          description: Ошибка добавления
+          content: {}
+  /mailing/{mailingId}:
+    get:
+      tags:
+      - mailing
+      summary: Поиск email по id
+      parameters:
+      - name: mailingId
+        in: path
+        description: ID искомого email
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mailing'
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
+        404:
+          description: Email не найден
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+    put:
+      tags:
+      - mailing
+      summary: Обновление email
+      parameters:
+      - name: mailingId
+        in: path
+        description: ID изменяемого email
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        description: Хранит данные объекта, которые нужно обновить в БД
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/Mailing'
+      responses:
+        204:
+          description: Нет данных
+          content: {}
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
+        404:
+          description: Email не обнаружен
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+    delete:
+      tags:
+      - mailing
+      summary: Удаление email
+      parameters:
+      - name: mailingId
+        in: path
+        description: ID удаляемого email
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        204:
+          description: Нет данных
+          content: {}
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
+        404:
+          description: Email не обнаружен
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+  /mailing/{email}:
+    get:
+      tags:
+        - mailing
+      summary: Поиск элеметронной почты по email
+      parameters:
+      - name: email
+        in: path
+        description: Email искомой почты
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Mailing'
+        403:
+          description: Недостаточно прав
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}    
+          
+  # Комментарий
+  /article/comment:
+    get:
+      tags:
+      - comment
+      summary: Получение списка комментариев
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        400:
+          description: Операция не выполнена
+          content: {}
+    post:
+      tags:
+      - comment
+      summary: Добавление нового комментария
+      requestBody:
+        description: Объект комментария, который необходимо добавить в БД
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comment'
+        required: true
+      responses:
+        201:
+          description: Комментарий создан
+          content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
+        405:
+          description: Ошибка добавления
+          content: {}
+  /article/comment/{commentId}:
+    get:
+      tags:
+      - comment
+      summary: Поиск комментария по id
+      parameters:
+      - name: commentId
+        in: path
+        description: ID искомого комментария
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        404:
+          description: Пользователь не найден
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+    put:
+      tags:
+      - comment
+      summary: Обновление созданного комментария
+      parameters:
+      - name: commentId
+        in: path
+        description: ID изменяемого комментария
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        description: Хранит данные объекта, которые нужно обновить в БД
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/Comment'
+      responses:
+        204:
+          description: Нет данных
+          content: {}
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
+        404:
+          description: Комментарий не обнаружен
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+    delete:
+      tags:
+      - comment
+      summary: Удаление комментария
+      parameters:
+      - name: commentId
+        in: path
+        description: ID удаляемого комментария
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        204:
+          description: Нет данных
+          content: {}
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
+        404:
+          description: Комментарий не обнаружен
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+  /article/comment/{userId}:
+    get:
+      tags:
+        - comment
+      summary: Поиск комментария по id пользователя, который его оставил
+      parameters:
+      - name: userId
+        in: path
+        description: id пользователя, который оставил комментарий
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        403:
+          description: Недостаточно прав
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}    
+  
+  # Новость
+  /article:
+    get:
+      tags:
+      - article
+      summary: Получение списка новостей
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Article'
+        400:
+          description: Операция не выполнена
+          content: {}
+    post:
+      tags:
+      - article
+      summary: Добавление новой новости
+      requestBody:
+        description: Объект новости, который необходимо добавить в БД
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Article'
+        required: true
+      responses:
+        201:
+          description: Новость создан
+          content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
+        405:
+          description: Ошибка добавления
+          content: {}
+  /article/{articleId}:
+    get:
+      tags:
+      - article
+      summary: Поиск новости по id
+      parameters:
+      - name: articleId
+        in: path
+        description: ID искомой новости
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Article'
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        404:
+          description: Новость не найдена
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+    put:
+      tags:
+      - article
+      summary: Обновление созданной новости
+      parameters:
+      - name: articleId
+        in: path
+        description: ID изменяемой новости
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        description: Хранит данные объекта, которые нужно обновить в БД
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/Article'
+      responses:
+        204:
+          description: Нет данных
+          content: {}
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
+        404:
+          description: Новость не обнаружена
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+    delete:
+      tags:
+      - article
+      summary: Удаление новости
+      parameters:
+      - name: articleId
+        in: path
+        description: ID удаляемой новости
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        204:
+          description: Нет данных
+          content: {}
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        403:
+          description: Недостаточно прав
+          content: {}
+        404:
+          description: Новость не обнаружена
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+  /article/{articleTitle}:
+    get:
+      tags:
+        - article
+      summary: Поиск новостей по заголовку
+      parameters:
+      - name: articleTitle
+        in: path
+        description: Заголовок, по которой нужно найти новости
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Article'
+        405:
+          description: Передан некорректный параметр
+          content: {}    
+
 
 components:
-
   schemas:
+  
+    # Основные сущности
     Group:
       type: object
       properties:
@@ -511,29 +1538,40 @@ components:
         id:
           type: integer
           format: int32
+          example: 1
         password:
           type: string
           format: password
+          example: qwerty123
         lastLogin:
           type: string
           format: date-time
+          example: "2020-10-04T13:33:03.969Z"
         isSuperuser:
           type: boolean
+          example: true
         username:
           type: string
+          example: admin
         firstName:
           type: string
+          example: Иван
         lastName:
           type: string
+          example: Иванов
         email:
           type: string
+          example: testmail@yandex.ru
         isStuff:
           type: boolean
+          example: true
         isActive:
           type: boolean
+          example: true
         dateJoined:
           type: string
           format: date-time
+          example: "2019-07-04T13:33:03.969Z"
         groupId:
           type: integer
           format: int32
@@ -544,38 +1582,51 @@ components:
         id:
           type: integer
           format: int32
+          example: 1
         title:
           type: string
+          example: Масленица
         imageUrl:
           type: string
+          example: "/static/maslenica.jpg"
         lead:
           type: string
+          example: Праздничные гуляния на площади
         description:
           type: string
+          example: Очень большое и подробное описание данного мероприятия
         ageLimit:
           type: integer
           format: int32
+          example: 3
         timing:
           type: integer
           format: int32
+          example: 4
         place:
           type: string
+          example: Соборная площадь
         phone:
           type: string
+          example: "34-24-55"
         date:
           type: string
           format: date-time
+          example: "2021-04-04T13:33:03.969Z"
         price:
           type: number
           format: double
+          example: 0
         userId:
           type: integer
           format: int32
           description: ID сотрудника, создавшего афишу
+          example: 2
         sourceId:
           type: integer
           format: int32
           description: ID источника, если афиша бралась из него
+          example: 1
     Article:
       type: object
       properties:
@@ -606,24 +1657,22 @@ components:
           type: integer
           format: int32
           description: ID источника, из которого взята новость
-        articleImage:
-          type: object
-          description: Объект изображения, прикрепленного к новости
-          properties:
-            id:
-              type: integer
-              format: int32
-            title:
-              type: string
-            path:
-              type: string
+        images:
+          type: array
+          description: Список изображений, добавленных к новости
+          items:
+            $ref: '#/components/schemas/ArticleImage'
+        comments:
+          type: array
+          description: Список комментариев, добавленных к новости
+          items:
+            $ref: '#/components/schemas/Comment'
     Comment:
       type: object
       properties:
         id:
           type: integer
           format: int32
-          example: 1
         text:
           type: string
         createDate:
@@ -640,32 +1689,56 @@ components:
           type: integer
           format: int32
           description: ID новости, к которой написан комментарий
-        commentAttachment:
-          type: object
-          description: Объект прикрепления, добавленный к комментарию
-          properties:
-            id:
-              type: integer
-              format: int32
-            path:
-              type: string
+        attachments:
+          type: array
+          description: Список прикреплений, добавленный к комментарию
+          items:
+            $ref: '#/components/schemas/CommentAttachment'
     Mailing:
       type: object
       properties:
         id:
           type: integer
           format: int32
+          example: 1
         email:
           type: string
+          example: testmail@yandex.ru
     Source:
       type: object
       properties:
         id:
           type: integer
           format: int32
+          example: 1
+        title:
+          type: string
+          example: REGNUM
         url:
           type: string
-          
-          
-
-      
+          example: https://regnum.ru/news/3233766.html?utm_source=yxnews&utm_medium=desktop
+    
+    # Вложенные сущности
+    CommentAttachment:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 1
+        path:
+          type: string
+          example: "/media/files/file1.txt"
+    ArticleImage:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 1
+        title:
+          type: string
+          example: Фото боя главного карда UFC 258
+        path:
+          type: string
+          example: "/media/images/image1.jpg"
