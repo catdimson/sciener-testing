@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 /**
  * Тестирование новостей (Article)
@@ -18,6 +19,10 @@ class ArticlesTest {
     @Mock
     final private Article.ArticleImage articleImage = new Article.ArticleImage(1, "Забастовка на площади",
             "/static/images/zabastovka.jpg");
+
+    @Mock
+    final private Article.ArticleImage articleImage2 = new Article.ArticleImage(2, "Забастовка на площади 2",
+            "/static/images/zabastovka2.jpg");
 
     @BeforeAll
     static void beforeAll() {
@@ -63,13 +68,50 @@ class ArticlesTest {
     }
 
     /**
-     *
+     * Замена списка изображений к новости
      */
     @Test
     void setListImages() {
         Article article = new Article(1, "title 1", "lead 1", createDate, editDate,
                 "description article 1", true, 1, 1, 1);
+        ArrayList<Article.ArticleImage> articleImages = new ArrayList<>();
+        articleImages.add(articleImage);
+        articleImages.add(articleImage2);
 
+        article.setAllImages(articleImages);
+
+        Assertions.assertTrue(article.containImage(articleImage) && article.containImage(articleImage2));
+    }
+
+    /**
+     * Добавление id тега
+     */
+    @Test
+    void addNewTagId() {
+        Article article = new Article(1, "title 1", "lead 1", createDate, editDate,
+                "description article 1", true, 1, 1, 1);
+        Integer tagId = 1;
+
+        article.addNewTagId(tagId);
+
+        Assertions.assertTrue(article.containTag(tagId));
+    }
+
+    /**
+     * Замена списка тегов к новости
+     */
+    @Test
+    void setListTagsId() {
+        Article article = new Article(1, "title 1", "lead 1", createDate, editDate,
+                "description article 1", true, 1, 1, 1);
+        ArrayList<Integer> articleTagsId = new ArrayList<>();
+        articleTagsId.add(1);
+        articleTagsId.add(2);
+        articleTagsId.add(3);
+
+        article.setAllTagsId(articleTagsId);
+
+        Assertions.assertTrue(article.containTag(1) && article.containTag(2) && article.containTag(3));
     }
 
     /**
