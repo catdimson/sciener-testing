@@ -623,6 +623,7 @@ components:
         id:
           type: integer
           format: int32
+          example: 1
         text:
           type: string
         createDate:
