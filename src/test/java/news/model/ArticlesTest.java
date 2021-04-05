@@ -63,6 +63,16 @@ class ArticlesTest {
     }
 
     /**
+     *
+     */
+    @Test
+    void setListImages() {
+        Article article = new Article(1, "title 1", "lead 1", createDate, editDate,
+                "description article 1", true, 1, 1, 1);
+
+    }
+
+    /**
      * Снять новость с публикации
      * */
     @Test

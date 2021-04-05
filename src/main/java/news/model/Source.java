@@ -5,15 +5,18 @@ package news.model;
  */
 public class Source {
     private int id;
+    private String title;
     private String url;
 
     public Source(int id, String url) {
         this.id = id;
         this.url = url;
+        this.title = title;
     }
 
     public Source(String url) {
         this.url = url;
+        this.title = title;
     }
 
     /**
@@ -21,6 +24,7 @@ public class Source {
      */
     public void editSource(String url) {
         this.url = url;
+        this.title = title;
     }
 
     public String getSourceUrl() {

@@ -19,6 +19,7 @@ public class Article {
     private int userId;
     private int sourceId;
     private Collection<ArticleImage> images = new ArrayList<>();
+    private Collection<Integer> tagsId = new ArrayList<>();
 
     public Article(int id, String title, String lead, LocalDate createDate, LocalDate editDate, String text,
                    boolean isPublished, int categoryId, int userId, int sourceId) {
@@ -88,9 +89,38 @@ public class Article {
     public void addNewImage(ArticleImage articleImage) {
         this.images.add(articleImage);
     }
-
+    /**
+     * Замена новым списком изображений
+     */
+    public void setAllImages(ArrayList<ArticleImage> images) {
+        this.images.clear();
+        this.images.addAll(images);
+    }
+    /**
+     * Содержится ли данное изображение в списке
+     */
     public boolean containImage(ArticleImage articleImage) {
         return this.images.contains(articleImage);
+    }
+
+    /**
+     * Добавить id тега
+     */
+    public void addNewTagId(Integer tagId) {
+        this.tagsId.add(tagId);
+    }
+    /**
+     * Замена новым списком id тегов
+     */
+    public void setAllTagsId(ArrayList<Integer> tagsId) {
+        this.tagsId.clear();
+        this.tagsId.addAll(tagsId);
+    }
+    /**
+     * Содержится ли данный id тега в списке
+     */
+    public boolean containTag(Integer tagId) {
+        return this.tagsId.contains(tagId);
     }
 
     /**

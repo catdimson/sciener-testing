@@ -1,0 +1,670 @@
+openapi: 3.0.2
+info:
+  title: "Open API for news system"
+  description: "Contains a description of the REST Api for the news system as part of the 4th internship lab for Java developer."
+  version: "1.0.0"
+  contact:
+    email: "kotik.news@yandex.ru"
+servers:
+- url: "http://api.news.org/v2/"
+tags:
+- name: group
+  description: Работа с группами
+- name: category
+  description: Работа с категориями
+- name: tag
+  description: Работа с тегами
+- name: source
+  description: Работа с источниками
+- name: mailing
+  description: Работа с рассылками
+- name: user
+  description: Работа с пользователями
+- name: new
+  description: Рабоат с новостями
+- name: comment
+  description: Работа с комментариями новостей
+- name: afisha
+  description: Работа с афишами
+
+paths:
+
+  # Группы
+  /group:
+    get:
+      tags:
+      - group
+      summary: Получение списка групп
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+        400:
+          description: Операция не выполнена
+          content: {}
+    post:
+      tags:
+      - group
+      summary: Добавление новой группы
+      requestBody:
+        description: Объект группы, который необходимо добавить в БД
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Group'
+        required: true
+      responses:
+        201:
+          description: Группа создана
+          content: {}
+        405:
+          description: Ошибка добавления
+          content: {}
+  /group/{groupId}:
+    get:
+      tags:
+      - group
+      summary: Поиск группы по id
+      parameters:
+      - name: groupId
+        in: path
+        description: ID искомой группы
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        404:
+          description: Группа не найдена
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+    put:
+      tags:
+      - group
+      summary: Обновление созданной группы
+      parameters:
+      - name: groupId
+        in: path
+        description: ID изменяемой группы
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        description: Хранит данные объекта, которые нужно обновить в БД
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/Group'
+      responses:
+        204:
+          description: Нет данных
+          content: {}
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        404:
+          description: Группа не обнаружена
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+    delete:
+      tags:
+      - group
+      summary: Удаление группы
+      parameters:
+      - name: groupId
+        in: path
+        description: ID удаляемой группы
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        204:
+          description: Нет данных
+          content: {}
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        404:
+          description: Группа не обнаружена
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+  /group/{title}:
+    get:
+      tags:
+        - group
+      summary: Поиск групп по заголовку
+      parameters:
+      - name: title
+        in: path
+        description: Заголовок искомой группы
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+        405:
+          description: Передан некорректный параметр
+          content: {}
+          
+  # Категории
+  /category:
+    get:
+      tags:
+      - category
+      summary: Получение списка категорий
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+        400:
+          description: Операция не выполнена
+          content: {}
+    post:
+      tags:
+      - category
+      summary: Добавление новой категории
+      requestBody:
+        description: Объект категории, который необходимо добавить в БД
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+        required: true
+      responses:
+        201:
+          description: Категория создана
+          content: {}
+        405:
+          description: Ошибка добавления
+          content: {}
+  /category/{categoryId}:
+    get:
+      tags:
+      - category
+      summary: Поиск категории по id
+      parameters:
+      - name: categoryId
+        in: path
+        description: ID искомой категории
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        404:
+          description: Категория не найдена
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+    put:
+      tags:
+      - category
+      summary: Обновление созданной категории
+      parameters:
+      - name: categoryId
+        in: path
+        description: ID изменяемой категории
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        description: Хранит данные объекта, которые нужно обновить в БД
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/Category'
+      responses:
+        204:
+          description: Нет данных
+          content: {}
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        404:
+          description: Категория не обнаружена
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+    delete:
+      tags:
+      - category
+      summary: Удаление категории
+      parameters:
+      - name: categoryId
+        in: path
+        description: ID удаляемой категории
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        204:
+          description: Нет данных
+          content: {}
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        404:
+          description: Категория не обнаружена
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+  /category/{title}:
+    get:
+      tags:
+        - category
+      summary: Поиск категории по заголовку
+      parameters:
+      - name: title
+        in: path
+        description: Заголовок искомой категории
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+        405:
+          description: Передан некорректный параметр
+          content: {}
+              
+  # Теги
+  /tag:
+    get:
+      tags:
+      - tag
+      summary: Получение списка тегов
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+        400:
+          description: Операция не выполнена
+          content: {}
+    post:
+      tags:
+      - tag
+      summary: Добавление нового тега
+      requestBody:
+        description: Объект тега, который необходимо добавить в БД
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tag'
+        required: true
+      responses:
+        201:
+          description: Тег создан
+          content: {}
+        405:
+          description: Ошибка добавления
+          content: {}
+  /tag/{tagId}:
+    get:
+      tags:
+      - tag
+      summary: Поиск тега по id
+      parameters:
+      - name: tagId
+        in: path
+        description: ID искомого тега
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        404:
+          description: Тег не найден
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+    put:
+      tags:
+      - tag
+      summary: Обновление созданного тега
+      parameters:
+      - name: tagId
+        in: path
+        description: ID изменяемого тега
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        description: Хранит данные объекта, которые нужно обновить в БД
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/Tag'
+      responses:
+        204:
+          description: Нет данных
+          content: {}
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        404:
+          description: Тег не обнаружен
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+    delete:
+      tags:
+      - tag
+      summary: Удаление тега
+      parameters:
+      - name: tagId
+        in: path
+        description: ID удаляемого тега
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        204:
+          description: Нет данных
+          content: {}
+        400:
+          description: Предоставлен неверный ID
+          content: {}
+        404:
+          description: Тег не обнаружен
+          content: {}
+        405:
+          description: Передан некорректный параметр
+          content: {}
+  /tag/{title}:
+    get:
+      tags:
+        - tag
+      summary: Поиск тега по заголовку
+      parameters:
+      - name: title
+        in: path
+        description: Заголовок искомого тега
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Операция успешно выполнена
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+        405:
+          description: Передан некорректный параметр
+          content: {}
+          
+  # 
+      
+      
+    
+
+components:
+
+  schemas:
+    Group:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 1
+        title:
+          type: string
+          example: Редактор
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 1
+        title:
+          type: string
+          example: Спорт
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 1
+        title:
+          type: string
+          example: UFC
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        password:
+          type: string
+          format: password
+        lastLogin:
+          type: string
+          format: date-time
+        isSuperuser:
+          type: boolean
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        isStuff:
+          type: boolean
+        isActive:
+          type: boolean
+        dateJoined:
+          type: string
+          format: date-time
+        groupId:
+          type: integer
+          format: int32
+          description: ID группы, к которой принадлежит пользователь
+    Afisha:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        title:
+          type: string
+        imageUrl:
+          type: string
+        lead:
+          type: string
+        description:
+          type: string
+        ageLimit:
+          type: integer
+          format: int32
+        timing:
+          type: integer
+          format: int32
+        place:
+          type: string
+        phone:
+          type: string
+        date:
+          type: string
+          format: date-time
+        price:
+          type: number
+          format: double
+        userId:
+          type: integer
+          format: int32
+          description: ID сотрудника, создавшего афишу
+        sourceId:
+          type: integer
+          format: int32
+          description: ID источника, если афиша бралась из него
+    Article:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        title:
+          type: string
+        lead:
+          type: string
+        createDate:
+          type: string
+          format: date-time
+        editaDate:
+          type: string
+          format: date-time
+        isPublished:
+          type: boolean
+        categoryId:
+          type: integer
+          format: int32
+          description: ID категории, к которой относится новость
+        userId:
+          type: integer
+          format: int32
+          description: ID сотрудника, создавшего новость
+        sourceId:
+          type: integer
+          format: int32
+          description: ID источника, из которого взята новость
+        articleImage:
+          type: object
+          description: Объект изображения, прикрепленного к новости
+          properties:
+            id:
+              type: integer
+              format: int32
+            title:
+              type: string
+            path:
+              type: string
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        text:
+          type: string
+        createDate:
+          type: string
+          format: date-time
+        editDate:
+          type: string
+          format: date-time
+        userId:
+          type: integer
+          format: int32
+          description: ID пользователя, который написал комментарий
+        articleId:
+          type: integer
+          format: int32
+          description: ID новости, к которой написан комментарий
+        commentAttachment:
+          type: object
+          description: Объект прикрепления, добавленный к комментарию
+          properties:
+            id:
+              type: integer
+              format: int32
+            path:
+              type: string
+    Mailing:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        email:
+          type: string
+    Source:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        url:
+          type: string
+          
+          
+
+      
