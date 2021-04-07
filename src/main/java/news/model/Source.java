@@ -8,13 +8,13 @@ public class Source {
     private String title;
     private String url;
 
-    public Source(int id, String url) {
+    public Source(int id, String url, String title) {
         this.id = id;
         this.url = url;
         this.title = title;
     }
 
-    public Source(String url) {
+    public Source(String url, String title) {
         this.url = url;
         this.title = title;
     }
@@ -22,7 +22,7 @@ public class Source {
     /**
      * Редактирование источника
      */
-    public void editSource(String url) {
+    public void editSource(String url, String title) {
         this.url = url;
         this.title = title;
     }

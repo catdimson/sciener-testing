@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Тестирование пользователя (User)
  * */
@@ -107,7 +109,8 @@ class UserTest {
         user.onSuperuser();
         user.activate();
 
-        Assertions.assertTrue(user.isPermissionOfSuperuser());
+        assertThat(user.isPermissionOfSuperuser()).as("У объекта пользователя нет прав администратора " +
+                "или он неактивен").isTrue();
     }
 
     /**
@@ -121,7 +124,8 @@ class UserTest {
         user.onStaff();
         user.activate();
 
-        Assertions.assertTrue(user.isPermissionOfStaff());
+        assertThat(user.isPermissionOfStaff()).as("У объекта пользователя нет прав персонала " +
+                "или он неактивен").isTrue();
     }
 }
 

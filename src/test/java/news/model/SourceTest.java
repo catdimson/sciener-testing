@@ -1,8 +1,7 @@
 package news.model;
 
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Тестирование источника для новостей и мероприятий (Source)
@@ -14,12 +13,14 @@ class SourceTest {
      */
     @Test
     void editUrl() {
-        Source source = new Source("https://lenta.ru/comments/news/2021/04/03/bil/");
-        source.editSource("https://lenta.ru/");
+        Source source = new Source(1, "https://rambler.ru/comments/news/2021/04/03/bil/", "Рамблер новости");
+        SoftAssertions soft = new SoftAssertions();
 
-        String actualTitle = source.getSourceUrl();
-        String expectedTitle = "https://lenta.ru/";
+        source.editSource("https://lenta.ru/", "Лента РУ");
 
-        assertEquals(expectedTitle, actualTitle);
+        soft.assertThat(source)
+                .hasFieldOrPropertyWithValue("url", "https://lenta.ru/")
+                .hasFieldOrPropertyWithValue("title", "Лента РУ");
+        soft.assertAll();
     }
 }

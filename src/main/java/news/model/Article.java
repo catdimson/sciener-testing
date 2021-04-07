@@ -71,15 +71,12 @@ public class Article {
     /**
      * Редактирование новости
      */
-    public void edit(String title, String lead, LocalDate editDate, String text, boolean isPublished,
-                     int categoryId, int userId, int sourceId) {
+    public void edit(String title, String lead, LocalDate editDate, String text, boolean isPublished, int sourceId) {
         this.title = title;
         this.lead = lead;
         this.editDate = editDate;
         this.text = text;
         this.isPublished = isPublished;
-        this.categoryId = categoryId;
-        this.userId = userId;
         this.sourceId = sourceId;
     }
 

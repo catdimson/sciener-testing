@@ -2,7 +2,7 @@ package news.model;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Тестирование категории (Category)
@@ -15,11 +15,9 @@ class CategoryTest {
     @Test
     void renameTitle() {
         Category category = new Category("sport");
+
         category.rename("politic");
 
-        String actualTitle = category.getTitle();
-        String expectedTitle = "politic";
-
-        assertEquals(expectedTitle, actualTitle);
+        assertThat(category.getTitle()).isEqualTo("politic");
     }
 }

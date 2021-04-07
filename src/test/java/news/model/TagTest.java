@@ -2,7 +2,7 @@ package news.model;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Тестирование тега (Tag)
@@ -15,11 +15,9 @@ class TagTest {
     @Test
     void changeTitle() {
         Tag tag = new Tag(1, "it");
+
         tag.rename("ufc");
 
-        String actual = tag.getTitle();
-        String expected = "ufc";
-
-        assertEquals(expected, actual);
+        assertThat(tag.getTitle()).isEqualTo("ufc");
     }
 }

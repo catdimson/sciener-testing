@@ -1,12 +1,13 @@
 package news.model;
 
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Тестирование комментария (Comment)
@@ -51,6 +52,7 @@ class CommentTest {
 
         comment.addNewAttachment(commentAttachment);
 
-        Assertions.assertTrue(comment.containAttachment(commentAttachment));
+        assertThat(comment.containAttachment(commentAttachment)).as("Прикрепление не было добавлено к " +
+                "комментарию").isTrue();
     }
 }

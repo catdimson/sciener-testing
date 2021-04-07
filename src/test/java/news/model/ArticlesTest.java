@@ -1,13 +1,14 @@
 package news.model;
 
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Тестирование новостей (Article)
@@ -40,7 +41,7 @@ class ArticlesTest {
         SoftAssertions soft = new SoftAssertions();
 
         article.edit("title 2", "lead 2", editDate,
-                "description article 2", false, 2, 2, 2);
+                "description article 2", false, 2);
 
         soft.assertThat(article)
                 .hasFieldOrPropertyWithValue("title", "title 2")
@@ -48,15 +49,13 @@ class ArticlesTest {
                 .hasFieldOrPropertyWithValue("editDate", editDate)
                 .hasFieldOrPropertyWithValue("text", "description article 2")
                 .hasFieldOrPropertyWithValue("isPublished", false)
-                .hasFieldOrPropertyWithValue("categoryId", 2)
-                .hasFieldOrPropertyWithValue("userId", 2)
                 .hasFieldOrPropertyWithValue("sourceId", 2);
         soft.assertAll();
     }
 
     /**
      * Добавить картинку к новости
-     * */
+     */
     @Test
     void addNewImage() {
         Article article = new Article(1, "title 1", "lead 1", createDate, editDate,
@@ -64,7 +63,8 @@ class ArticlesTest {
 
         article.addNewImage(articleImage);
 
-        Assertions.assertTrue(article.containImage(articleImage));
+        assertThat(article.containImage(articleImage)).as("Объект изображения ArticleImage не был добавлен " +
+                "в список изображений объекта Article").isTrue();
     }
 
     /**
@@ -80,7 +80,8 @@ class ArticlesTest {
 
         article.setAllImages(articleImages);
 
-        Assertions.assertTrue(article.containImage(articleImage) && article.containImage(articleImage2));
+        assertThat(article.containImage(articleImage) && article.containImage(articleImage2)).as("Список " +
+                "объектов изображения ArticleImage не был добавлен в список изображений объекта Article").isTrue();
     }
 
     /**
@@ -94,7 +95,7 @@ class ArticlesTest {
 
         article.addNewTagId(tagId);
 
-        Assertions.assertTrue(article.containTag(tagId));
+        assertThat(article.containTag(tagId)).as("ID тега не был добавлен в список id тегов объекта Article").isTrue();
     }
 
     /**
@@ -111,7 +112,8 @@ class ArticlesTest {
 
         article.setAllTagsId(articleTagsId);
 
-        Assertions.assertTrue(article.containTag(1) && article.containTag(2) && article.containTag(3));
+        assertThat(article.containTag(1) && article.containTag(2) && article.containTag(3)).as("Список id " +
+                "тегов не был добавлены в список тегов объекта Article").isTrue();
     }
 
     /**
@@ -124,7 +126,7 @@ class ArticlesTest {
 
         article.unpublished();
 
-        Assertions.assertFalse(article.getStatusPublished());
+        assertThat(article.getStatusPublished()).as("Страница не снята с публикации").isFalse();
     }
 
     /**
@@ -137,6 +139,6 @@ class ArticlesTest {
 
         article.published();
 
-        Assertions.assertTrue(article.getStatusPublished());
+        assertThat(article.getStatusPublished()).as("Страница не опубликована").isTrue();
     }
 }
