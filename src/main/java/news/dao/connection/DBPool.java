@@ -1,4 +1,4 @@
-package news.dao;
+package news.dao.connection;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,18 +14,14 @@ public class DBPool implements ConnectionPool {
     private String dbConnectionUrl;
     final private ArrayDeque<Connection> connectionPool = new ArrayDeque<>();
 
-    public DBPool() {
-        try {
-            FileInputStream fileProperties = new FileInputStream("src/main/resources/dbconnection.properties");
-            Properties prop = new Properties();
-            prop.load(fileProperties);
+    public DBPool() throws IOException {
+        FileInputStream fileProperties = new FileInputStream("src/main/resources/dbconnection.properties");
+        Properties prop = new Properties();
+        prop.load(fileProperties);
 
-            this.dbUser = new String (prop.getProperty("DB_USER").getBytes("ISO8859-1"));
-            this.dbPassword = new String(prop.getProperty("DB_PASSWORD").getBytes("ISO8859-1"));
-            this.dbConnectionUrl = new String(prop.getProperty("DB_CONNECTION_URL").getBytes("ISO8859-1"));
-        } catch (IOException throwable) {
-            throwable.printStackTrace();
-        }
+        this.dbUser = new String (prop.getProperty("DB_USER").getBytes("ISO8859-1"));
+        this.dbPassword = new String(prop.getProperty("DB_PASSWORD").getBytes("ISO8859-1"));
+        this.dbConnectionUrl = new String(prop.getProperty("DB_CONNECTION_URL").getBytes("ISO8859-1"));
     }
 
     public DBPool(String connectionUrl, String username, String password) {

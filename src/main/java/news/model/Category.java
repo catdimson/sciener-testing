@@ -26,4 +26,11 @@ public class Category {
     public String getTitle() {
         return this.title;
     }
+
+    public Object[] getObjects() {
+        return new Object[] {
+                id,
+                title
+        };
+    }
 }

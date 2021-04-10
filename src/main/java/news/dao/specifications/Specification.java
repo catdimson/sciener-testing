@@ -1,4 +1,4 @@
-package news.dao;
+package news.dao.specifications;
 
 public interface Specification<T> {
 
