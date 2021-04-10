@@ -12,6 +12,10 @@ public class Tag {
         this.title = title;
     }
 
+    public Tag(String title) {
+        this.title = title;
+    }
+
     /**
      * Переименование новости
      */
@@ -21,5 +25,12 @@ public class Tag {
 
     public String getTitle() {
         return this.title;
+    }
+
+    public Object[] getObjects() {
+        return new Object[] {
+                id,
+                title
+        };
     }
 }
