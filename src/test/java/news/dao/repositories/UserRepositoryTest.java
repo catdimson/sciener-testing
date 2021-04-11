@@ -262,26 +262,46 @@ class UserRepositoryTest {
         }
     }
 
-    /*@Test
-    void updateCategory() {
+    @Test
+    void updateUser() {
         try {
-            GroupRepository groupRepository = new GroupRepository(this.poolConnection);
+            SoftAssertions soft = new SoftAssertions();
+            UserRepository userRepository = new UserRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            String sqlInsertInstance = "INSERT INTO \"group\" (title) VALUES('Редактор');";
-            statement.executeUpdate(sqlInsertInstance);
-            Group group = new Group(1, "Администратор");
-            Object[] instance = group.getObjects();
+            User user = new User("qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", lastLogin, dateJoined,
+                    true, true, true, 1);
+            User user2 = new User(1, "ytrewq321", "cyber777", "Александр", "Жбанов", "jban1990@mail.ru", lastLogin, dateJoined,
+                    false, false, true, 2);
+            Object[] userInstance = user.getObjects();
+            LocalDate localDateLogin = (LocalDate) userInstance[6];
+            LocalDate localDateJoined = (LocalDate) userInstance[7];
+            String sqlCreateUser1 = String.format("INSERT INTO \"user\"" +
+                            "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
+                            "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance[1], userInstance[2], userInstance[3], userInstance[4], userInstance[5],
+                    Timestamp.valueOf(localDateLogin.atStartOfDay()), Timestamp.valueOf(localDateJoined.atStartOfDay()), userInstance[8], userInstance[9], userInstance[10], userInstance[11]);
+            statement.executeUpdate(sqlCreateUser1);
 
-            groupRepository.update(group);
+            userRepository.update(user2);
 
-            String sqlQueryInstance = String.format("SELECT id, title FROM \"group\" WHERE id=%s;", instance[0]);
+            String sqlQueryInstance = String.format("SELECT * FROM \"user\" WHERE id=%d;", 1);
             ResultSet result = statement.executeQuery(sqlQueryInstance);
             result.next();
-            assertThat(group).hasFieldOrPropertyWithValue("title", result.getString(2));
+            soft.assertThat(user2)
+                    .hasFieldOrPropertyWithValue("username", result.getString(3))
+                    .hasFieldOrPropertyWithValue("firstName", result.getString(4))
+                    .hasFieldOrPropertyWithValue("lastName", result.getString(5))
+                    .hasFieldOrPropertyWithValue("email", result.getString(6))
+                    .hasFieldOrPropertyWithValue("lastLogin", result.getTimestamp(7).toLocalDateTime().toLocalDate())
+                    .hasFieldOrPropertyWithValue("dateJoined", result.getTimestamp(8).toLocalDateTime().toLocalDate())
+                    .hasFieldOrPropertyWithValue("isSuperuser", result.getBoolean(9))
+                    .hasFieldOrPropertyWithValue("isStaff", result.getBoolean(10))
+                    .hasFieldOrPropertyWithValue("isActive", result.getBoolean(11))
+                    .hasFieldOrPropertyWithValue("groupId", result.getInt(12));
+            soft.assertAll();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-    }*/
+    }
 }
