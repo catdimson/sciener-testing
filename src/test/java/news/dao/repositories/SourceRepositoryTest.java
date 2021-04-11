@@ -10,9 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class SourceRepositoryTest {
     private PostgreSQLContainer container;
@@ -93,68 +96,75 @@ class SourceRepositoryTest {
         }
     }
 
-   /* @Test
-    void createCategory() {
+    @Test
+    void createSource() {
         try {
-            CategoryRepository categoryRepository = new CategoryRepository(this.poolConnection);
-            Category category = new Category("Новости");
+            SoftAssertions soft = new SoftAssertions();
+            SourceRepository sourceRepository = new SourceRepository(this.poolConnection);
+            Source source = new Source("Яндекс ДЗЕН", "https://zen.yandex.ru/");
 
-            categoryRepository.create(category);
+            sourceRepository.create(source);
 
             Connection connection = this.poolConnection.getConnection();
-            String sqlQueryInstanceFromTableCategory = "SELECT id, title FROM category WHERE title='Новости'";
+            String sqlQueryInstanceFromTableSource = "SELECT * FROM source WHERE title='Яндекс ДЗЕН' AND url='https://zen.yandex.ru/'";
             Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery(sqlQueryInstanceFromTableCategory);
+            ResultSet result = statement.executeQuery(sqlQueryInstanceFromTableSource);
             result.next();
-            assertThat(category).hasFieldOrPropertyWithValue("title", result.getString(2));
+            soft.assertThat(source)
+                    .hasFieldOrPropertyWithValue("title", result.getString(2))
+                    .hasFieldOrPropertyWithValue("url", result.getString(3));
+            soft.assertAll();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-    }*/
+    }
 
-    /*@Test
-    void deleteCategory() {
+    @Test
+    void deleteSource() {
         try {
-            CategoryRepository categoryRepository = new CategoryRepository(this.poolConnection);
+            SourceRepository sourceRepository = new SourceRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            String sqlInsertInstance = "INSERT INTO category (title) VALUES('Новости');";
+            String sqlInsertInstance = "INSERT INTO source (title, url) VALUES('Яндекс ДЗЕН', 'https://zen.yandex.ru/');";
             statement.executeUpdate(sqlInsertInstance, Statement.RETURN_GENERATED_KEYS);
             ResultSet generatedKeys = statement.getGeneratedKeys();
             generatedKeys.next();
 
-            categoryRepository.delete(generatedKeys.getInt(1));
+            sourceRepository.delete(generatedKeys.getInt(1));
 
-            String sqlQueryInstance = String.format("SELECT id, title FROM category WHERE id=%d;", generatedKeys.getInt(1));
+            String sqlQueryInstance = String.format("SELECT * FROM source WHERE id=%d;", generatedKeys.getInt(1));
             ResultSet result = statement.executeQuery(sqlQueryInstance);
-            assertThat(result.next()).as("Запись класса Category не была удалена").isFalse();
+            assertThat(result.next()).as("Запись класса Source не была удалена").isFalse();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-    }*/
+    }
 
-    /*@Test
+    @Test
     void updateCategory() {
         try {
-            CategoryRepository categoryRepository = new CategoryRepository(this.poolConnection);
+            SoftAssertions soft = new SoftAssertions();
+            SourceRepository sourceRepository = new SourceRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            String sqlInsertInstance = "INSERT INTO category (title) VALUES('Новости');";
+            String sqlInsertInstance = "INSERT INTO source (title, url) VALUES('Яндекс ДЗЕН', 'https://zen.yandex.ru/');";
             statement.executeUpdate(sqlInsertInstance);
-            Category category = new Category(1, "Политика");
-            Object[] instance = category.getObjects();
+            Source source = new Source(1,"РИА", "https://ria.ru/");
+            Object[] instance = source.getObjects();
 
-            categoryRepository.update(category);
+            sourceRepository.update(source);
 
-            String sqlQueryInstance = String.format("SELECT id, title FROM category WHERE id=%s;", instance[0]);
+            String sqlQueryInstance = String.format("SELECT * FROM source WHERE id=%s;", instance[0]);
             ResultSet result = statement.executeQuery(sqlQueryInstance);
             result.next();
-            assertThat(category).hasFieldOrPropertyWithValue("title", result.getString(2));
+            soft.assertThat(source)
+                    .hasFieldOrPropertyWithValue("title", result.getString(2))
+                    .hasFieldOrPropertyWithValue("url", result.getString(3));
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-    }*/
+    }
 }
