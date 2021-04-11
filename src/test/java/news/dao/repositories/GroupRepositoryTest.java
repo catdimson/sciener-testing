@@ -29,7 +29,7 @@ class GroupRepositoryTest {
                 .withDatabaseName("news");
         this.container.start();
 
-        String sqlCreateTableCategory = "CREATE TABLE IF NOT EXISTS \"group\" (" +
+        String sqlCreateTableGroup = "CREATE TABLE IF NOT EXISTS \"group\" (" +
                 "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
                 "title character varying(40) NOT NULL," +
                 "CONSTRAINT group_pk PRIMARY KEY (id)," +
@@ -38,7 +38,7 @@ class GroupRepositoryTest {
         this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
 
         Statement statement = this.poolConnection.getConnection().createStatement();
-        statement.executeUpdate(sqlCreateTableCategory);
+        statement.executeUpdate(sqlCreateTableGroup);
     }
 
     @Test

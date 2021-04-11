@@ -29,7 +29,7 @@ class TagRepositoryTest {
                 .withDatabaseName("news");
         this.container.start();
 
-        String sqlCreateTableCategory = "CREATE TABLE IF NOT EXISTS tag (" +
+        String sqlCreateTableTag = "CREATE TABLE IF NOT EXISTS tag (" +
                 "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
                 "title character varying(50) NOT NULL," +
                 "CONSTRAINT tag_pk PRIMARY KEY (id)" +
@@ -37,7 +37,7 @@ class TagRepositoryTest {
         this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
 
         Statement statement = this.poolConnection.getConnection().createStatement();
-        statement.executeUpdate(sqlCreateTableCategory);
+        statement.executeUpdate(sqlCreateTableTag);
     }
 
     @Test

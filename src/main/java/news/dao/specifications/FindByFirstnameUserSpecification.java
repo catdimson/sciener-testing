@@ -16,6 +16,6 @@ public class FindByFirstnameUserSpecification implements SqlSpecification<User> 
 
     @Override
     public String toSqlClauses() {
-        return String.format("SELECT * FROM \"user\" WHERE firstname='%s';", this.firstName);
+        return String.format("SELECT * FROM \"user\" WHERE first_name='%s';", this.firstName);
     }
 }

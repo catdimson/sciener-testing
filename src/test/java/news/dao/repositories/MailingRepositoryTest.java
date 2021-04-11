@@ -29,7 +29,7 @@ class MailingRepositoryTest {
                 .withDatabaseName("news");
         this.container.start();
 
-        String sqlCreateTableCategory = "CREATE TABLE IF NOT EXISTS mailing (" +
+        String sqlCreateTableMailing = "CREATE TABLE IF NOT EXISTS mailing (" +
                 "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
                 "email character varying(80) NOT NULL," +
                 "CONSTRAINT mailing_pk PRIMARY KEY (id)," +
@@ -38,7 +38,7 @@ class MailingRepositoryTest {
         this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
 
         Statement statement = this.poolConnection.getConnection().createStatement();
-        statement.executeUpdate(sqlCreateTableCategory);
+        statement.executeUpdate(sqlCreateTableMailing);
     }
 
     @Test
