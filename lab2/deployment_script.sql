@@ -107,6 +107,7 @@ CREATE INDEX IF NOT EXISTS fk_index_new_user_id ON article (user_id);
 -- Создание таблица afisha
 CREATE TABLE IF NOT EXISTS afisha (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    image_url character varying(500),
     title character varying(250) NOT NULL,
     lead character varying(350) NOT NULL,
     description text NOT NULL,

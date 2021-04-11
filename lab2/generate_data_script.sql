@@ -118,9 +118,10 @@ INSERT INTO article(title, lead, create_date, edit_date, text, is_published, cat
     FROM generate_series(1, 50) as iter;
 
 -- Данные для таблицы afisha
-INSERT INTO afisha(title, lead, description, age_limit, timing, place, phone, date, is_commercial, user_id, source_id)
+INSERT INTO afisha(title, image_url, lead, description, age_limit, timing, place, phone, date, is_commercial, user_id, source_id)
     SELECT
         'title_' || iter,
+        '/media/' || iter || '.png',
         'lead_' || iter,
         'description_' || iter,
         round(random() * 18)::text,
