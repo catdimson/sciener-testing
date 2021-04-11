@@ -18,11 +18,11 @@ public class Afisha {
     private LocalDate date;
     private boolean isCommercial;
 
-    private int authorUserId;
+    private int userId;
     private int sourceId;
 
     public Afisha(int id, String title, String imageUrl, String lead, String description, int ageLimit, int timing,
-                  String place, String phone, LocalDate date, Boolean isCommercial, int authorUserId, int articleId) {
+                  String place, String phone, LocalDate date, Boolean isCommercial, int userId, int articleId) {
         this.id = id;
         this.title = title;
         this.imageUrl = imageUrl;
@@ -34,7 +34,7 @@ public class Afisha {
         this.phone = phone;
         this.date = date;
         this.isCommercial = isCommercial;
-        this.authorUserId = authorUserId;
+        this.userId = userId;
         this.sourceId = articleId;
     }
 
@@ -42,7 +42,7 @@ public class Afisha {
      * Редактирования афиши
      */
     public void edit(String title, String lead, String description, int ageLimit, int timing,
-                     String place, String phone, LocalDate date, Boolean isCommercial, int authorUserId, int sourceId) {
+                     String place, String phone, LocalDate date, Boolean isCommercial, int userId, int sourceId) {
         this.title = title;
         this.lead = lead;
         this.description = description;
@@ -52,7 +52,23 @@ public class Afisha {
         this.phone = phone;
         this.date = date;
         this.isCommercial = isCommercial;
-        this.authorUserId = authorUserId;
+        this.userId = userId;
         this.sourceId = sourceId;
+    }
+
+    public Object[] getObjects() {
+        return new Object[] {
+                id,
+                title,
+                lead,
+                description,
+                timing,
+                place,
+                phone,
+                date,
+                isCommercial,
+                userId,
+                sourceId
+        };
     }
 }
