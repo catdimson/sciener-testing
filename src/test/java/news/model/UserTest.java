@@ -43,17 +43,16 @@ class UserTest {
      * Изменение данных аккаунта: логин, пароль и email
      */
     @Test
-    void changePersonalData() throws NoSuchAlgorithmException {
+    void changePersonalData() {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
                 "admin@gmail.com", lastLogin, dateJoined, true, true, true, groupId);
         SoftAssertions soft = new SoftAssertions();
 
         user.editAccountData("Иванов", "newpas12", "newemail@mail.ru");
-        String expectedPassword = user.md5("newpas12");
 
         soft.assertThat(user)
                 .hasFieldOrPropertyWithValue("username", "Иванов")
-                .hasFieldOrPropertyWithValue("password", expectedPassword)
+                .hasFieldOrPropertyWithValue("password", "newpas12")
                 .hasFieldOrPropertyWithValue("email", "newemail@mail.ru");
         soft.assertAll();
     }
@@ -62,7 +61,7 @@ class UserTest {
      * Деактивация пользователя, убрать права суперпользователя, сделать его НЕ персоналом
      */
     @Test
-    void allDeactivateUser() throws NoSuchAlgorithmException {
+    void allDeactivateUser() {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
                 "admin@gmail.com", lastLogin, dateJoined, true, true, true, groupId);
         SoftAssertions soft = new SoftAssertions();
@@ -82,7 +81,7 @@ class UserTest {
      * Активировация пользователя, добавить права суперпользователя, сделать его персоналом
      */
     @Test
-    void allActivateUser() throws NoSuchAlgorithmException {
+    void allActivateUser() {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
                 "admin@gmail.com", lastLogin, dateJoined, false, false, false, groupId);
         SoftAssertions soft = new SoftAssertions();
@@ -102,7 +101,7 @@ class UserTest {
      * Активен ли пользователь и является ли он администратором
      */
     @Test
-    void isPermissionOfSuperuser() throws NoSuchAlgorithmException {
+    void isPermissionOfSuperuser() {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
                 "admin@gmail.com", lastLogin, dateJoined, true, false, true, groupId);
 
@@ -117,7 +116,7 @@ class UserTest {
      * Активен ли пользователь и является ли он персоналом
      */
     @Test
-    void isPermissionOfStaff() throws NoSuchAlgorithmException {
+    void isPermissionOfStaff() {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
                 "admin@gmail.com", lastLogin, dateJoined, true, false, true, groupId);
 

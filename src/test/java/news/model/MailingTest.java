@@ -4,11 +4,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Тестирование рассылки (Mailing)
@@ -19,26 +18,12 @@ class MailingTest {
     private static int groupId;
 
     @Mock
-    User userAdmin;
-    {
-        try {
-            userAdmin = new User("qwerty12", "admin", "alexandr", "kanonenko",
+    User userAdmin = new User("qwerty12", "admin", "alexandr", "kanonenko",
                     "admin@gmail.com", lastLogin, dateJoined, true, true, true, groupId);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Mock
-    User userPersonal;
-    {
-        try {
-            userPersonal = new User("qwerty12", "admin", "alexandr", "kanonenko",
+    User userPersonal = new User("qwerty12", "admin", "alexandr", "kanonenko",
                     "admin@gmail.com", lastLogin, dateJoined, false, true, true, groupId);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-    }
 
     @BeforeAll
     static void beforeAll() {

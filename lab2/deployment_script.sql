@@ -19,15 +19,15 @@ CREATE TABLE IF NOT EXISTS "user"  (
     first_name character varying(150) NOT NULL,
     last_name character varying(150),
     email character varying(254) NOT NULL,
-    "group" integer NOT NULL,
     last_login timestamp NOT NULL,
     date_joined timestamp NOT NULL,
     is_superuser boolean NOT NULL DEFAULT false,
     is_staff boolean NOT NULL DEFAULT false,
     is_active boolean NOT NULL DEFAULT true,
+    group_id integer NOT NULL,
     CONSTRAINT user_pk PRIMARY KEY (id),
     CONSTRAINT username_unique UNIQUE (username),
-    CONSTRAINT fk_user_group FOREIGN KEY ("group")
+    CONSTRAINT fk_user_group_id FOREIGN KEY (group_id)
         REFERENCES "group" (id) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE RESTRICT

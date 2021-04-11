@@ -26,10 +26,9 @@ public class User {
     private int groupId;
 
     public User(int id, String password, String username, String firstName, String lastName, String email, LocalDate lastLogin,
-                LocalDate dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive, int groupId)
-            throws NoSuchAlgorithmException {
+                LocalDate dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive, int groupId) {
         this.id = id;
-        this.password = md5(password);
+        this.password = password;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -41,10 +40,10 @@ public class User {
         this.isActive = isActive;
         this.groupId = groupId;
     }
+
     public User(String password, String username, String firstName, String lastName, String email, LocalDate lastLogin,
-                LocalDate dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive, int groupId)
-            throws NoSuchAlgorithmException {
-        this.password = md5(password);
+                LocalDate dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive, int groupId) {
+        this.password = password;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -81,10 +80,9 @@ public class User {
     /**
      * Изменить логин, пароль, email
      */
-    public void editAccountData(String newUsername, String newPassword, String newEmail)
-            throws NoSuchAlgorithmException {
+    public void editAccountData(String newUsername, String newPassword, String newEmail) {
         this.username = newUsername;
-        this.password = md5(newPassword);
+        this.password = newPassword;
         this.email = newEmail;
     }
 
@@ -139,5 +137,22 @@ public class User {
      */
     public boolean isPermissionOfStaff() {
         return this.isStaff && this.isActive;
+    }
+
+    public Object[] getObjects() {
+        return new Object[] {
+                id,
+                password,
+                username,
+                firstName,
+                lastName,
+                email,
+                lastLogin,
+                dateJoined,
+                isSuperuser,
+                isStaff,
+                isActive,
+                groupId
+        };
     }
 }
