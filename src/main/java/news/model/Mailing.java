@@ -31,4 +31,11 @@ public class Mailing {
             throw new IllegalAccessException("Недостаточно прав");
         }
     }
+
+    public Object[] getObjects() {
+        return new Object[] {
+                id,
+                email
+        };
+    }
 }
