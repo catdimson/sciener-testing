@@ -14,6 +14,8 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 class UserRepositoryTest {
     private PostgreSQLContainer container;
     private DBPool poolConnection;
@@ -147,18 +149,18 @@ class UserRepositoryTest {
             LocalDate localDateLogin2 = (LocalDate) userInstance2[6];
             LocalDate localDateJoined2 = (LocalDate) userInstance2[7];
 
-            String sqlCreateInstance1 = String.format("INSERT INTO \"user\"" +
+            String sqlCreateUser1 = String.format("INSERT INTO \"user\"" +
                     "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
                     "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance[1], userInstance[2], userInstance[3], userInstance[4], userInstance[5],
                     Timestamp.valueOf(localDateLogin.atStartOfDay()), Timestamp.valueOf(localDateJoined.atStartOfDay()), userInstance[8], userInstance[9], userInstance[10], userInstance[11]);
-            String sqlCreateInstance2 = String.format("INSERT INTO \"user\"" +
+            String sqlCreateUser2 = String.format("INSERT INTO \"user\"" +
                     "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
                     "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance2[1], userInstance2[2], userInstance2[3], userInstance2[4], userInstance2[5],
                     Timestamp.valueOf(localDateLogin2.atStartOfDay()), Timestamp.valueOf(localDateJoined2.atStartOfDay()), userInstance2[8], userInstance2[9], userInstance2[10], userInstance2[11]);
 
             Statement statement = connection.createStatement();
-            statement.executeUpdate(sqlCreateInstance1);
-            statement.executeUpdate(sqlCreateInstance2);
+            statement.executeUpdate(sqlCreateUser1);
+            statement.executeUpdate(sqlCreateUser2);
 
             FindByFirstnameUserSpecification findByFirstname = new FindByFirstnameUserSpecification("Александр");
             List<User> resultFindByFirstnameUserList = userRepository.query(findByFirstname);
@@ -191,8 +193,69 @@ class UserRepositoryTest {
                     .hasFieldOrPropertyWithValue("isActive", resultFindByFirstnameUserInstance2[10])
                     .hasFieldOrPropertyWithValue("groupId", resultFindByFirstnameUserInstance2[11]);
             soft.assertAll();
+            this.poolConnection.pullConnection(connection);
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
 
+    @Test
+    void createUser() {
+        try {
+            SoftAssertions soft = new SoftAssertions();
+            UserRepository userRepository = new UserRepository(this.poolConnection);
+            Connection connection = this.poolConnection.getConnection();
+            Statement statement = connection.createStatement();
+            User user = new User("qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", lastLogin, dateJoined,
+                    true, true, true, 1);
 
+            userRepository.create(user);
+
+            String sqlQueryInstance = String.format("SELECT * FROM \"user\" WHERE id=%d;", 1);
+            ResultSet result = statement.executeQuery(sqlQueryInstance);
+            result.next();
+            soft.assertThat(user)
+                    .hasFieldOrPropertyWithValue("username", result.getString(3))
+                    .hasFieldOrPropertyWithValue("firstName", result.getString(4))
+                    .hasFieldOrPropertyWithValue("lastName", result.getString(5))
+                    .hasFieldOrPropertyWithValue("email", result.getString(6))
+                    .hasFieldOrPropertyWithValue("lastLogin", result.getTimestamp(7).toLocalDateTime().toLocalDate())
+                    .hasFieldOrPropertyWithValue("dateJoined", result.getTimestamp(8).toLocalDateTime().toLocalDate())
+                    .hasFieldOrPropertyWithValue("isSuperuser", result.getBoolean(9))
+                    .hasFieldOrPropertyWithValue("isStaff", result.getBoolean(10))
+                    .hasFieldOrPropertyWithValue("isActive", result.getBoolean(11))
+                    .hasFieldOrPropertyWithValue("groupId", result.getInt(12));
+            soft.assertAll();
+            this.poolConnection.pullConnection(connection);
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    @Test
+    void deleteUser() {
+        try {
+            UserRepository userRepository = new UserRepository(this.poolConnection);
+            Connection connection = this.poolConnection.getConnection();
+            Statement statement = connection.createStatement();
+            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", lastLogin, dateJoined,
+                    true, true, true, 1);
+            Object[] userInstance = user.getObjects();
+            LocalDate localDateLogin = (LocalDate) userInstance[6];
+            LocalDate localDateJoined = (LocalDate) userInstance[7];
+            String sqlCreateUser = String.format("INSERT INTO \"user\"" +
+                            "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
+                            "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance[1], userInstance[2], userInstance[3], userInstance[4], userInstance[5],
+                    Timestamp.valueOf(localDateLogin.atStartOfDay()), Timestamp.valueOf(localDateJoined.atStartOfDay()), userInstance[8], userInstance[9], userInstance[10], userInstance[11]);
+            statement.executeUpdate(sqlCreateUser, Statement.RETURN_GENERATED_KEYS);
+            ResultSet generatedKeys = statement.getGeneratedKeys();
+            generatedKeys.next();
+
+            userRepository.delete(generatedKeys.getInt(1));
+
+            String sqlQueryInstance = String.format("SELECT * FROM \"user\" WHERE id=%d;", generatedKeys.getInt(1));
+            ResultSet result = statement.executeQuery(sqlQueryInstance);
+            assertThat(result.next()).as("Запись класса User не была удалена").isFalse();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -200,48 +263,6 @@ class UserRepositoryTest {
     }
 
     /*@Test
-    void createCategory() {
-        try {
-            GroupRepository groupRepository = new GroupRepository(this.poolConnection);
-            Group group = new Group("Редактор");
-
-            groupRepository.create(group);
-
-            Connection connection = this.poolConnection.getConnection();
-            String sqlQueryInstanceFromTableGroup = "SELECT id, title FROM \"group\" WHERE title='Редактор'";
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery(sqlQueryInstanceFromTableGroup);
-            result.next();
-            assertThat(group).hasFieldOrPropertyWithValue("title", result.getString(2));
-            this.poolConnection.pullConnection(connection);
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-        }
-    }
-
-    @Test
-    void deleteCategory() {
-        try {
-            GroupRepository groupRepository = new GroupRepository(this.poolConnection);
-            Connection connection = this.poolConnection.getConnection();
-            Statement statement = connection.createStatement();
-            String sqlInsertInstance = "INSERT INTO \"group\" (title) VALUES('Редактор');";
-            statement.executeUpdate(sqlInsertInstance, Statement.RETURN_GENERATED_KEYS);
-            ResultSet generatedKeys = statement.getGeneratedKeys();
-            generatedKeys.next();
-
-            groupRepository.delete(generatedKeys.getInt(1));
-
-            String sqlQueryInstance = String.format("SELECT id, title FROM \"group\" WHERE id=%d;", generatedKeys.getInt(1));
-            ResultSet result = statement.executeQuery(sqlQueryInstance);
-            assertThat(result.next()).as("Запись класса Group не была удалена").isFalse();
-            this.poolConnection.pullConnection(connection);
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-        }
-    }
-
-    @Test
     void updateCategory() {
         try {
             GroupRepository groupRepository = new GroupRepository(this.poolConnection);
