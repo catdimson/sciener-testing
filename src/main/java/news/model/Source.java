@@ -27,7 +27,11 @@ public class Source {
         this.title = title;
     }
 
-    public String getSourceUrl() {
-        return this.url;
+    public Object[] getObjects() {
+        return new Object[] {
+                id,
+                title,
+                url
+        };
     }
 }

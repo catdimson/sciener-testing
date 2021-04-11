@@ -1,4 +1,5 @@
 -- Удаление всех данных из таблиц
+DELETE FROM source;
 DELETE FROM mailing;
 DELETE FROM session;
 DELETE FROM image;
@@ -45,6 +46,23 @@ INSERT INTO category(title)
     SELECT
         (array['спорт', 'политика', 'кинематограф', 'искусство', 'экономика', 'наука', 'музыка'])[iter]
     FROM generate_series(1, 7) as iter;
+
+-- Данные для таблицы source
+INSERT INTO source(title, url)
+SELECT
+    (array[
+        'Яндекс ДЗЕН',
+        'РИА',
+        'Лента',
+        'News Front',
+        'Лайф'])[iter],
+    (array[
+        'https://zen.yandex.ru/',
+        'https://ria.ru/',
+        'https://lenta.ru/',
+        'https://news-front.info/',
+        'https://life.ru/'])[iter]
+FROM generate_series(1, 5) as iter;
 
 -- Данные для таблицы tag
 INSERT INTO tag(title)

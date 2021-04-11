@@ -40,6 +40,14 @@ CREATE TABLE IF NOT EXISTS category (
     CONSTRAINT category_pk PRIMARY KEY (id)
 );
 
+-- Создание таблицы source
+CREATE TABLE IF NOT EXISTS source (
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    title character varying(50) NOT NULL,
+    url character varying(500) NOT NULL,
+    CONSTRAINT source_pk PRIMARY KEY (id)
+);
+
 -- Создание таблица tag
 CREATE TABLE IF NOT EXISTS tag (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
@@ -48,12 +56,12 @@ CREATE TABLE IF NOT EXISTS tag (
 );
 
 -- Создание таблица content
-CREATE TABLE IF NOT EXISTS content (
+/*CREATE TABLE IF NOT EXISTS content (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     entity character varying(50) NOT NULL,
     CONSTRAINT content_pk PRIMARY KEY (id),
     CONSTRAINT entity_unique UNIQUE (entity)
-);
+);*/
 
 -- Создание таблица mailing
 CREATE TABLE IF NOT EXISTS mailing (
@@ -64,13 +72,13 @@ CREATE TABLE IF NOT EXISTS mailing (
 );
 
 -- Создание таблица session
-CREATE TABLE IF NOT EXISTS session (
+/*CREATE TABLE IF NOT EXISTS session (
     session_key character varying(40) NOT NULL,
     session_data text NOT NULL,
     expire_date timestamp NOT NULL,
     CONSTRAINT session_key_pk PRIMARY KEY (session_key)
 );
-CREATE INDEX IF NOT EXISTS session_index ON session (expire_date);
+CREATE INDEX IF NOT EXISTS session_index ON session (expire_date);*/
 
 -- Создание таблица new
 CREATE TABLE IF NOT EXISTS new (
@@ -111,7 +119,7 @@ CREATE TABLE IF NOT EXISTS image (
 CREATE INDEX IF NOT EXISTS fk_index_image_new_id ON image (new);
 
 -- Создание таблица page
-CREATE TABLE IF NOT EXISTS page (
+/*CREATE TABLE IF NOT EXISTS page (
      id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
      title character varying(80) NOT NULL,
      meta_charset character varying(350) NOT NULL,
@@ -129,10 +137,10 @@ CREATE TABLE IF NOT EXISTS page (
          ON UPDATE CASCADE
          ON DELETE CASCADE
 );
-CREATE INDEX IF NOT EXISTS fk_index_page_content_id ON page (content);
+CREATE INDEX IF NOT EXISTS fk_index_page_content_id ON page (content);*/
 
 -- Создание таблица log
-CREATE TABLE IF NOT EXISTS log (
+/*CREATE TABLE IF NOT EXISTS log (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     content integer NOT NULL,
     "user" integer NOT NULL,
@@ -149,7 +157,7 @@ CREATE TABLE IF NOT EXISTS log (
         ON DELETE CASCADE
 );
 CREATE INDEX IF NOT EXISTS fk_index_log_content_id ON log (content);
-CREATE INDEX IF NOT EXISTS fk_index_log_user_id ON log ("user");
+CREATE INDEX IF NOT EXISTS fk_index_log_user_id ON log ("user");*/
 
 -- Создание таблица comment
 CREATE TABLE IF NOT EXISTS comment (
@@ -173,7 +181,7 @@ CREATE INDEX IF NOT EXISTS fk_index_comment_new_id ON comment (new);
 CREATE INDEX IF NOT EXISTS fk_index_comment_user_id ON comment ("user");
 
 -- Создание таблица permission
-CREATE TABLE IF NOT EXISTS permission (
+/*CREATE TABLE IF NOT EXISTS permission (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     content integer NOT NULL,
     action character varying(50) NOT NULL,
@@ -184,10 +192,10 @@ CREATE TABLE IF NOT EXISTS permission (
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
-CREATE INDEX IF NOT EXISTS fk_index_permission_content_id ON permission (content);
+CREATE INDEX IF NOT EXISTS fk_index_permission_content_id ON permission (content);*/
 
 -- Создание таблица group_permission для реализации связи многие-ко-многим
-CREATE TABLE IF NOT EXISTS group_permission (
+/*CREATE TABLE IF NOT EXISTS group_permission (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     "group" integer NOT NULL,
     permission integer NOT NULL,
@@ -203,7 +211,7 @@ CREATE TABLE IF NOT EXISTS group_permission (
         ON DELETE CASCADE
 );
 CREATE INDEX IF NOT EXISTS fk_index_group_permission_user_id ON group_permission ("group");
-CREATE INDEX IF NOT EXISTS fk_index_group_permission_permission_id ON group_permission (permission);
+CREATE INDEX IF NOT EXISTS fk_index_group_permission_permission_id ON group_permission (permission);*/
 
 -- Создание таблица new_tag для реализации связи многие-ко-многим
 CREATE TABLE IF NOT EXISTS new_tag (
