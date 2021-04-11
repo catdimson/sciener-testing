@@ -1,6 +1,5 @@
 package news.model;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
@@ -17,13 +16,13 @@ public class Afisha {
     private String place;
     private String phone;
     private LocalDate date;
-    private BigDecimal price;
+    private boolean isCommercial;
 
     private int authorUserId;
     private int sourceId;
 
     public Afisha(int id, String title, String imageUrl, String lead, String description, int ageLimit, int timing,
-                  String place, String phone, LocalDate date, BigDecimal price, int authorUserId, int articleId) {
+                  String place, String phone, LocalDate date, Boolean isCommercial, int authorUserId, int articleId) {
         this.id = id;
         this.title = title;
         this.imageUrl = imageUrl;
@@ -34,7 +33,7 @@ public class Afisha {
         this.place = place;
         this.phone = phone;
         this.date = date;
-        this.price = price;
+        this.isCommercial = isCommercial;
         this.authorUserId = authorUserId;
         this.sourceId = articleId;
     }
@@ -43,7 +42,7 @@ public class Afisha {
      * Редактирования афиши
      */
     public void edit(String title, String lead, String description, int ageLimit, int timing,
-                     String place, String phone, LocalDate date, BigDecimal price, int authorUserId, int sourceId) {
+                     String place, String phone, LocalDate date, Boolean isCommercial, int authorUserId, int sourceId) {
         this.title = title;
         this.lead = lead;
         this.description = description;
@@ -52,7 +51,7 @@ public class Afisha {
         this.place = place;
         this.phone = phone;
         this.date = date;
-        this.price = price;
+        this.isCommercial = isCommercial;
         this.authorUserId = authorUserId;
         this.sourceId = sourceId;
     }

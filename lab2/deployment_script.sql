@@ -80,8 +80,8 @@ CREATE TABLE IF NOT EXISTS mailing (
 );
 CREATE INDEX IF NOT EXISTS session_index ON session (expire_date);*/
 
--- Создание таблица new
-CREATE TABLE IF NOT EXISTS new (
+-- Создание таблица article
+CREATE TABLE IF NOT EXISTS article (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     title character varying(250) NOT NULL,
     lead character varying(350) NOT NULL,
@@ -89,34 +89,62 @@ CREATE TABLE IF NOT EXISTS new (
     edit_date timestamp NOT NULL,
     text text NOT NULL,
     is_published boolean DEFAULT false,
-    category integer NOT NULL DEFAULT 1,
-    "user" integer NOT NULL,
-    CONSTRAINT new_pk PRIMARY KEY (id),
-    CONSTRAINT fk_category FOREIGN KEY (category)
+    category_id integer NOT NULL DEFAULT 1,
+    user_id integer NOT NULL,
+    CONSTRAINT article_pk PRIMARY KEY (id),
+    CONSTRAINT fk_category FOREIGN KEY (category_id)
         REFERENCES category (id) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE RESTRICT,
-    CONSTRAINT fk_user FOREIGN KEY ("user")
+    CONSTRAINT fk_user FOREIGN KEY (user_id)
         REFERENCES "user" (id) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE RESTRICT
 );
-CREATE INDEX IF NOT EXISTS fk_index_category_id ON new (category);
-CREATE INDEX IF NOT EXISTS fk_index_new_user_id ON new ("user");
+CREATE INDEX IF NOT EXISTS fk_index_category_id ON article (category_id);
+CREATE INDEX IF NOT EXISTS fk_index_new_user_id ON article (user_id);
+
+-- Создание таблица afisha
+CREATE TABLE IF NOT EXISTS afisha (
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    title character varying(250) NOT NULL,
+    lead character varying(350) NOT NULL,
+    description text NOT NULL,
+    age_limit character varying(5),
+    timing character varying(15),
+    place character varying(300),
+    phone character varying(20),
+    date timestamp,
+    is_commercial boolean NOT NULL DEFAULT false,
+    user_id integer NOT NULL,
+    source_id integer,
+
+    CONSTRAINT afisha_pk PRIMARY KEY (id),
+    CONSTRAINT fk_source FOREIGN KEY (source_id)
+        REFERENCES source (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_user FOREIGN KEY (user_id)
+        REFERENCES "user" (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+);
+CREATE INDEX IF NOT EXISTS fk_index_source_id ON afisha (source_id);
+CREATE INDEX IF NOT EXISTS fk_index_source_user_id ON afisha (user_id);
 
 -- Создание таблица image
 CREATE TABLE IF NOT EXISTS image (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     title character varying(80) NOT NULL,
     path character varying(500) NOT NULL,
-    new integer NOT NULL,
+    article_id integer NOT NULL,
     CONSTRAINT image_pk PRIMARY KEY (id),
-    CONSTRAINT fk_new FOREIGN KEY (new)
-        REFERENCES new (id) MATCH SIMPLE
+    CONSTRAINT fk_article FOREIGN KEY (article_id)
+        REFERENCES article (id) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
-CREATE INDEX IF NOT EXISTS fk_index_image_new_id ON image (new);
+CREATE INDEX IF NOT EXISTS fk_index_image_article_id ON image (article_id);
 
 -- Создание таблица page
 /*CREATE TABLE IF NOT EXISTS page (
@@ -165,20 +193,20 @@ CREATE TABLE IF NOT EXISTS comment (
     text character varying(3000),
     create_date timestamp NOT NULL,
     edit_date timestamp NOT NULL,
-    new integer NOT NULL,
-    "user" integer NOT NULL,
+    article_id integer NOT NULL,
+    user_id integer NOT NULL,
     CONSTRAINT comment_pk PRIMARY KEY (id),
-    CONSTRAINT fk_new FOREIGN KEY (new)
-        REFERENCES new (id) MATCH SIMPLE
+    CONSTRAINT fk_new FOREIGN KEY (article_id)
+        REFERENCES article (id) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    CONSTRAINT fk_user FOREIGN KEY ("user")
+    CONSTRAINT fk_user FOREIGN KEY (user_id)
         REFERENCES "user" (id) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
-CREATE INDEX IF NOT EXISTS fk_index_comment_new_id ON comment (new);
-CREATE INDEX IF NOT EXISTS fk_index_comment_user_id ON comment ("user");
+CREATE INDEX IF NOT EXISTS fk_index_comment_new_id ON comment (article_id);
+CREATE INDEX IF NOT EXISTS fk_index_comment_user_id ON comment (user_id);
 
 -- Создание таблица permission
 /*CREATE TABLE IF NOT EXISTS permission (
@@ -214,20 +242,20 @@ CREATE INDEX IF NOT EXISTS fk_index_group_permission_user_id ON group_permission
 CREATE INDEX IF NOT EXISTS fk_index_group_permission_permission_id ON group_permission (permission);*/
 
 -- Создание таблица new_tag для реализации связи многие-ко-многим
-CREATE TABLE IF NOT EXISTS new_tag (
+CREATE TABLE IF NOT EXISTS article_tag (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
-    new integer NOT NULL,
-    tag integer NOT NULL,
-    CONSTRAINT new_tag_pk PRIMARY KEY (id),
-    CONSTRAINT new_tag_unique UNIQUE (new, tag),
-    CONSTRAINT fk_new FOREIGN KEY (new)
-        REFERENCES new (id) MATCH SIMPLE
+    article_id integer NOT NULL,
+    tag_id integer NOT NULL,
+    CONSTRAINT article_tag_pk PRIMARY KEY (id),
+    CONSTRAINT article_tag_unique UNIQUE (article_id, tag_id),
+    CONSTRAINT fk_new FOREIGN KEY (article_id)
+        REFERENCES article (id) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    CONSTRAINT fk_tag FOREIGN KEY (tag)
+    CONSTRAINT fk_tag FOREIGN KEY (tag_id)
         REFERENCES tag (id) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
-CREATE INDEX IF NOT EXISTS fk_index_new_tag_new_id ON new_tag (new);
-CREATE INDEX IF NOT EXISTS fk_index_new_tag_tag_id ON new_tag (tag);
+CREATE INDEX IF NOT EXISTS fk_index_new_tag_article_id ON article_tag (article_id);
+CREATE INDEX IF NOT EXISTS fk_index_new_tag_tag_id ON article_tag (tag_id);
