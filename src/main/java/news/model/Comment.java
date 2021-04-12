@@ -46,6 +46,15 @@ public class Comment {
             this.path = path;
             this.comment_id = comment_id;
         }
+
+        public Object[] getObjects() {
+            return new Object[] {
+                    id,
+                    title,
+                    path,
+                    comment_id
+            };
+        }
     }
 
     /**

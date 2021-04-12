@@ -3,12 +3,13 @@ package news.dao.repositories;
 import news.dao.connection.DBPool;
 import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Comment;
-import news.model.User;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CommentRepository implements ExtendRepository<Comment> {
     final private DBPool connectionPool;
@@ -98,59 +99,77 @@ public class CommentRepository implements ExtendRepository<Comment> {
     @Override
     public void create(Comment comment) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
-        Object[] instance = user.getObjects();
-        String sqlCreateInstance = "INSERT INTO \"user\"" +
-                "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
-                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        Object[] instance = comment.getObjects();
 
-        PreparedStatement statement = connection.prepareStatement(sqlCreateInstance);
+        // добавление комментариев
+        String sqlCreateComment = "INSERT INTO comment " +
+                "(text, create_date, edit_date, article_id, user_id) " +
+                "VALUES(?, ?, ?, ?, ?);";
+        PreparedStatement statement = connection.prepareStatement(sqlCreateComment);
         statement.setString(1, (String) instance[1]);
-        statement.setString(2, (String) instance[2]);
-        statement.setString(3, (String) instance[3]);
-        statement.setString(4, (String) instance[4]);
-        statement.setString(5, (String) instance[5]);
-        LocalDate dateLogin = (LocalDate) instance[6];
-        statement.setTimestamp(6, Timestamp.valueOf(dateLogin.atStartOfDay()));
-        LocalDate dateJoined = (LocalDate) instance[7];
-        statement.setTimestamp(7, Timestamp.valueOf(dateJoined.atStartOfDay()));
-        statement.setBoolean(8, (Boolean) instance[8]);
-        statement.setBoolean(9, (Boolean) instance[9]);
-        statement.setBoolean(10, (Boolean) instance[10]);
-        statement.setInt(11, (int) instance[11]);
+        LocalDate createDate = (LocalDate) instance[2];
+        statement.setTimestamp(2, Timestamp.valueOf(createDate.atStartOfDay()));
+        LocalDate editDate = (LocalDate) instance[3];
+        statement.setTimestamp(3, Timestamp.valueOf(editDate.atStartOfDay()));
+        statement.setInt(4, (int) instance[4]);
+        statement.setInt(5, (int) instance[5]);
         statement.executeUpdate();
+
+        // добавление вложений к комментариям
+        StringBuilder sqlCreateAttachments = new StringBuilder("INSERT INTO attachment (title, path, comment_id) VALUES ");
+        Statement statementWithoutParams = connection.createStatement();
+        ArrayList attachments = (ArrayList) instance[6];
+        for (int i = 0; i < attachments.size(); i++) {
+            Comment.CommentAttachment attachment = (Comment.CommentAttachment) attachments.get(i);
+            Object[] attachmentInstance = attachment.getObjects();
+            String sqlPath;
+            if (i != attachments.size() - 1) {
+                sqlPath = String.format("('%s', '%s', %s), ", attachmentInstance[1], attachmentInstance[2], attachmentInstance[3]);
+            } else {
+                sqlPath = String.format("('%s', '%s', %s); ", attachmentInstance[1], attachmentInstance[2], attachmentInstance[3]);
+            }
+            sqlCreateAttachments.append(sqlPath);
+        }
+        statementWithoutParams.executeUpdate(sqlCreateComment);
     }
 
     @Override
     public void delete(int id) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         Statement statement = connection.createStatement();
-        String sqlDeleteInstance = String.format("DELETE FROM \"user\" WHERE id=%d;", id);
-        statement.executeUpdate(sqlDeleteInstance);
+        String sqlDeleteAttachments = String.format("DELETE FROM attachment WHERE comment_id=%d;", id);
+        statement.executeUpdate(sqlDeleteAttachments);
+        String sqlDeleteComment = String.format("DELETE FROM comment WHERE id=%d;", id);
+        statement.executeUpdate(sqlDeleteComment);
     }
 
     @Override
     public void update(Comment comment) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
-        Object[] instance = user.getObjects();
-        String sqlUpdateInstance = "UPDATE \"user\" SET " +
-                "password=?, username=?, first_name=?, last_name=?, email=?, last_login=?, date_joined=?, is_superuser=?, " +
-                "is_staff=?, is_active=?, group_id=? WHERE id=?;";
+        Object[] instanceComment = comment.getObjects();
+        ArrayList<Comment.CommentAttachment> attachments = (ArrayList<Comment.CommentAttachment>) instanceComment[6];
+        Set<Comment.CommentAttachment> attachmentsSet = new HashSet<>(attachments);
+        Statement statement = connection.createStatement();
+        String sqlQueryAttachments = String.format("SELECT * FROM attachment WHERE comment_id=%s;", instanceComment[0]);
+        ResultSet result = statement.executeQuery(sqlQueryAttachments);
 
-        PreparedStatement statement = connection.prepareStatement(sqlUpdateInstance);
-        statement.setString(1, (String) instance[1]);
-        statement.setString(2, (String) instance[2]);
-        statement.setString(3, (String) instance[3]);
-        statement.setString(4, (String) instance[4]);
-        statement.setString(5, (String) instance[5]);
-        LocalDate dateLogin = (LocalDate) instance[6];
-        statement.setTimestamp(6, Timestamp.valueOf(dateLogin.atStartOfDay()));
-        LocalDate dateJoined = (LocalDate) instance[7];
-        statement.setTimestamp(7, Timestamp.valueOf(dateJoined.atStartOfDay()));
-        statement.setBoolean(8, (Boolean) instance[8]);
-        statement.setBoolean(9, (Boolean) instance[9]);
-        statement.setBoolean(10, (Boolean) instance[10]);
-        statement.setInt(11, (int) instance[11]);
-        statement.setInt(12, (int) instance[0]);
-        statement.executeUpdate();
+        outer:
+        while (result.next()) {
+            for (int i = 0; i < attachments.size(); i++) {
+                Comment.CommentAttachment attachment = attachments.get(i);
+                Object[] instanceAttachment = attachment.getObjects();
+                if (result.getInt("id") == (int) instanceAttachment[0]) {
+                    attachmentsSet.remove(attachment);
+                    String sqlUpdateAttachment = String.format("UPDATE attachment " +
+                            "SET title='%s', path='%s' WHERE id=%s;", instanceAttachment[1], instanceAttachment[2], instanceAttachment[0]);
+                    statement.executeUpdate(sqlUpdateAttachment);
+                    continue outer;
+                }
+            }
+            result.deleteRow();
+        }
+
+        // нужно добавить из attachmentsSet в БД
+        // нужно обновить объект Комментария
     }
 }
