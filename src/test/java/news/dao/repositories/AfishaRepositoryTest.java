@@ -6,6 +6,7 @@ import news.dao.specifications.FindByTitleAfishaSpecification;
 import news.model.Afisha;
 import news.model.User;
 import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -295,29 +296,25 @@ class AfishaRepositoryTest {
     }
 
     @Test
-    void deleteUser() {
+    void deleteAfisha() {
         try {
-            UserRepository userRepository = new UserRepository(this.poolConnection);
+            AfishaRepository afishaRepository = new AfishaRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", lastLogin, dateJoined,
-                    true, true, true, 1);
-            Object[] userInstance = user.getObjects();
-            LocalDate localDateLogin = (LocalDate) userInstance[6];
-            LocalDate localDateJoined = (LocalDate) userInstance[7];
-            String sqlCreateUser = String.format("INSERT INTO \"user\"" +
-                            "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
-                            "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance[1], userInstance[2], userInstance[3], userInstance[4], userInstance[5],
-                    Timestamp.valueOf(localDateLogin.atStartOfDay()), Timestamp.valueOf(localDateJoined.atStartOfDay()), userInstance[8], userInstance[9], userInstance[10], userInstance[11]);
-            statement.executeUpdate(sqlCreateUser, Statement.RETURN_GENERATED_KEYS);
+            String sqlCreateAfisha = String.format("INSERT INTO afisha" +
+                            "(title, image_url, lead, description, age_limit, timing, place, phone, date, is_commercial, user_id, source_id) " +
+                            "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %d, %d);",
+                    "Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний", "0", "180", "Центральная площадь, г.Белгород",
+                    "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
+            statement.executeUpdate(sqlCreateAfisha, Statement.RETURN_GENERATED_KEYS);
             ResultSet generatedKeys = statement.getGeneratedKeys();
             generatedKeys.next();
 
-            userRepository.delete(generatedKeys.getInt(1));
+            afishaRepository.delete(generatedKeys.getInt(1));
 
-            String sqlQueryInstance = String.format("SELECT * FROM \"user\" WHERE id=%d;", generatedKeys.getInt(1));
+            String sqlQueryInstance = String.format("SELECT * FROM afisha WHERE id=%d;", generatedKeys.getInt(1));
             ResultSet result = statement.executeQuery(sqlQueryInstance);
-            assertThat(result.next()).as("Запись класса User не была удалена").isFalse();
+            assertThat(result.next()).as("Запись класса Afisha не была удалена").isFalse();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
             exception.printStackTrace();
