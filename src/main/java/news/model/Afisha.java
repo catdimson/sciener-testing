@@ -22,7 +22,7 @@ public class Afisha {
     private int sourceId;
 
     public Afisha(int id, String title, String imageUrl, String lead, String description, String ageLimit, String timing,
-                  String place, String phone, LocalDate date, Boolean isCommercial, int userId, int articleId) {
+                  String place, String phone, LocalDate date, Boolean isCommercial, int userId, int sourceId) {
         this.id = id;
         this.title = title;
         this.imageUrl = imageUrl;
@@ -35,7 +35,7 @@ public class Afisha {
         this.date = date;
         this.isCommercial = isCommercial;
         this.userId = userId;
-        this.sourceId = articleId;
+        this.sourceId = sourceId;
     }
 
     /**
