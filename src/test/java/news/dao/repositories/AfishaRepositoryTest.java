@@ -176,7 +176,7 @@ class AfishaRepositoryTest {
     }
 
     @Test
-    void findByFirstname() {
+    void findByTitle() {
         try {
             SoftAssertions soft = new SoftAssertions();
             AfishaRepository afishaRepository = new AfishaRepository(this.poolConnection);
@@ -260,31 +260,33 @@ class AfishaRepositoryTest {
     }
 
     @Test
-    void createUser() {
+    void createAfisha() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            UserRepository userRepository = new UserRepository(this.poolConnection);
+            AfishaRepository afishaRepository = new AfishaRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            User user = new User("qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", lastLogin, dateJoined,
-                    true, true, true, 1);
+            Afisha afisha = new Afisha("Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний",
+                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", date, false, 1, 1);
 
-            userRepository.create(user);
+            afishaRepository.create(afisha);
 
-            String sqlQueryInstance = String.format("SELECT * FROM \"user\" WHERE id=%d;", 1);
+            String sqlQueryInstance = String.format("SELECT * FROM afisha WHERE id=%d;", 1);
             ResultSet result = statement.executeQuery(sqlQueryInstance);
             result.next();
-            soft.assertThat(user)
-                    .hasFieldOrPropertyWithValue("username", result.getString(3))
-                    .hasFieldOrPropertyWithValue("firstName", result.getString(4))
-                    .hasFieldOrPropertyWithValue("lastName", result.getString(5))
-                    .hasFieldOrPropertyWithValue("email", result.getString(6))
-                    .hasFieldOrPropertyWithValue("lastLogin", result.getTimestamp(7).toLocalDateTime().toLocalDate())
-                    .hasFieldOrPropertyWithValue("dateJoined", result.getTimestamp(8).toLocalDateTime().toLocalDate())
-                    .hasFieldOrPropertyWithValue("isSuperuser", result.getBoolean(9))
-                    .hasFieldOrPropertyWithValue("isStaff", result.getBoolean(10))
-                    .hasFieldOrPropertyWithValue("isActive", result.getBoolean(11))
-                    .hasFieldOrPropertyWithValue("groupId", result.getInt(12));
+            soft.assertThat(afisha)
+                    .hasFieldOrPropertyWithValue("title", result.getString(2))
+                    .hasFieldOrPropertyWithValue("imageUrl", result.getString(3))
+                    .hasFieldOrPropertyWithValue("lead", result.getString(4))
+                    .hasFieldOrPropertyWithValue("description", result.getString(5))
+                    .hasFieldOrPropertyWithValue("ageLimit", result.getString(6))
+                    .hasFieldOrPropertyWithValue("timing", result.getString(7))
+                    .hasFieldOrPropertyWithValue("place", result.getString(8))
+                    .hasFieldOrPropertyWithValue("phone", result.getString(9))
+                    .hasFieldOrPropertyWithValue("date", result.getTimestamp(10).toLocalDateTime().toLocalDate())
+                    .hasFieldOrPropertyWithValue("isCommercial", result.getBoolean(11))
+                    .hasFieldOrPropertyWithValue("userId", result.getInt(12))
+                    .hasFieldOrPropertyWithValue("sourceId", result.getInt(13));
             soft.assertAll();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {

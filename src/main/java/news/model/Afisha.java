@@ -38,6 +38,22 @@ public class Afisha {
         this.sourceId = sourceId;
     }
 
+    public Afisha(String title, String imageUrl, String lead, String description, String ageLimit, String timing,
+                  String place, String phone, LocalDate date, Boolean isCommercial, int userId, int sourceId) {
+        this.title = title;
+        this.imageUrl = imageUrl;
+        this.lead = lead;
+        this.description = description;
+        this.ageLimit = ageLimit;
+        this.timing = timing;
+        this.place = place;
+        this.phone = phone;
+        this.date = date;
+        this.isCommercial = isCommercial;
+        this.userId = userId;
+        this.sourceId = sourceId;
+    }
+
     /**
      * Редактирования афиши
      */
