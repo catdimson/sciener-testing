@@ -4,9 +4,7 @@ import news.dao.connection.DBPool;
 import news.dao.specifications.FindByIdAfishaSpecification;
 import news.dao.specifications.FindByTitleAfishaSpecification;
 import news.model.Afisha;
-import news.model.User;
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -325,38 +323,36 @@ class AfishaRepositoryTest {
     void updateUser() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            UserRepository userRepository = new UserRepository(this.poolConnection);
+            AfishaRepository afishaRepository = new AfishaRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            User user = new User("qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", lastLogin, dateJoined,
-                    true, true, true, 1);
-            User user2 = new User(1, "ytrewq321", "cyber777", "Александр", "Жбанов", "jban1990@mail.ru", lastLogin, dateJoined,
-                    false, false, true, 2);
-            Object[] userInstance = user.getObjects();
-            LocalDate localDateLogin = (LocalDate) userInstance[6];
-            LocalDate localDateJoined = (LocalDate) userInstance[7];
-            String sqlCreateUser1 = String.format("INSERT INTO \"user\"" +
-                            "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
-                            "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance[1], userInstance[2], userInstance[3], userInstance[4], userInstance[5],
-                    Timestamp.valueOf(localDateLogin.atStartOfDay()), Timestamp.valueOf(localDateJoined.atStartOfDay()), userInstance[8], userInstance[9], userInstance[10], userInstance[11]);
-            statement.executeUpdate(sqlCreateUser1);
+            String sqlCreateAfisha = String.format("INSERT INTO afisha" +
+                            "(title, image_url, lead, description, age_limit, timing, place, phone, date, is_commercial, user_id, source_id) " +
+                            "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %d, %d);",
+                    "Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний", "0", "180", "Центральная площадь, г.Белгород",
+                    "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
+            statement.executeUpdate(sqlCreateAfisha, Statement.RETURN_GENERATED_KEYS);
+            Afisha afisha2 = new Afisha(1, "Масленица. Конкурсы.", "/media/maslenicaprazdnik.jpg", "Конкурсы на празник", "Красивое описание масленичных конкурсов",
+                    "3", "120", "Кинотеатр русич", "89208880022", date, false, 1, 1);
 
-            userRepository.update(user2);
+            afishaRepository.update(afisha2);
 
-            String sqlQueryInstance = String.format("SELECT * FROM \"user\" WHERE id=%d;", 1);
+            String sqlQueryInstance = String.format("SELECT * FROM afisha WHERE id=%d;", 1);
             ResultSet result = statement.executeQuery(sqlQueryInstance);
             result.next();
-            soft.assertThat(user2)
-                    .hasFieldOrPropertyWithValue("username", result.getString(3))
-                    .hasFieldOrPropertyWithValue("firstName", result.getString(4))
-                    .hasFieldOrPropertyWithValue("lastName", result.getString(5))
-                    .hasFieldOrPropertyWithValue("email", result.getString(6))
-                    .hasFieldOrPropertyWithValue("lastLogin", result.getTimestamp(7).toLocalDateTime().toLocalDate())
-                    .hasFieldOrPropertyWithValue("dateJoined", result.getTimestamp(8).toLocalDateTime().toLocalDate())
-                    .hasFieldOrPropertyWithValue("isSuperuser", result.getBoolean(9))
-                    .hasFieldOrPropertyWithValue("isStaff", result.getBoolean(10))
-                    .hasFieldOrPropertyWithValue("isActive", result.getBoolean(11))
-                    .hasFieldOrPropertyWithValue("groupId", result.getInt(12));
+            soft.assertThat(afisha2)
+                    .hasFieldOrPropertyWithValue("title", result.getString(2))
+                    .hasFieldOrPropertyWithValue("imageUrl", result.getString(3))
+                    .hasFieldOrPropertyWithValue("lead", result.getString(4))
+                    .hasFieldOrPropertyWithValue("description", result.getString(5))
+                    .hasFieldOrPropertyWithValue("ageLimit", result.getString(6))
+                    .hasFieldOrPropertyWithValue("timing", result.getString(7))
+                    .hasFieldOrPropertyWithValue("place", result.getString(8))
+                    .hasFieldOrPropertyWithValue("phone", result.getString(9))
+                    .hasFieldOrPropertyWithValue("date", result.getTimestamp(10).toLocalDateTime().toLocalDate())
+                    .hasFieldOrPropertyWithValue("isCommercial", result.getBoolean(11))
+                    .hasFieldOrPropertyWithValue("userId", result.getInt(12))
+                    .hasFieldOrPropertyWithValue("sourceId", result.getInt(13));
             soft.assertAll();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {

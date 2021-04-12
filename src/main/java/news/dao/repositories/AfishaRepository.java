@@ -98,6 +98,7 @@ public class AfishaRepository implements Repository<Afisha> {
         statement.setBoolean(10, (Boolean) instance[10]);
         statement.setInt(11, (int) instance[11]);
         statement.setInt(12, (int) instance[12]);
+        statement.setInt(13, (int) instance[0]);
         statement.executeUpdate();
     }
 }
