@@ -151,6 +151,14 @@ INSERT INTO comment(text, create_date, edit_date, article_id, user_id)
         (SELECT min(id) FROM "user") + trunc(random() * 10)
     FROM generate_series(1, 20);
 
+-- Данные для таблицы attachment
+INSERT INTO attachment(title, path, comment_id)
+SELECT
+        'title_' || iter,
+        '/part' || iter || '/_' || md5(random()::text) || '/_' || md5(random()::text) || '/_' || md5(random()::text),
+        (SELECT min(id) FROM comment) + trunc(random() * 20)
+FROM generate_series(1, 40) as iter;
+
 -- Данные для таблицы image
 INSERT INTO image(title, path, article_id)
     SELECT

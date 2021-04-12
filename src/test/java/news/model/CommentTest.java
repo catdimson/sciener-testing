@@ -17,7 +17,7 @@ class CommentTest {
     private static LocalDate editDate;
 
     @Mock
-    final private Comment.CommentAttachment commentAttachment = new Comment.CommentAttachment(1, "Прекрасно");
+    final private Comment.CommentAttachment commentAttachment = new Comment.CommentAttachment(1, "Документ", "/static/files/file1.txt", 1);
 
     @BeforeAll
     static void beforeAll() {

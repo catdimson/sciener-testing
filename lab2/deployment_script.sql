@@ -209,6 +209,20 @@ CREATE TABLE IF NOT EXISTS comment (
 CREATE INDEX IF NOT EXISTS fk_index_comment_new_id ON comment (article_id);
 CREATE INDEX IF NOT EXISTS fk_index_comment_user_id ON comment (user_id);
 
+-- Создание таблица attachment
+CREATE TABLE IF NOT EXISTS attachment (
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    title character varying(80) NOT NULL,
+    path character varying(500) NOT NULL,
+    comment_id integer NOT NULL,
+    CONSTRAINT attachment_pk PRIMARY KEY (id),
+    CONSTRAINT fk_comment FOREIGN KEY (comment_id)
+        REFERENCES comment (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS fk_index_attachment_comment_id ON attachment (comment_id);
+
 -- Создание таблица permission
 /*CREATE TABLE IF NOT EXISTS permission (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),

@@ -137,4 +137,21 @@ public class Article {
     public boolean getStatusPublished() {
         return this.isPublished;
     }
+
+    public Object[] getObjects() {
+        return new Object[] {
+                id,
+                title,
+                lead,
+                createDate,
+                editDate,
+                text,
+                isPublished,
+                categoryId,
+                userId,
+                sourceId,
+                images,
+                tagsId
+        };
+    }
 }

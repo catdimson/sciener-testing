@@ -28,17 +28,23 @@ public class Comment {
     /**
      * Прикрепление к комментарию
      */
-    static class CommentAttachment {
+    public static class CommentAttachment {
         int id;
+        String title;
         String path;
+        int comment_id;
 
-        public CommentAttachment(int id, String path) {
+        public CommentAttachment(int id, String title, String path, int comment_id) {
             this.id = id;
+            this.title = title;
             this.path = path;
+            this.comment_id = comment_id;
         }
 
-        public CommentAttachment(String path) {
+        public CommentAttachment(String title, String path, int comment_id) {
+            this.title = title;
             this.path = path;
+            this.comment_id = comment_id;
         }
     }
 
@@ -63,5 +69,17 @@ public class Comment {
      */
     public boolean containAttachment(CommentAttachment attachment) {
         return this.attachments.contains(attachment);
+    }
+
+    public Object[] getObjects() {
+        return new Object[] {
+                id,
+                userId,
+                text,
+                createDate,
+                editDate,
+                articleId,
+                attachments
+        };
     }
 }
