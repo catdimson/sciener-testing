@@ -384,44 +384,59 @@ class CommentRepositoryTest {
         }
     }
 
-    /*@Test
-    void updateUser() {
+    @Test
+    void updateComment() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            AfishaRepository afishaRepository = new AfishaRepository(this.poolConnection);
+            CommentRepository commentRepository = new CommentRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            String sqlCreateAfisha = String.format("INSERT INTO afisha" +
-                            "(title, image_url, lead, description, age_limit, timing, place, phone, date, is_commercial, user_id, source_id) " +
-                            "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %d, %d);",
-                    "Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний", "0", "180", "Центральная площадь, г.Белгород",
-                    "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
-            statement.executeUpdate(sqlCreateAfisha, Statement.RETURN_GENERATED_KEYS);
-            Afisha afisha2 = new Afisha(1, "Масленица. Конкурсы.", "/media/maslenicaprazdnik.jpg", "Конкурсы на празник", "Красивое описание масленичных конкурсов",
-                    "3", "120", "Кинотеатр русич", "89208880022", date, false, 1, 1);
+            // данные В БД, которые будем обновлять
+            String sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
+                            "VALUES ('%s', '%s', '%s', %s, %s);",
+                    "Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()), Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
+            statement.executeUpdate(sqlInsertComment);
+            String sqlInsertAttachments = String.format("INSERT INTO attachment (title, path, comment_id) " +
+                            "VALUES ('%s', '%s', %s), ('%s', '%s', %s);",
+                    "Прикрепление 1", "/static/attachments/image1.png", 1,
+                    "Прикрепление 2", "/static/attachments/image2.png", 1);
+            statement.executeUpdate(sqlInsertAttachments);
+            // объект, которым будем обновлять данные в БД
+            Comment comment = new Comment(1,"Текст комментария новый", createDateComment.plusDays(1), editDateComment.plusDays(1), 2, 1);
+            Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment(2,"Прикрепление 2 новое", "/static/attachments/image2_новое.png", 1);
+            Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 3", "/static/attachments/image3.png", 1);
+            comment.addNewAttachment(commentAttachment1);
+            comment.addNewAttachment(commentAttachment2);
 
-            afishaRepository.update(afisha2);
+            commentRepository.update(comment);
 
-            String sqlQueryInstance = String.format("SELECT * FROM afisha WHERE id=%d;", 1);
-            ResultSet result = statement.executeQuery(sqlQueryInstance);
-            result.next();
-            soft.assertThat(afisha2)
-                    .hasFieldOrPropertyWithValue("title", result.getString(2))
-                    .hasFieldOrPropertyWithValue("imageUrl", result.getString(3))
-                    .hasFieldOrPropertyWithValue("lead", result.getString(4))
-                    .hasFieldOrPropertyWithValue("description", result.getString(5))
-                    .hasFieldOrPropertyWithValue("ageLimit", result.getString(6))
-                    .hasFieldOrPropertyWithValue("timing", result.getString(7))
-                    .hasFieldOrPropertyWithValue("place", result.getString(8))
-                    .hasFieldOrPropertyWithValue("phone", result.getString(9))
-                    .hasFieldOrPropertyWithValue("date", result.getTimestamp(10).toLocalDateTime().toLocalDate())
-                    .hasFieldOrPropertyWithValue("isCommercial", result.getBoolean(11))
-                    .hasFieldOrPropertyWithValue("userId", result.getInt(12))
-                    .hasFieldOrPropertyWithValue("sourceId", result.getInt(13));
+            String sqlQueryComment = String.format("SELECT * FROM comment WHERE id=%s;", 1);
+            String sqlQueryAttachment = String.format("SELECT * FROM attachment WHERE comment_id=%s;", 1);
+            ResultSet resultComment = statement.executeQuery(sqlQueryComment);
+            resultComment.next();
+            soft.assertThat(comment)
+                    .hasFieldOrPropertyWithValue("text", resultComment.getString("text"))
+                    .hasFieldOrPropertyWithValue("createDate", resultComment.getTimestamp("create_date").toLocalDateTime().toLocalDate())
+                    .hasFieldOrPropertyWithValue("editDate", resultComment.getTimestamp("edit_date").toLocalDateTime().toLocalDate())
+                    .hasFieldOrPropertyWithValue("articleId", resultComment.getInt("article_id"))
+                    .hasFieldOrPropertyWithValue("userId", resultComment.getInt("user_id"));
+            soft.assertAll();
+            ResultSet resultAttachments = statement.executeQuery(sqlQueryAttachment);
+            resultAttachments.next();
+            soft.assertThat(commentAttachment1)
+                    .hasFieldOrPropertyWithValue("title", resultAttachments.getString("title"))
+                    .hasFieldOrPropertyWithValue("path", resultAttachments.getString("path"))
+                    .hasFieldOrPropertyWithValue("commentId", resultAttachments.getInt("comment_id"));
+            soft.assertAll();
+            resultAttachments.next();
+            soft.assertThat(commentAttachment2)
+                    .hasFieldOrPropertyWithValue("title", resultAttachments.getString("title"))
+                    .hasFieldOrPropertyWithValue("path", resultAttachments.getString("path"))
+                    .hasFieldOrPropertyWithValue("commentId", resultAttachments.getInt("comment_id"));
             soft.assertAll();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-    }*/
+    }
 }

@@ -151,20 +151,23 @@ public class CommentRepository implements ExtendRepository<Comment> {
         Object[] instanceComment = comment.getObjects();
         ArrayList<Comment.CommentAttachment> attachments = (ArrayList<Comment.CommentAttachment>) instanceComment[6];
         Set<Comment.CommentAttachment> attachmentsSet = new HashSet<>(attachments);
-        Statement statement = connection.createStatement();
+        Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
         String sqlQueryAttachments = String.format("SELECT * FROM attachment WHERE comment_id=%s;", instanceComment[0]);
         ResultSet result = statement.executeQuery(sqlQueryAttachments);
 
         outer:
-        while (result.next()) {
+        while (!result.wasNull() && result.next()) {
             for (Comment.CommentAttachment attachment : attachments) {
                 Object[] instanceAttachment = attachment.getObjects();
                 if (result.getInt("id") == (int) instanceAttachment[0]) {
                     // обновляем записи в БД
                     attachmentsSet.remove(attachment);
-                    String sqlUpdateAttachment = String.format("UPDATE attachment " +
-                            "SET title='%s', path='%s' WHERE id=%s;", instanceAttachment[1], instanceAttachment[2], instanceAttachment[0]);
-                    statement.executeUpdate(sqlUpdateAttachment);
+                    //String sqlUpdateAttachment = String.format("UPDATE attachment " +
+                    //        "SET title='%s', path='%s' WHERE id=%s;", instanceAttachment[1], instanceAttachment[2], instanceAttachment[0]);
+                    result.updateString(2, (String) instanceAttachment[1]);
+                    result.updateString(3, (String) instanceAttachment[2]);
+                    result.updateRow();
+                    //statement.executeUpdate(sqlUpdateAttachment);
                     continue outer;
                 }
             }
@@ -191,9 +194,9 @@ public class CommentRepository implements ExtendRepository<Comment> {
         // обновляем запись комментария
         LocalDate createDate = (LocalDate) instanceComment[2];
         LocalDate editDate = (LocalDate) instanceComment[3];
-        String sqlUpdateComment = String.format("UPDATE comment (text, create_date, edit_date, article_id, user_id) " +
-                "VALUES('%s', '%s', '%s', %s, %s);", instanceComment[1], Timestamp.valueOf(createDate.atStartOfDay()),
-                Timestamp.valueOf(editDate.atStartOfDay()), instanceComment[4], instanceComment[5]);
+        String sqlUpdateComment = String.format("UPDATE comment SET text='%s', create_date='%s', edit_date='%s', article_id=%s, user_id=%s WHERE id=%s;",
+                instanceComment[1], Timestamp.valueOf(createDate.atStartOfDay()),
+                Timestamp.valueOf(editDate.atStartOfDay()), instanceComment[4], instanceComment[5], instanceComment[0]);
         statement.executeUpdate(sqlUpdateComment);
     }
 }
