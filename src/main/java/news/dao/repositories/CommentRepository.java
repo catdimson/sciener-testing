@@ -130,7 +130,7 @@ public class CommentRepository implements ExtendRepository<Comment> {
             }
             sqlCreateAttachments.append(sqlPath);
         }
-        statementWithoutParams.executeUpdate(sqlCreateComment);
+        statementWithoutParams.executeUpdate(String.valueOf(sqlCreateAttachments));
     }
 
     @Override
@@ -155,10 +155,10 @@ public class CommentRepository implements ExtendRepository<Comment> {
 
         outer:
         while (result.next()) {
-            for (int i = 0; i < attachments.size(); i++) {
-                Comment.CommentAttachment attachment = attachments.get(i);
+            for (Comment.CommentAttachment attachment : attachments) {
                 Object[] instanceAttachment = attachment.getObjects();
                 if (result.getInt("id") == (int) instanceAttachment[0]) {
+                    // обновляем записи в БД
                     attachmentsSet.remove(attachment);
                     String sqlUpdateAttachment = String.format("UPDATE attachment " +
                             "SET title='%s', path='%s' WHERE id=%s;", instanceAttachment[1], instanceAttachment[2], instanceAttachment[0]);
@@ -166,10 +166,32 @@ public class CommentRepository implements ExtendRepository<Comment> {
                     continue outer;
                 }
             }
+            // удаляем записи из БД
             result.deleteRow();
         }
 
-        // нужно добавить из attachmentsSet в БД
-        // нужно обновить объект Комментария
+        // добавляем записи в БД
+        ArrayList<Comment.CommentAttachment> addingInDBAttachments = new ArrayList<>(attachmentsSet);
+        StringBuilder sqlCreateAttachments = new StringBuilder("INSERT INTO attachment (title, path, comment_id) VALUES ");
+        for (int i = 0; i < addingInDBAttachments.size(); i++) {
+            Comment.CommentAttachment attachment = addingInDBAttachments.get(i);
+            Object[] attachmentInstance = attachment.getObjects();
+            String sqlPath;
+            if (i != addingInDBAttachments.size() - 1) {
+                sqlPath = String.format("('%s', '%s', %s), ", attachmentInstance[1], attachmentInstance[2], attachmentInstance[3]);
+            } else {
+                sqlPath = String.format("('%s', '%s', %s); ", attachmentInstance[1], attachmentInstance[2], attachmentInstance[3]);
+            }
+            sqlCreateAttachments.append(sqlPath);
+        }
+        statement.executeUpdate(String.valueOf(sqlCreateAttachments));
+
+        // обновляем запись комментария
+        LocalDate createDate = (LocalDate) instanceComment[2];
+        LocalDate editDate = (LocalDate) instanceComment[3];
+        String sqlUpdateComment = String.format("UPDATE comment (text, create_date, edit_date, article_id, user_id) " +
+                "VALUES('%s', '%s', '%s', %s, %s);", instanceComment[1], Timestamp.valueOf(createDate.atStartOfDay()),
+                Timestamp.valueOf(editDate.atStartOfDay()), instanceComment[4], instanceComment[5]);
+        statement.executeUpdate(sqlUpdateComment);
     }
 }
