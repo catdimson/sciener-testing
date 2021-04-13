@@ -22,7 +22,7 @@ public class CommentRepository implements ExtendRepository<Comment> {
     public List<Comment> query(ExtendSqlSpecification<Comment> commentSpecification) throws SQLException {
         List<Comment> queryResult = new ArrayList<>();
         Connection connection = connectionPool.getConnection();
-        Statement statement = connection.createStatement();
+        Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
         boolean isById = commentSpecification.isById();
         String sqlQuery = commentSpecification.toSqlClauses();
         ResultSet result = statement.executeQuery(sqlQuery);
@@ -30,6 +30,7 @@ public class CommentRepository implements ExtendRepository<Comment> {
         int idCommentWithAttachments = 0;
         int indexCurrentCommentInResultQuery = 0;
         if (isById) {
+            result.next();
             Comment comment = new Comment(
                     result.getInt(1),
                     result.getString(2),
@@ -38,6 +39,7 @@ public class CommentRepository implements ExtendRepository<Comment> {
                     result.getInt(5),
                     result.getInt(6)
             );
+            result.previous();
             while (result.next()) {
                     Comment.CommentAttachment commentAttachment = new Comment.CommentAttachment(
                     result.getInt(7),
@@ -80,15 +82,15 @@ public class CommentRepository implements ExtendRepository<Comment> {
                         commentWithAttachments.addNewAttachment(commentAttachment);
                         queryResult.add(commentWithAttachments);
                         indexCurrentCommentInResultQuery = queryResult.size() - 1;
+                    } else {
+                        Comment.CommentAttachment commentAttachment = new Comment.CommentAttachment(
+                                result.getInt(7),
+                                result.getString(8),
+                                result.getString(9),
+                                result.getInt(10));
+                        Comment comment = queryResult.get(indexCurrentCommentInResultQuery);
+                        comment.addNewAttachment(commentAttachment);
                     }
-
-                    Comment.CommentAttachment commentAttachment = new Comment.CommentAttachment(
-                            result.getInt(7),
-                            result.getString(8),
-                            result.getString(9),
-                            result.getInt(10));
-                    Comment comment = queryResult.get(indexCurrentCommentInResultQuery);
-                    comment.addNewAttachment(commentAttachment);
                 }
             }
         }

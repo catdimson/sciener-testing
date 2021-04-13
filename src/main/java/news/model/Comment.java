@@ -8,7 +8,7 @@ import java.util.Collection;
  * Комментарий к новости
  */
 public class Comment {
-    final private int id;
+    private int id;
     final private LocalDate createDate;
     private String text;
     private LocalDate editDate;
@@ -25,6 +25,14 @@ public class Comment {
         this.articleId = articleId;
     }
 
+    public Comment(String text, LocalDate createDate, LocalDate editDate, int userId, int articleId) {
+        this.text = text;
+        this.createDate = createDate;
+        this.editDate = editDate;
+        this.userId = userId;
+        this.articleId = articleId;
+    }
+
     /**
      * Прикрепление к комментарию
      */
@@ -32,19 +40,19 @@ public class Comment {
         int id;
         String title;
         String path;
-        int comment_id;
+        int commentId;
 
-        public CommentAttachment(int id, String title, String path, int comment_id) {
+        public CommentAttachment(int id, String title, String path, int commentId) {
             this.id = id;
             this.title = title;
             this.path = path;
-            this.comment_id = comment_id;
+            this.commentId = commentId;
         }
 
-        public CommentAttachment(String title, String path, int comment_id) {
+        public CommentAttachment(String title, String path, int commentId) {
             this.title = title;
             this.path = path;
-            this.comment_id = comment_id;
+            this.commentId = commentId;
         }
 
         public Object[] getObjects() {
@@ -52,7 +60,7 @@ public class Comment {
                     id,
                     title,
                     path,
-                    comment_id
+                    commentId
             };
         }
     }
@@ -83,11 +91,11 @@ public class Comment {
     public Object[] getObjects() {
         return new Object[] {
                 id,
-                userId,
                 text,
                 createDate,
                 editDate,
                 articleId,
+                userId,
                 attachments
         };
     }

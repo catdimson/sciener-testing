@@ -1,15 +1,19 @@
 package news.dao.repositories;
 
 import news.dao.connection.DBPool;
+import news.dao.specifications.FindByIdCommentSpecification;
+import news.dao.specifications.FindByUserIdCommentSpecification;
+import news.model.Comment;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 class CommentRepositoryTest {
     private PostgreSQLContainer container;
@@ -89,6 +93,11 @@ class CommentRepositoryTest {
         String sqlCreateUser = String.format("INSERT INTO \"user\"" +
                         "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
                         "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", "qwerty123", "alex", "Александр", "Колесников", "alex1993@mail.ru",
+                Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()), false, true, true, 2);
+        statement.executeUpdate(sqlCreateUser);
+        sqlCreateUser = String.format("INSERT INTO \"user\"" +
+                        "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
+                        "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", "qwerty000", "max", "Максим", "Вердилов", "maxiver@mail.ru",
                 Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()), false, true, true, 2);
         statement.executeUpdate(sqlCreateUser);
 
@@ -185,178 +194,165 @@ class CommentRepositoryTest {
 
     @Test
     void findById() {
-        System.out.println("ТАБЛИЦЫ СОЗДАНЫ");
-        /*try {
+        try {
             SoftAssertions soft = new SoftAssertions();
-            AfishaRepository afishaRepository = new AfishaRepository(this.poolConnection);
+            CommentRepository commentRepository = new CommentRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
+            Statement statement = connection.createStatement();
+            Comment comment = new Comment("Текст комментария", createDateComment, editDateComment, 1, 1);
+            Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment("Прикрепление 1", "/static/attachments/image1.png", 1);
+            Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 2", "/static/attachments/image2.png", 1);
+            comment.addNewAttachment(commentAttachment1);
+            comment.addNewAttachment(commentAttachment2);
+            String sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
+                    "VALUES ('%s', '%s', '%s', %s, %s);", "Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()),
+                    Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
+            statement.executeUpdate(sqlInsertComment);
+            String sqlInsertAttachments = String.format("INSERT INTO attachment (title, path, comment_id)" +
+                    "VALUES ('%s', '%s', %s), ('%s', '%s', %s);", "Прикрепление 1", "/static/attachments/image1.png", 1,
+                    "Прикрепление 2", "/static/attachments/image2.png", 1);
+            statement.executeUpdate(sqlInsertAttachments);
 
-            Afisha afisha = new Afisha(1, "Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний",
-                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", date, false, 1, 1);
-            Object[] afishaInstance = afisha.getObjects();
+            FindByIdCommentSpecification findById = new FindByIdCommentSpecification(1);
+            List<Comment> resultFindByIdCommentList = commentRepository.query(findById);
+            Object[] resultFindByIdCommentInstance = resultFindByIdCommentList.get(0).getObjects();
+            ArrayList attachments = (ArrayList) resultFindByIdCommentInstance[6];
+            Comment.CommentAttachment resultFindByIdAttachment1 = (Comment.CommentAttachment) attachments.get(0);
+            Comment.CommentAttachment resultFindByIdAttachment2 = (Comment.CommentAttachment) attachments.get(1);
 
-            String sqlCreateInstance = "INSERT INTO afisha" +
-                    "(title, image_url, lead, description, age_limit, timing, place, phone, date, is_commercial, user_id, source_id) " +
-                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-            PreparedStatement statement = connection.prepareStatement(sqlCreateInstance);
-            statement.setString(1, (String) afishaInstance[1]);
-            statement.setString(2, (String) afishaInstance[2]);
-            statement.setString(3, (String) afishaInstance[3]);
-            statement.setString(4, (String) afishaInstance[4]);
-            statement.setString(5, (String) afishaInstance[5]);
-            statement.setString(6, (String) afishaInstance[6]);
-            statement.setString(7, (String) afishaInstance[7]);
-            statement.setString(8, (String) afishaInstance[8]);
-            statement.setTimestamp(9, Timestamp.valueOf(date.atStartOfDay()));
-            statement.setBoolean(10, (boolean) afishaInstance[10]);
-            statement.setInt(11, (int) afishaInstance[11]);
-            statement.setInt(12, (int) afishaInstance[12]);
-            statement.executeUpdate();
-
-            FindByIdAfishaSpecification findById = new FindByIdAfishaSpecification(1);
-            List<Afisha> resultFindByIdAfishaList = afishaRepository.query(findById);
-            Object[] resultFindByIdAfishaInstance = resultFindByIdAfishaList.get(0).getObjects();
-
-            soft.assertThat(afisha)
-                    .hasFieldOrPropertyWithValue("title", resultFindByIdAfishaInstance[1])
-                    .hasFieldOrPropertyWithValue("imageUrl", resultFindByIdAfishaInstance[2])
-                    .hasFieldOrPropertyWithValue("lead", resultFindByIdAfishaInstance[3])
-                    .hasFieldOrPropertyWithValue("description", resultFindByIdAfishaInstance[4])
-                    .hasFieldOrPropertyWithValue("ageLimit", resultFindByIdAfishaInstance[5])
-                    .hasFieldOrPropertyWithValue("timing", resultFindByIdAfishaInstance[6])
-                    .hasFieldOrPropertyWithValue("place", resultFindByIdAfishaInstance[7])
-                    .hasFieldOrPropertyWithValue("phone", resultFindByIdAfishaInstance[8])
-                    .hasFieldOrPropertyWithValue("date", resultFindByIdAfishaInstance[9])
-                    .hasFieldOrPropertyWithValue("isCommercial", resultFindByIdAfishaInstance[10])
-                    .hasFieldOrPropertyWithValue("userId", resultFindByIdAfishaInstance[11])
-                    .hasFieldOrPropertyWithValue("sourceId", resultFindByIdAfishaInstance[12]);
+            soft.assertThat(comment)
+                    .hasFieldOrPropertyWithValue("text", resultFindByIdCommentInstance[1])
+                    .hasFieldOrPropertyWithValue("createDate", resultFindByIdCommentInstance[2])
+                    .hasFieldOrPropertyWithValue("editDate", resultFindByIdCommentInstance[3])
+                    .hasFieldOrPropertyWithValue("articleId", resultFindByIdCommentInstance[4])
+                    .hasFieldOrPropertyWithValue("userId", resultFindByIdCommentInstance[5]);
+            soft.assertAll();
+            soft.assertThat(resultFindByIdAttachment1)
+                    .hasFieldOrPropertyWithValue("title", "Прикрепление 1")
+                    .hasFieldOrPropertyWithValue("path", "/static/attachments/image1.png")
+                    .hasFieldOrPropertyWithValue("commentId", 1);
+            soft.assertAll();
+            soft.assertThat(resultFindByIdAttachment2)
+                    .hasFieldOrPropertyWithValue("title", "Прикрепление 2")
+                    .hasFieldOrPropertyWithValue("path", "/static/attachments/image2.png")
+                    .hasFieldOrPropertyWithValue("commentId", 1);
             soft.assertAll();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
             exception.printStackTrace();
-        }*/
+        }
+    }
+
+    @Test
+    void findByUserId() {
+        try {
+            SoftAssertions soft = new SoftAssertions();
+            CommentRepository commentRepository = new CommentRepository(this.poolConnection);
+            Connection connection = this.poolConnection.getConnection();
+            Statement statement = connection.createStatement();
+            // комментарий пользователя с id=1
+            Comment comment = new Comment("Текст комментария", createDateComment, editDateComment, 1, 1);
+            // 2 прикрепления к комментарию выше
+            Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment("Прикрепление 1", "/static/attachments/image1.png", 1);
+            Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 2", "/static/attachments/image2.png", 1);
+            comment.addNewAttachment(commentAttachment1);
+            comment.addNewAttachment(commentAttachment2);
+            // добавляем 2 комментария в БД
+            String sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
+                            "VALUES ('%s', '%s', '%s', %s, %s), ('%s', '%s', '%s', %s, %s);",
+                    "Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()), Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1,
+                    "Текст комментария 2", Timestamp.valueOf(createDateComment.atStartOfDay()), Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 2);
+            statement.executeUpdate(sqlInsertComment);
+            // добавляем 2 прикрепления для комментария 2 в БД
+            String sqlInsertAttachmentsComment2 = String.format("INSERT INTO attachment (title, path, comment_id) " +
+                            "VALUES ('%s', '%s', %s), ('%s', '%s', %s);",
+                    "Прикрепление 3", "/static/attachments/image3.png", 2,
+                    "Прикрепление 4", "/static/attachments/image4.png", 2);
+            statement.executeUpdate(sqlInsertAttachmentsComment2);
+            // добавляем 2 прикрепления для комментария 1 в БД
+            String sqlInsertAttachmentsComment1 = String.format("INSERT INTO attachment (title, path, comment_id) " +
+                    "VALUES ('%s', '%s', %s), ('%s', '%s', %s);",
+                    "Прикрепление 1", "/static/attachments/image1.png", 1,
+                    "Прикрепление 2", "/static/attachments/image2.png", 1);
+            statement.executeUpdate(sqlInsertAttachmentsComment1);
+
+            FindByUserIdCommentSpecification findByUserId = new FindByUserIdCommentSpecification(1);
+            List<Comment> resultFindByUserIdCommentList = commentRepository.query(findByUserId);
+            Comment testComment = resultFindByUserIdCommentList.get(0);
+            Object[] resultFindByUserIdCommentInstance = resultFindByUserIdCommentList.get(0).getObjects();
+            ArrayList attachments = (ArrayList) resultFindByUserIdCommentInstance[6];
+            Comment.CommentAttachment resultFindByUserIdAttachment1 = (Comment.CommentAttachment) attachments.get(0);
+            Comment.CommentAttachment resultFindByUserIdAttachment2 = (Comment.CommentAttachment) attachments.get(1);
+
+            soft.assertThat(comment)
+                    .hasFieldOrPropertyWithValue("text", resultFindByUserIdCommentInstance[1])
+                    .hasFieldOrPropertyWithValue("createDate", resultFindByUserIdCommentInstance[2])
+                    .hasFieldOrPropertyWithValue("editDate", resultFindByUserIdCommentInstance[3])
+                    .hasFieldOrPropertyWithValue("articleId", resultFindByUserIdCommentInstance[4])
+                    .hasFieldOrPropertyWithValue("userId", resultFindByUserIdCommentInstance[5]);
+            soft.assertAll();
+            soft.assertThat(resultFindByUserIdAttachment1)
+                    .hasFieldOrPropertyWithValue("title", "Прикрепление 1")
+                    .hasFieldOrPropertyWithValue("path", "/static/attachments/image1.png")
+                    .hasFieldOrPropertyWithValue("commentId", 1);
+            soft.assertAll();
+            soft.assertThat(resultFindByUserIdAttachment2)
+                    .hasFieldOrPropertyWithValue("title", "Прикрепление 2")
+                    .hasFieldOrPropertyWithValue("path", "/static/attachments/image2.png")
+                    .hasFieldOrPropertyWithValue("commentId", 1);
+            soft.assertAll();
+            this.poolConnection.pullConnection(connection);
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    @Test
+    void createComment() {
+        try {
+            SoftAssertions soft = new SoftAssertions();
+            CommentRepository commentRepository = new CommentRepository(this.poolConnection);
+            Connection connection = this.poolConnection.getConnection();
+            Statement statement = connection.createStatement();
+            Comment comment = new Comment("Текст комментария", createDateComment, editDateComment, 1, 1);
+            Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment("Прикрепление 1", "/static/attachments/image1.png", 1);
+            Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 2", "/static/attachments/image2.png", 1);
+            comment.addNewAttachment(commentAttachment1);
+            comment.addNewAttachment(commentAttachment2);
+
+            commentRepository.create(comment);
+
+            String sqlQueryComment = String.format("SELECT * FROM comment WHERE id=%s;", 1);
+            String sqlQueryAttachment = String.format("SELECT * FROM attachment WHERE comment_id=%s;", 1);
+            ResultSet resultComment = statement.executeQuery(sqlQueryComment);
+            resultComment.next();
+            soft.assertThat(comment)
+                    .hasFieldOrPropertyWithValue("text", resultComment.getString("text"))
+                    .hasFieldOrPropertyWithValue("createDate", resultComment.getTimestamp("create_date").toLocalDateTime().toLocalDate())
+                    .hasFieldOrPropertyWithValue("editDate", resultComment.getTimestamp("edit_date").toLocalDateTime().toLocalDate())
+                    .hasFieldOrPropertyWithValue("articleId", resultComment.getInt("article_id"))
+                    .hasFieldOrPropertyWithValue("userId", resultComment.getInt("user_id"));
+            soft.assertAll();
+            ResultSet resultAttachments = statement.executeQuery(sqlQueryAttachment);
+            resultAttachments.next();
+            soft.assertThat(commentAttachment1)
+                    .hasFieldOrPropertyWithValue("title", resultAttachments.getString("title"))
+                    .hasFieldOrPropertyWithValue("path", resultAttachments.getString("path"))
+                    .hasFieldOrPropertyWithValue("commentId", resultAttachments.getInt("comment_id"));
+            soft.assertAll();
+            resultAttachments.next();
+            soft.assertThat(commentAttachment2)
+                    .hasFieldOrPropertyWithValue("title", resultAttachments.getString("title"))
+                    .hasFieldOrPropertyWithValue("path", resultAttachments.getString("path"))
+                    .hasFieldOrPropertyWithValue("commentId", resultAttachments.getInt("comment_id"));
+            soft.assertAll();
+            this.poolConnection.pullConnection(connection);
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
     }
 
     /*@Test
-    void findByTitle() {
-        try {
-            SoftAssertions soft = new SoftAssertions();
-            AfishaRepository afishaRepository = new AfishaRepository(this.poolConnection);
-            Connection connection = this.poolConnection.getConnection();
-            Afisha afisha = new Afisha(1, "Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний",
-                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", date, false, 1, 1);
-            Afisha afisha2 = new Afisha(2, "Масленица", "/media/konkursi.jpg", "Конкурсы", "Описание масленичных конкурсов",
-                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", date, false, 1, 1);
-            Object[] afishaInstance = afisha.getObjects();
-            Object[] afishaInstance2 = afisha2.getObjects();
-
-            String sqlCreateInstance = "INSERT INTO afisha" +
-                    "(title, image_url, lead, description, age_limit, timing, place, phone, date, is_commercial, user_id, source_id) " +
-                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-            PreparedStatement statement = connection.prepareStatement(sqlCreateInstance);
-            statement.setString(1, (String) afishaInstance[1]);
-            statement.setString(2, (String) afishaInstance[2]);
-            statement.setString(3, (String) afishaInstance[3]);
-            statement.setString(4, (String) afishaInstance[4]);
-            statement.setString(5, (String) afishaInstance[5]);
-            statement.setString(6, (String) afishaInstance[6]);
-            statement.setString(7, (String) afishaInstance[7]);
-            statement.setString(8, (String) afishaInstance[8]);
-            statement.setTimestamp(9, Timestamp.valueOf(date.atStartOfDay()));
-            statement.setBoolean(10, (boolean) afishaInstance[10]);
-            statement.setInt(11, (int) afishaInstance[11]);
-            statement.setInt(12, (int) afishaInstance[12]);
-            statement.executeUpdate();
-
-            statement.setString(1, (String) afishaInstance2[1]);
-            statement.setString(2, (String) afishaInstance2[2]);
-            statement.setString(3, (String) afishaInstance2[3]);
-            statement.setString(4, (String) afishaInstance2[4]);
-            statement.setString(5, (String) afishaInstance2[5]);
-            statement.setString(6, (String) afishaInstance2[6]);
-            statement.setString(7, (String) afishaInstance2[7]);
-            statement.setString(8, (String) afishaInstance2[8]);
-            statement.setTimestamp(9, Timestamp.valueOf(date.atStartOfDay()));
-            statement.setBoolean(10, (boolean) afishaInstance2[10]);
-            statement.setInt(11, (int) afishaInstance2[11]);
-            statement.setInt(12, (int) afishaInstance2[12]);
-            statement.executeUpdate();
-
-            FindByTitleAfishaSpecification findByTitle = new FindByTitleAfishaSpecification("Масленица");
-            List<Afisha> resultFindByTitleAfishaList = afishaRepository.query(findByTitle);
-            Object[] resultFindByTitleAfishaInstance = resultFindByTitleAfishaList.get(0).getObjects();
-            Object[] resultFindByTitleAfishaInstance2 = resultFindByTitleAfishaList.get(1).getObjects();
-
-            soft.assertThat(afisha)
-                    .hasFieldOrPropertyWithValue("title", resultFindByTitleAfishaInstance[1])
-                    .hasFieldOrPropertyWithValue("imageUrl", resultFindByTitleAfishaInstance[2])
-                    .hasFieldOrPropertyWithValue("lead", resultFindByTitleAfishaInstance[3])
-                    .hasFieldOrPropertyWithValue("description", resultFindByTitleAfishaInstance[4])
-                    .hasFieldOrPropertyWithValue("ageLimit", resultFindByTitleAfishaInstance[5])
-                    .hasFieldOrPropertyWithValue("timing", resultFindByTitleAfishaInstance[6])
-                    .hasFieldOrPropertyWithValue("place", resultFindByTitleAfishaInstance[7])
-                    .hasFieldOrPropertyWithValue("phone", resultFindByTitleAfishaInstance[8])
-                    .hasFieldOrPropertyWithValue("date", resultFindByTitleAfishaInstance[9])
-                    .hasFieldOrPropertyWithValue("isCommercial", resultFindByTitleAfishaInstance[10])
-                    .hasFieldOrPropertyWithValue("userId", resultFindByTitleAfishaInstance[11])
-                    .hasFieldOrPropertyWithValue("sourceId", resultFindByTitleAfishaInstance[12]);
-            soft.assertAll();
-            soft.assertThat(afisha2)
-                    .hasFieldOrPropertyWithValue("title", resultFindByTitleAfishaInstance2[1])
-                    .hasFieldOrPropertyWithValue("imageUrl", resultFindByTitleAfishaInstance2[2])
-                    .hasFieldOrPropertyWithValue("lead", resultFindByTitleAfishaInstance2[3])
-                    .hasFieldOrPropertyWithValue("description", resultFindByTitleAfishaInstance2[4])
-                    .hasFieldOrPropertyWithValue("ageLimit", resultFindByTitleAfishaInstance2[5])
-                    .hasFieldOrPropertyWithValue("timing", resultFindByTitleAfishaInstance2[6])
-                    .hasFieldOrPropertyWithValue("place", resultFindByTitleAfishaInstance2[7])
-                    .hasFieldOrPropertyWithValue("phone", resultFindByTitleAfishaInstance2[8])
-                    .hasFieldOrPropertyWithValue("date", resultFindByTitleAfishaInstance2[9])
-                    .hasFieldOrPropertyWithValue("isCommercial", resultFindByTitleAfishaInstance2[10])
-                    .hasFieldOrPropertyWithValue("userId", resultFindByTitleAfishaInstance2[11])
-                    .hasFieldOrPropertyWithValue("sourceId", resultFindByTitleAfishaInstance2[12]);
-            soft.assertAll();
-            this.poolConnection.pullConnection(connection);
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-        }
-    }
-
-    @Test
-    void createAfisha() {
-        try {
-            SoftAssertions soft = new SoftAssertions();
-            AfishaRepository afishaRepository = new AfishaRepository(this.poolConnection);
-            Connection connection = this.poolConnection.getConnection();
-            Statement statement = connection.createStatement();
-            Afisha afisha = new Afisha("Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний",
-                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", date, false, 1, 1);
-
-            afishaRepository.create(afisha);
-
-            String sqlQueryInstance = String.format("SELECT * FROM afisha WHERE id=%d;", 1);
-            ResultSet result = statement.executeQuery(sqlQueryInstance);
-            result.next();
-            soft.assertThat(afisha)
-                    .hasFieldOrPropertyWithValue("title", result.getString(2))
-                    .hasFieldOrPropertyWithValue("imageUrl", result.getString(3))
-                    .hasFieldOrPropertyWithValue("lead", result.getString(4))
-                    .hasFieldOrPropertyWithValue("description", result.getString(5))
-                    .hasFieldOrPropertyWithValue("ageLimit", result.getString(6))
-                    .hasFieldOrPropertyWithValue("timing", result.getString(7))
-                    .hasFieldOrPropertyWithValue("place", result.getString(8))
-                    .hasFieldOrPropertyWithValue("phone", result.getString(9))
-                    .hasFieldOrPropertyWithValue("date", result.getTimestamp(10).toLocalDateTime().toLocalDate())
-                    .hasFieldOrPropertyWithValue("isCommercial", result.getBoolean(11))
-                    .hasFieldOrPropertyWithValue("userId", result.getInt(12))
-                    .hasFieldOrPropertyWithValue("sourceId", result.getInt(13));
-            soft.assertAll();
-            this.poolConnection.pullConnection(connection);
-        } catch (SQLException exception) {
-            exception.printStackTrace();
-        }
-    }
-
-    @Test
     void deleteAfisha() {
         try {
             AfishaRepository afishaRepository = new AfishaRepository(this.poolConnection);
@@ -380,9 +376,9 @@ class CommentRepositoryTest {
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-    }
+    }*/
 
-    @Test
+    /*@Test
     void updateUser() {
         try {
             SoftAssertions soft = new SoftAssertions();

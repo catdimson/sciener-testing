@@ -2,7 +2,7 @@ package news.dao.specifications;
 
 import news.model.Comment;
 
-public class FindByIdCommentSpecification implements SqlSpecification<Comment> {
+public class FindByIdCommentSpecification implements ExtendSqlSpecification<Comment> {
     final private int id;
 
     public FindByIdCommentSpecification(int id) {
@@ -18,8 +18,8 @@ public class FindByIdCommentSpecification implements SqlSpecification<Comment> {
     public String toSqlClauses() {
         return String.format("" +
                 "SELECT * FROM comment JOIN attachment " +
-                "ON comment.id = attachment.comment_id" +
-                "WHERE comment.id='%d';", this.id);
+                "ON comment.id = attachment.comment_id " +
+                "WHERE comment.id=%d;", this.id);
     }
 
     public boolean isById() {
