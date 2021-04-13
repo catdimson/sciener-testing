@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS "group" (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     title character varying(40) NOT NULL,
     CONSTRAINT group_pk PRIMARY KEY (id),
-    CONSTRAINT title_unique UNIQUE (title)
+    CONSTRAINT title_unique_group UNIQUE (title)
 );
 
 CREATE TABLE IF NOT EXISTS "user"  (
@@ -37,7 +37,8 @@ CREATE TABLE IF NOT EXISTS "user"  (
 CREATE TABLE IF NOT EXISTS category (
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
     title character varying(50) NOT NULL,
-    CONSTRAINT category_pk PRIMARY KEY (id)
+    CONSTRAINT category_pk PRIMARY KEY (id),
+    CONSTRAINT title_unique_category UNIQUE (title)
 );
 
 -- Создание таблицы source
@@ -91,6 +92,7 @@ CREATE TABLE IF NOT EXISTS article (
     is_published boolean DEFAULT false,
     category_id integer NOT NULL DEFAULT 1,
     user_id integer NOT NULL,
+    source_id integer,
     CONSTRAINT article_pk PRIMARY KEY (id),
     CONSTRAINT fk_category FOREIGN KEY (category_id)
         REFERENCES category (id) MATCH SIMPLE
@@ -99,10 +101,15 @@ CREATE TABLE IF NOT EXISTS article (
     CONSTRAINT fk_user FOREIGN KEY (user_id)
         REFERENCES "user" (id) MATCH SIMPLE
         ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_source FOREIGN KEY (source_id)
+        REFERENCES source (id) MATCH SIMPLE
+        ON UPDATE CASCADE
         ON DELETE RESTRICT
 );
 CREATE INDEX IF NOT EXISTS fk_index_category_id ON article (category_id);
-CREATE INDEX IF NOT EXISTS fk_index_new_user_id ON article (user_id);
+CREATE INDEX IF NOT EXISTS fk_index_article_user_id ON article (user_id);
+CREATE INDEX IF NOT EXISTS fk_index_source_id ON article (source_id);
 
 -- Создание таблица afisha
 CREATE TABLE IF NOT EXISTS afisha (

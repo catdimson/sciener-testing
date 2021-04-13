@@ -1,37 +1,43 @@
 package news.dao.repositories;
 
 import news.dao.connection.DBPool;
-import news.dao.specifications.FindByIdAfishaSpecification;
-import news.dao.specifications.FindByTitleAfishaSpecification;
-import news.model.Afisha;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import java.sql.*;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class CommentRepositoryTest {
     private PostgreSQLContainer container;
     private DBPool poolConnection;
     private static LocalDate lastLogin;
     private static LocalDate dateJoined;
-    private static LocalDate createDate;
-    private static LocalDate editDate;
+    private static LocalDate createDateComment;
+    private static LocalDate editDateComment;
+    private static LocalDate createDateArticle;
+    private static LocalDate editDateArticle;
     private static LocalDate date;
-    private static int userId;
+    private static int articleUserId;
+    private static int commentUserId;
 
     @BeforeAll
     static void beforeAll() {
         date = LocalDate.of(2020, 5, 20);
+        // user (дата входа, дара регистрации)
         lastLogin = LocalDate.of(2020, 5, 20);
         dateJoined = LocalDate.of(2019, 5, 20);
-        userId = 1;
+        // article (дата создания, дата редактирования, id юзера создавший новость)
+        createDateArticle = LocalDate.of(2019, 6, 25);
+        editDateArticle = LocalDate.of(2019, 6, 25);
+        articleUserId = 1;
+        // comment (дата создания, дата редактировани)
+        createDateComment = LocalDate.of(2019, 5, 20);
+        editDateComment = LocalDate.of(2020, 5, 20);
+        commentUserId = 1;
     }
 
     @BeforeEach
@@ -44,11 +50,12 @@ class CommentRepositoryTest {
         this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
         Statement statement = this.poolConnection.getConnection().createStatement();
 
+        // осздание группы
         String sqlCreateTableGroup = "CREATE TABLE IF NOT EXISTS \"group\" (" +
                 "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
                 "title character varying(40) NOT NULL," +
                 "CONSTRAINT group_pk PRIMARY KEY (id)," +
-                "CONSTRAINT title_unique UNIQUE (title)" +
+                "CONSTRAINT title_unique_group UNIQUE (title)" +
                 ");";
         statement.executeUpdate(sqlCreateTableGroup);
         String sqlInsertInstanceTableGroup = "INSERT INTO \"group\"(title)" +
@@ -57,6 +64,7 @@ class CommentRepositoryTest {
                 "FROM generate_series(1, 4) as iter;";
         statement.executeUpdate(sqlInsertInstanceTableGroup);
 
+        // создание юзера
         String sqlCreateTableUser = "CREATE TABLE IF NOT EXISTS \"user\"  (" +
                 "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
                 "password character varying(128) NOT NULL," +
@@ -84,6 +92,7 @@ class CommentRepositoryTest {
                 Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()), false, true, true, 2);
         statement.executeUpdate(sqlCreateUser);
 
+        // создание источника
         String sqlCreateTableSource = "CREATE TABLE IF NOT EXISTS source (" +
                 "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
                 "title character varying(50) NOT NULL," +
@@ -94,47 +103,90 @@ class CommentRepositoryTest {
         String sqlCreateSource = "INSERT INTO source (title, url) VALUES('Яндекс ДЗЕН', 'https://zen.yandex.ru/');";
         statement.executeUpdate(sqlCreateSource);
 
+        // создание категории
         String sqlCreateTableCategory = "CREATE TABLE IF NOT EXISTS category (" +
                 "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ), " +
                 "title character varying(50) NOT NULL, " +
                 "CONSTRAINT category_pk PRIMARY KEY (id)," +
-                "CONSTRAINT title_unique UNIQUE (title));";
+                "CONSTRAINT title_unique_category UNIQUE (title));";
         statement.executeUpdate(sqlCreateTableCategory);
         String sqlCreateCategory = "INSERT INTO category (title) VALUES('Спорт');";
         statement.executeUpdate(sqlCreateCategory);
 
-        String sqlCreateTableAfisha = "CREATE TABLE IF NOT EXISTS afisha (" +
+        // создание article
+        String sqlCreateTableArticle = "CREATE TABLE IF NOT EXISTS article (" +
                 "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
                 "title character varying(250) NOT NULL," +
-                "image_url character varying(500)," +
                 "lead character varying(350) NOT NULL," +
-                "description text NOT NULL," +
-                "age_limit character varying(5)," +
-                "timing character varying(15)," +
-                "place character varying(300)," +
-                "phone character varying(20)," +
-                "date timestamp," +
-                "is_commercial boolean NOT NULL DEFAULT false," +
+                "create_date timestamp NOT NULL," +
+                "edit_date timestamp NOT NULL," +
+                "text text NOT NULL," +
+                "is_published boolean DEFAULT false," +
+                "category_id integer NOT NULL DEFAULT 1," +
                 "user_id integer NOT NULL," +
                 "source_id integer," +
-                "CONSTRAINT afisha_pk PRIMARY KEY (id)," +
-                "CONSTRAINT fk_source FOREIGN KEY (source_id)" +
-                "    REFERENCES source (id) MATCH SIMPLE" +
+                "CONSTRAINT article_pk PRIMARY KEY (id)," +
+                "CONSTRAINT fk_category FOREIGN KEY (category_id)" +
+                "    REFERENCES category (id) MATCH SIMPLE" +
                 "    ON UPDATE CASCADE" +
                 "    ON DELETE RESTRICT," +
                 "CONSTRAINT fk_user FOREIGN KEY (user_id)" +
                 "    REFERENCES \"user\" (id) MATCH SIMPLE" +
                 "    ON UPDATE CASCADE" +
-                "    ON DELETE RESTRICT" +
-                ");" +
-                "CREATE INDEX IF NOT EXISTS fk_index_source_id ON afisha (source_id);" +
-                "CREATE INDEX IF NOT EXISTS fk_index_source_user_id ON afisha (user_id);";
-        statement.executeUpdate(sqlCreateTableAfisha);
+                "    ON DELETE RESTRICT," +
+                "CONSTRAINT fk_source FOREIGN KEY (source_id)" +
+                "    REFERENCES source (id) MATCH SIMPLE" +
+                "    ON UPDATE CASCADE" +
+                "    ON DELETE RESTRICT);" +
+                "CREATE INDEX IF NOT EXISTS fk_index_category_id ON article (category_id);" +
+                "CREATE INDEX IF NOT EXISTS fk_index_article_user_id ON article (user_id);" +
+                "CREATE INDEX IF NOT EXISTS fk_index_source_id ON article (source_id);";
+        statement.executeUpdate(sqlCreateTableArticle);
+        String sqlCreateArticle = String.format("INSERT INTO article (title, lead, create_date, edit_date, text, is_published, category_id, user_id, source_id) " +
+                "VALUES('title1', 'lead1', '%s', '%s', 'text1', true, 1, %s, 1);", Timestamp.valueOf(createDateArticle.atStartOfDay()),
+                Timestamp.valueOf(editDateArticle.atStartOfDay()), articleUserId);
+        statement.executeUpdate(sqlCreateArticle);
+
+        // СОЗДАНИЕ ТАБЛИЦЫ КОММЕНТАРИЕВ
+        String sqlCreateTableComment = "CREATE TABLE IF NOT EXISTS comment (" +
+                "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),\n" +
+                "text character varying(3000)," +
+                "create_date timestamp NOT NULL," +
+                "edit_date timestamp NOT NULL," +
+                "article_id integer NOT NULL," +
+                "user_id integer NOT NULL," +
+                "CONSTRAINT comment_pk PRIMARY KEY (id)," +
+                "CONSTRAINT fk_new FOREIGN KEY (article_id)" +
+                "    REFERENCES article (id) MATCH SIMPLE" +
+                "    ON UPDATE CASCADE" +
+                "    ON DELETE CASCADE," +
+                "CONSTRAINT fk_user FOREIGN KEY (user_id)" +
+                "    REFERENCES \"user\" (id) MATCH SIMPLE" +
+                "    ON UPDATE CASCADE" +
+                "    ON DELETE CASCADE);" +
+                "CREATE INDEX IF NOT EXISTS fk_index_comment_new_id ON comment (article_id);" +
+                "CREATE INDEX IF NOT EXISTS fk_index_comment_user_id ON comment (user_id);";
+        statement.executeUpdate(sqlCreateTableComment);
+
+        // СОЗДАНИЕ ТАБЛИЦЫ ПРИКРЕПЛЕНИЙ К КОММЕНТАРИЯМ
+        String sqlCreateTableAttachment = "CREATE TABLE IF NOT EXISTS attachment (" +
+                "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
+                "title character varying(80) NOT NULL," +
+                "path character varying(500) NOT NULL," +
+                "comment_id integer NOT NULL," +
+                "CONSTRAINT attachment_pk PRIMARY KEY (id)," +
+                "CONSTRAINT fk_comment FOREIGN KEY (comment_id)" +
+                "    REFERENCES comment (id) MATCH SIMPLE" +
+                "    ON UPDATE CASCADE" +
+                "    ON DELETE CASCADE);" +
+                "CREATE INDEX IF NOT EXISTS fk_index_attachment_comment_id ON attachment (comment_id);";
+        statement.executeUpdate(sqlCreateTableAttachment);
     }
 
     @Test
     void findById() {
-        try {
+        System.out.println("ТАБЛИЦЫ СОЗДАНЫ");
+        /*try {
             SoftAssertions soft = new SoftAssertions();
             AfishaRepository afishaRepository = new AfishaRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
@@ -182,10 +234,10 @@ class CommentRepositoryTest {
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
             exception.printStackTrace();
-        }
+        }*/
     }
 
-    @Test
+    /*@Test
     void findByTitle() {
         try {
             SoftAssertions soft = new SoftAssertions();
@@ -369,5 +421,5 @@ class CommentRepositoryTest {
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-    }
+    }*/
 }

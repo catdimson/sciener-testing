@@ -33,7 +33,7 @@ class CategoryRepositoryTest {
                 "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ), " +
                 "title character varying(50) NOT NULL, " +
                 "CONSTRAINT category_pk PRIMARY KEY (id)," +
-                "CONSTRAINT title_unique UNIQUE (title));";
+                "CONSTRAINT title_unique_category UNIQUE (title));";
         this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
 
         Statement statement = this.poolConnection.getConnection().createStatement();
