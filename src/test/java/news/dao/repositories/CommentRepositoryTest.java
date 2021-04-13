@@ -15,6 +15,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 class CommentRepositoryTest {
     private PostgreSQLContainer container;
     private DBPool poolConnection;
@@ -352,31 +354,35 @@ class CommentRepositoryTest {
         }
     }
 
-    /*@Test
-    void deleteAfisha() {
+    @Test
+    void deleteComment() {
         try {
-            AfishaRepository afishaRepository = new AfishaRepository(this.poolConnection);
+            CommentRepository commentRepository = new CommentRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            String sqlCreateAfisha = String.format("INSERT INTO afisha" +
-                            "(title, image_url, lead, description, age_limit, timing, place, phone, date, is_commercial, user_id, source_id) " +
-                            "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %d, %d);",
-                    "Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний", "0", "180", "Центральная площадь, г.Белгород",
-                    "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
-            statement.executeUpdate(sqlCreateAfisha, Statement.RETURN_GENERATED_KEYS);
-            ResultSet generatedKeys = statement.getGeneratedKeys();
-            generatedKeys.next();
+            String sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
+                            "VALUES ('%s', '%s', '%s', %s, %s);",
+                    "Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()), Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
+            statement.executeUpdate(sqlInsertComment);
+            String sqlInsertAttachments = String.format("INSERT INTO attachment (title, path, comment_id) " +
+                            "VALUES ('%s', '%s', %s), ('%s', '%s', %s);",
+                    "Прикрепление 1", "/static/attachments/image1.png", 1,
+                    "Прикрепление 2", "/static/attachments/image2.png", 1);
+            statement.executeUpdate(sqlInsertAttachments);
 
-            afishaRepository.delete(generatedKeys.getInt(1));
+            commentRepository.delete(1);
 
-            String sqlQueryInstance = String.format("SELECT * FROM afisha WHERE id=%d;", generatedKeys.getInt(1));
-            ResultSet result = statement.executeQuery(sqlQueryInstance);
-            assertThat(result.next()).as("Запись класса Afisha не была удалена").isFalse();
+            String sqlQueryComment = String.format("SELECT * FROM comment WHERE id=%d;", 1);
+            ResultSet result = statement.executeQuery(sqlQueryComment);
+            assertThat(result.next()).as("Запись класса Comment не была удалена").isFalse();
+            String sqlQueryAttachment = String.format("SELECT * FROM attachment WHERE comment_id=%d;", 1);
+            result = statement.executeQuery(sqlQueryAttachment);
+            assertThat(result.next()).as("Запись класса Attachment не была удалена").isFalse();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-    }*/
+    }
 
     /*@Test
     void updateUser() {
