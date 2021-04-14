@@ -152,6 +152,10 @@ public class Article {
         return this.isPublished;
     }
 
+    public boolean equalsWithId(int id) {
+        return this.id == id;
+    }
+
     public Object[] getObjects() {
         return new Object[] {
                 id,

@@ -3,11 +3,13 @@ package news.dao.repositories;
 import news.dao.connection.DBPool;
 import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Article;
-import news.model.Comment;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class ArticleRepository implements ExtendRepository<Article> {
@@ -21,10 +23,13 @@ public class ArticleRepository implements ExtendRepository<Article> {
     public List<Article> query(ExtendSqlSpecification<Article> articleSpecification) throws SQLException {
         List<Article> queryResult = new ArrayList<>();
         Connection connection = connectionPool.getConnection();
-        Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        //Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
         boolean isById = articleSpecification.isById();
         String sqlQuery = articleSpecification.toSqlClauses();
-        ResultSet result = statement.executeQuery(sqlQuery);
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
+        preparedStatement.setInt(1, articleSpecification.getId());
+        preparedStatement.setInt(2, articleSpecification.getId());
+        ResultSet result = preparedStatement.executeQuery();
         // переменная содержит id статьи, которая содержит вложенные сущности и с которым работаем в цикле
         int idCurrentArticle = 0;
         int indexCurrentArticleInResultQuery = 0;
@@ -156,7 +161,7 @@ public class ArticleRepository implements ExtendRepository<Article> {
         // добавление изображений к статьям
         StringBuilder sqlInsertImages = new StringBuilder("INSERT INTO image (title, path, article_id) VALUES ");
         Statement statementWithoutParams = connection.createStatement();
-        ArrayList images = (ArrayList) instanceArticle[6];
+        List images = (ArrayList) instanceArticle[6];
         for (int i = 0; i < images.size(); i++) {
             Article.ArticleImage image = (Article.ArticleImage) images.get(i);
             Object[] instanceImage = image.getObjects();
@@ -172,7 +177,7 @@ public class ArticleRepository implements ExtendRepository<Article> {
 
         // добавление id тегов
         StringBuilder sqlInsertIdTags = new StringBuilder("INSERT INTO article_tag (article_id, tag_id) VALUES ");
-        HashSet tagsId = (HashSet) instanceArticle[11];
+        Set tagsId = (HashSet) instanceArticle[11];
         Stream stream = tagsId.stream();
         stream.forEach((tagId) -> {
             String sqlPath;
@@ -206,26 +211,35 @@ public class ArticleRepository implements ExtendRepository<Article> {
     @Override
     public void update(Article article) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
-        Object[] instanceComment = comment.getObjects();
-        ArrayList<Comment.CommentAttachment> attachments = (ArrayList<Comment.CommentAttachment>) instanceComment[6];
-        Set<Comment.CommentAttachment> attachmentsSet = new HashSet<>(attachments);
-        Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-        String sqlQueryAttachments = String.format("SELECT * FROM attachment WHERE comment_id=%s;", instanceComment[0]);
-        ResultSet result = statement.executeQuery(sqlQueryAttachments);
+        Statement statement = connection.createStatement();
+        Object[] instanceArticle = article.getObjects();
 
+        // для работы с изображениями
+        List<Article.ArticleImage> images = (ArrayList<Article.ArticleImage>) instanceArticle[10];
+        Set<Article.ArticleImage> imagesSet = new HashSet<>(images);
+        String sqlQueryImages = "SELECT * FROM image WHERE article_id=?;";
+
+        // для работы с id тегов
+        List<Integer> tagsId = (ArrayList<Integer>) instanceArticle[11];
+        Set<Integer> tagsIdSet = new HashSet<>(tagsId);
+        String sqlQueryTags = "SELECT * FROM article_tag WHERE article_id=?;";
+
+        // получение изображений
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlQueryImages);
+        preparedStatement.setInt(1, (int) instanceArticle[0]);
+        ResultSet result = preparedStatement.executeQuery();
+
+        // работа с изображениями
         outer:
         while (!result.wasNull() && result.next()) {
-            for (Comment.CommentAttachment attachment : attachments) {
-                Object[] instanceAttachment = attachment.getObjects();
-                if (result.getInt("id") == (int) instanceAttachment[0]) {
+            for (Article.ArticleImage image : images) {
+                Object[] instanceImage = image.getObjects();
+                if (result.getInt("id") == (int) instanceImage[0]) {
                     // обновляем записи в БД
-                    attachmentsSet.remove(attachment);
-                    //String sqlUpdateAttachment = String.format("UPDATE attachment " +
-                    //        "SET title='%s', path='%s' WHERE id=%s;", instanceAttachment[1], instanceAttachment[2], instanceAttachment[0]);
-                    result.updateString(2, (String) instanceAttachment[1]);
-                    result.updateString(3, (String) instanceAttachment[2]);
+                    imagesSet.remove(image);
+                    result.updateString(2, (String) instanceImage[1]);
+                    result.updateString(3, (String) instanceImage[2]);
                     result.updateRow();
-                    //statement.executeUpdate(sqlUpdateAttachment);
                     continue outer;
                 }
             }
@@ -233,28 +247,74 @@ public class ArticleRepository implements ExtendRepository<Article> {
             result.deleteRow();
         }
 
-        // добавляем записи в БД
-        ArrayList<Comment.CommentAttachment> addingInDBAttachments = new ArrayList<>(attachmentsSet);
-        StringBuilder sqlCreateAttachments = new StringBuilder("INSERT INTO attachment (title, path, comment_id) VALUES ");
-        for (int i = 0; i < addingInDBAttachments.size(); i++) {
-            Comment.CommentAttachment attachment = addingInDBAttachments.get(i);
-            Object[] attachmentInstance = attachment.getObjects();
-            String sqlPath;
-            if (i != addingInDBAttachments.size() - 1) {
-                sqlPath = String.format("('%s', '%s', %s), ", attachmentInstance[1], attachmentInstance[2], attachmentInstance[3]);
-            } else {
-                sqlPath = String.format("('%s', '%s', %s); ", attachmentInstance[1], attachmentInstance[2], attachmentInstance[3]);
+        // добавляем изображения в БД
+        if (!imagesSet.isEmpty()) {
+            List<Article.ArticleImage> addingInDBImages = new ArrayList<>(imagesSet);
+            StringBuilder sqlCreateImages = new StringBuilder("INSERT INTO image (title, path, article_id) VALUES ");
+            for (int i = 0; i < addingInDBImages.size(); i++) {
+                Article.ArticleImage image = addingInDBImages.get(i);
+                Object[] imageInstance = image.getObjects();
+                String sqlPath;
+                if (i != addingInDBImages.size() - 1) {
+                    sqlPath = String.format("('%s', '%s', %s), ", imageInstance[1], imageInstance[2], imageInstance[3]);
+                } else {
+                    sqlPath = String.format("('%s', '%s', %s); ", imageInstance[1], imageInstance[2], imageInstance[3]);
+                }
+                sqlCreateImages.append(sqlPath);
             }
-            sqlCreateAttachments.append(sqlPath);
+            statement.executeUpdate(String.valueOf(sqlCreateImages));
         }
-        statement.executeUpdate(String.valueOf(sqlCreateAttachments));
 
-        // обновляем запись комментария
-        LocalDate createDate = (LocalDate) instanceComment[2];
-        LocalDate editDate = (LocalDate) instanceComment[3];
-        String sqlUpdateComment = String.format("UPDATE comment SET text='%s', create_date='%s', edit_date='%s', article_id=%s, user_id=%s WHERE id=%s;",
-                instanceComment[1], Timestamp.valueOf(createDate.atStartOfDay()),
-                Timestamp.valueOf(editDate.atStartOfDay()), instanceComment[4], instanceComment[5], instanceComment[0]);
-        statement.executeUpdate(sqlUpdateComment);
+        // обновляем запись статьи
+        LocalDate createDate = (LocalDate) instanceArticle[3];
+        LocalDate editDate = (LocalDate) instanceArticle[4];
+        String sqlUpdateArticle = "UPDATE article SET " +
+                "title=?, lead=?, create_date=?, edit_date=?, text=?, is_published=?, category_id=?, user_id=?, source_id=? WHERE id=?;";
+        preparedStatement = connection.prepareStatement(sqlUpdateArticle);
+        preparedStatement.setString(1, (String) instanceArticle[1]);
+        preparedStatement.setString(2, (String) instanceArticle[2]);
+        preparedStatement.setTimestamp(3, Timestamp.valueOf(createDate.atStartOfDay()));
+        preparedStatement.setTimestamp(4, Timestamp.valueOf(editDate.atStartOfDay()));
+        preparedStatement.setString(5, (String) instanceArticle[5]);
+        preparedStatement.setBoolean(6, (Boolean) instanceArticle[6]);
+        preparedStatement.setInt(7, (int) instanceArticle[7]);
+        preparedStatement.setInt(8, (int) instanceArticle[8]);
+        preparedStatement.setInt(9, (int) instanceArticle[9]);
+        preparedStatement.executeUpdate(sqlUpdateArticle);
+
+        // получение id тегов
+        preparedStatement = connection.prepareStatement(sqlQueryTags);
+        preparedStatement.setInt(1, (int) instanceArticle[0]);
+        result = preparedStatement.executeQuery();
+
+        // работа с тегами
+        outer:
+        while (!result.wasNull() && result.next()) {
+            for (Integer tagId : tagsId) {
+                if (result.getInt("tag_id") == tagId) {
+                    // оставляем id тегов
+                    tagsIdSet.remove(tagId);
+                    continue outer;
+                }
+            }
+            // удаляем id тегов
+            result.deleteRow();
+        }
+
+        // добавляем id тегов
+        if (!imagesSet.isEmpty()) {
+            List<Integer> addingInDBTagsId = new ArrayList<>(tagsIdSet);
+            StringBuilder sqlCreateTagsId = new StringBuilder("INSERT INTO article_tag (article_id, tag_id) VALUES ");
+            for (int i = 0; i < addingInDBTagsId.size(); i++) {
+                String sqlPath;
+                if (i != addingInDBTagsId.size() - 1) {
+                    sqlPath = String.format("(%s, %s), ", instanceArticle[0], addingInDBTagsId.get(i));
+                } else {
+                    sqlPath = String.format("(%s, %s); ", instanceArticle[0], addingInDBTagsId.get(i));
+                }
+                sqlCreateTagsId.append(sqlPath);
+            }
+            statement.executeUpdate(String.valueOf(sqlCreateTagsId));
+        }
     }
 }
