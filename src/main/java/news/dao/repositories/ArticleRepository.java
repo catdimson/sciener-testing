@@ -186,11 +186,21 @@ public class ArticleRepository implements ExtendRepository<Article> {
     @Override
     public void delete(int id) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
-        Statement statement = connection.createStatement();
-        String sqlDeleteAttachments = String.format("DELETE FROM attachment WHERE comment_id=%d;", id);
-        statement.executeUpdate(sqlDeleteAttachments);
-        String sqlDeleteComment = String.format("DELETE FROM comment WHERE id=%d;", id);
-        statement.executeUpdate(sqlDeleteComment);
+        // удаление изображений
+        String sqlDeleteImages = String.format("DELETE FROM image WHERE article_id=?;");
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlDeleteImages);
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
+        // удаление связи с тегами из промежуточной таблицы article_tag
+        String sqlDeleteTagsId = String.format("DELETE FROM article_tag WHERE article_id=?;");
+        preparedStatement = connection.prepareStatement(sqlDeleteTagsId);
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
+        // удаление статьи
+        String sqlDeleteArticle = String.format("DELETE FROM article WHERE id=?;");
+        preparedStatement = connection.prepareStatement(sqlDeleteArticle);
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
     }
 
     @Override

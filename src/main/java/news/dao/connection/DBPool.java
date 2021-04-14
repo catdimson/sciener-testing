@@ -6,13 +6,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Properties;
 
 public class DBPool implements ConnectionPool {
     private String dbUser;
     private String dbPassword;
     private String dbConnectionUrl;
-    final private ArrayDeque<Connection> connectionPool = new ArrayDeque<>();
+    final private Deque<Connection> connectionPool = new ArrayDeque<>();
 
     public DBPool() throws IOException {
         FileInputStream fileProperties = new FileInputStream("src/main/resources/dbconnection.properties");
