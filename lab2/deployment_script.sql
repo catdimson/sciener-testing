@@ -204,7 +204,7 @@ CREATE TABLE IF NOT EXISTS comment (
     article_id integer NOT NULL,
     user_id integer NOT NULL,
     CONSTRAINT comment_pk PRIMARY KEY (id),
-    CONSTRAINT fk_new FOREIGN KEY (article_id)
+    CONSTRAINT fk_article FOREIGN KEY (article_id)
         REFERENCES article (id) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE,

@@ -115,7 +115,7 @@ INSERT INTO article(title, lead, create_date, edit_date, text, is_published, cat
         (array[TRUE, FALSE])[round(random()) + 1],
         (SELECT min(id) FROM category) + trunc(random() * 7),
         (SELECT min(id) FROM "user") + trunc(random() * 10)
-    FROM generate_series(1, 50) as iter;
+    FROM generate_series(1, 10) as iter;
 
 -- Данные для таблицы afisha
 INSERT INTO afisha(title, image_url, lead, description, age_limit, timing, place, phone, date, is_commercial, user_id, source_id)
@@ -147,7 +147,7 @@ INSERT INTO comment(text, create_date, edit_date, article_id, user_id)
             + interval '1 hour' * round(random() * 24) + interval '1 second' * round(random() * 60),
         now() - interval '1 day' * round(random() * 20) + interval '1 minute' * round(random() * 60)
             + interval '1 hour' * round(random() * 24) + interval '1 second' * round(random() * 60),
-        (SELECT min(id) FROM article) + trunc(random() * 50),
+        (SELECT min(id) FROM article) + trunc(random() * 10),
         (SELECT min(id) FROM "user") + trunc(random() * 10)
     FROM generate_series(1, 20);
 
@@ -164,7 +164,7 @@ INSERT INTO image(title, path, article_id)
     SELECT
         'title_' || iter,
         '/part' || iter || '/_' || md5(random()::text) || '/_' || md5(random()::text) || '/_' || md5(random()::text),
-        (SELECT min(id) FROM article) + trunc(random() * 50)
+        (SELECT min(id) FROM article) + trunc(random() * 10)
     FROM generate_series(1, 25) as iter;
 
 -- Данные для таблицы log
@@ -223,12 +223,12 @@ INSERT INTO article_tag(article_id, tag_id)
     SELECT
         (SELECT min(id) FROM article) + iter - 1,
         (SELECT min(id) FROM tag) + trunc(random() * 9)
-    FROM generate_series(1, 25) as iter;
+    FROM generate_series(1, 5) as iter;
 INSERT INTO article_tag(article_id, tag_id)
     SELECT
-        (SELECT min(id) FROM article) + iter - 1 + 24,
+        (SELECT min(id) FROM article) + iter - 1 + 5,
         (SELECT min(id) FROM tag) + trunc(random() * 9) + 9
-    FROM generate_series(1, 25) as iter;
+    FROM generate_series(1, 5) as iter;
 
 -- Данные для таблицы реализации связи многие-ко-многим group_permission
 -- INSERT INTO group_permission("group", permission)

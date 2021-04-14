@@ -2,7 +2,7 @@ package news.dao.specifications;
 
 import news.model.Article;
 
-public class FindByTitleArticleSpecification implements SqlSpecification<Article> {
+public class FindByTitleArticleSpecification implements ExtendSqlSpecification<Article> {
     final private String title;
 
     public FindByTitleArticleSpecification(String title) {
@@ -16,6 +16,12 @@ public class FindByTitleArticleSpecification implements SqlSpecification<Article
 
     @Override
     public String toSqlClauses() {
-        return String.format("SELECT * FROM article WHERE title='%s';", this.title);
+        return String.format("" +
+                "SELECT * FROM article WHERE title='%s';", this.title);
+    }
+
+    @Override
+    public boolean isById() {
+        return false;
     }
 }

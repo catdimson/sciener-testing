@@ -17,6 +17,18 @@ public class FindByIdArticleSpecification implements SqlSpecification<Article> {
     @Override
     public String toSqlClauses() {
         return String.format("" +
-                "SELECT * FROM article WHERE id='%d';", this.id);
+                "SELECT * FROM article" +
+                "    LEFT JOIN image ON article.id = image.article_id" +
+                "    LEFT JOIN article_tag ON article_tag.article_id=0" +
+                "    WHERE article.id=%s " +
+                "UNION" +
+                "    SELECT * FROM article" +
+                "    LEFT JOIN image ON image.article_id=0" +
+                "    LEFT JOIN article_tag ON article.id=article_tag.article_id" +
+                "    WHERE article.id=%s;", this.id, this.id);
+    }
+
+    public boolean isById() {
+        return true;
     }
 }
