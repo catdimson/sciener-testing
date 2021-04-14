@@ -26,4 +26,9 @@ public class FindByUserIdCommentSpecification implements ExtendSqlSpecification<
     public boolean isById() {
         return false;
     }
+
+    @Override
+    public Object getCriterial() {
+        return this.userId;
+    }
 }

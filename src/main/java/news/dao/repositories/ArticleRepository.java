@@ -26,9 +26,9 @@ public class ArticleRepository implements ExtendRepository<Article> {
         //Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
         boolean isById = articleSpecification.isById();
         String sqlQuery = articleSpecification.toSqlClauses();
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
-        preparedStatement.setInt(1, articleSpecification.getId());
-        preparedStatement.setInt(2, articleSpecification.getId());
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        preparedStatement.setInt(1, (int) articleSpecification.getCriterial());
+        preparedStatement.setInt(2, (int) articleSpecification.getCriterial());
         ResultSet result = preparedStatement.executeQuery();
         // переменная содержит id статьи, которая содержит вложенные сущности и с которым работаем в цикле
         int idCurrentArticle = 0;
@@ -39,35 +39,35 @@ public class ArticleRepository implements ExtendRepository<Article> {
                 // поиск по id
                 // создали статью
                 Article article = new Article(
-                        result.getInt("article.id"),
-                        result.getString("article.title"),
-                        result.getString("lead"),
-                        result.getTimestamp("create_date").toLocalDateTime().toLocalDate(),
-                        result.getTimestamp("edit_date").toLocalDateTime().toLocalDate(),
-                        result.getString("text"),
-                        result.getBoolean("is_published"),
-                        result.getInt("category_id"),
-                        result.getInt("user_id"),
-                        result.getInt("source_id")
+                        result.getInt(2),
+                        result.getString(3),
+                        result.getString(4),
+                        result.getTimestamp(5).toLocalDateTime().toLocalDate(),
+                        result.getTimestamp(6).toLocalDateTime().toLocalDate(),
+                        result.getString(7),
+                        result.getBoolean(8),
+                        result.getInt(9),
+                        result.getInt(10),
+                        result.getInt(11)
                 );
                 result.previous();
 
                 // добавили в статью id всех тегов
                 while (result.next()) {
-                    if (result.getInt("article_tag.id") == 0) {
+                    if (result.getInt(18) == 0) {
                         result.previous();
                         break;
                     }
-                    article.addNewTagId(result.getInt("tag_id"));
+                    article.addNewTagId(result.getInt(18));
                 }
 
                 // добавили в статью все изображения
                 while (result.next()) {
                     Article.ArticleImage articleImage = new Article.ArticleImage(
-                            result.getInt("image.id"),
-                            result.getString("image.title"),
-                            result.getString("path"),
-                            result.getInt("image.article_id")
+                            result.getInt(12),
+                            result.getString(13),
+                            result.getString(14),
+                            result.getInt(15)
                     );
                     article.addNewImage(articleImage);
                 }
