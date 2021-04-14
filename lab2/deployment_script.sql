@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS article (
     is_published boolean DEFAULT false,
     category_id integer NOT NULL DEFAULT 1,
     user_id integer NOT NULL,
-    source_id integer,
+    source_id integer NOT NULL,
     CONSTRAINT article_pk PRIMARY KEY (id),
     CONSTRAINT fk_category FOREIGN KEY (category_id)
         REFERENCES category (id) MATCH SIMPLE
@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS afisha (
     date timestamp,
     is_commercial boolean NOT NULL DEFAULT false,
     user_id integer NOT NULL,
-    source_id integer,
+    source_id integer NOT NULL,
 
     CONSTRAINT afisha_pk PRIMARY KEY (id),
     CONSTRAINT fk_source FOREIGN KEY (source_id)

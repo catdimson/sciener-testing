@@ -7,10 +7,8 @@ import news.model.Comment;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class ArticleRepository implements ExtendRepository<Article> {
     final private DBPool connectionPool;
@@ -135,38 +133,54 @@ public class ArticleRepository implements ExtendRepository<Article> {
     @Override
     public void create(Article article) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
-        Object[] instance = comment.getObjects();
+        Object[] instanceArticle = article.getObjects();
 
-        // добавление комментариев
-        String sqlCreateComment = "INSERT INTO comment " +
-                "(text, create_date, edit_date, article_id, user_id) " +
-                "VALUES(?, ?, ?, ?, ?);";
+        // добавление статьи
+        String sqlCreateComment = "INSERT INTO article " +
+                "(title, lead, create_date, edit_date, text, is_published, category_id, user_id, source_id) " +
+                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);";
         PreparedStatement statement = connection.prepareStatement(sqlCreateComment);
-        statement.setString(1, (String) instance[1]);
-        LocalDate createDate = (LocalDate) instance[2];
-        statement.setTimestamp(2, Timestamp.valueOf(createDate.atStartOfDay()));
-        LocalDate editDate = (LocalDate) instance[3];
-        statement.setTimestamp(3, Timestamp.valueOf(editDate.atStartOfDay()));
-        statement.setInt(4, (int) instance[4]);
-        statement.setInt(5, (int) instance[5]);
+        statement.setString(1, (String) instanceArticle[1]);
+        statement.setString(2, (String) instanceArticle[2]);
+        LocalDate createDate = (LocalDate) instanceArticle[3];
+        statement.setTimestamp(3, Timestamp.valueOf(createDate.atStartOfDay()));
+        LocalDate editDate = (LocalDate) instanceArticle[4];
+        statement.setTimestamp(4, Timestamp.valueOf(editDate.atStartOfDay()));
+        statement.setString(5, (String) instanceArticle[5]);
+        statement.setBoolean(6, (Boolean) instanceArticle[6]);
+        statement.setInt(7, (int) instanceArticle[7]);
+        statement.setInt(8, (int) instanceArticle[8]);
+        statement.setInt(9, (int) instanceArticle[9]);
         statement.executeUpdate();
 
-        // добавление вложений к комментариям
-        StringBuilder sqlCreateAttachments = new StringBuilder("INSERT INTO attachment (title, path, comment_id) VALUES ");
+        // добавление изображений к статьям
+        StringBuilder sqlInsertImages = new StringBuilder("INSERT INTO image (title, path, article_id) VALUES ");
         Statement statementWithoutParams = connection.createStatement();
-        ArrayList attachments = (ArrayList) instance[6];
-        for (int i = 0; i < attachments.size(); i++) {
-            Comment.CommentAttachment attachment = (Comment.CommentAttachment) attachments.get(i);
-            Object[] attachmentInstance = attachment.getObjects();
+        ArrayList images = (ArrayList) instanceArticle[6];
+        for (int i = 0; i < images.size(); i++) {
+            Article.ArticleImage image = (Article.ArticleImage) images.get(i);
+            Object[] instanceImage = image.getObjects();
             String sqlPath;
-            if (i != attachments.size() - 1) {
-                sqlPath = String.format("('%s', '%s', %s), ", attachmentInstance[1], attachmentInstance[2], attachmentInstance[3]);
+            if (i != images.size() - 1) {
+                sqlPath = String.format("('%s', '%s', %s), ", instanceImage[1], instanceImage[2], instanceImage[3]);
             } else {
-                sqlPath = String.format("('%s', '%s', %s); ", attachmentInstance[1], attachmentInstance[2], attachmentInstance[3]);
+                sqlPath = String.format("('%s', '%s', %s); ", instanceImage[1], instanceImage[2], instanceImage[3]);
             }
-            sqlCreateAttachments.append(sqlPath);
+            sqlInsertImages.append(sqlPath);
         }
-        statementWithoutParams.executeUpdate(String.valueOf(sqlCreateAttachments));
+        statementWithoutParams.executeUpdate(String.valueOf(sqlInsertImages));
+
+        // добавление id тегов
+        StringBuilder sqlInsertIdTags = new StringBuilder("INSERT INTO article_tag (article_id, tag_id) VALUES ");
+        HashSet tagsId = (HashSet) instanceArticle[11];
+        Stream stream = tagsId.stream();
+        stream.forEach((tagId) -> {
+            String sqlPath;
+            sqlPath = String.format("(%s, %s),", instanceArticle[0], tagId);
+            sqlInsertIdTags.append(sqlPath);
+        });
+        sqlInsertIdTags.replace(sqlInsertIdTags.length()-1, sqlInsertIdTags.length(), ";");
+        statementWithoutParams.executeUpdate(String.valueOf(sqlInsertIdTags));
     }
 
     @Override

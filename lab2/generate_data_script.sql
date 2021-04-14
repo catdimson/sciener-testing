@@ -99,7 +99,7 @@ INSERT INTO "user"(password, username, first_name, last_name, email, group_id, l
     FROM generate_series(1, 10) as iter;
 
 -- Данные для таблицы new
-INSERT INTO article(title, lead, create_date, edit_date, text, is_published, category_id, user_id)
+INSERT INTO article(title, lead, create_date, edit_date, text, is_published, category_id, user_id, source_id)
     SELECT
         'title_' || iter,
         'lead_' || iter,
@@ -114,7 +114,8 @@ INSERT INTO article(title, lead, create_date, edit_date, text, is_published, cat
         'imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt.',
         (array[TRUE, FALSE])[round(random()) + 1],
         (SELECT min(id) FROM category) + trunc(random() * 7),
-        (SELECT min(id) FROM "user") + trunc(random() * 10)
+        (SELECT min(id) FROM "user") + trunc(random() * 10),
+        1
     FROM generate_series(1, 10) as iter;
 
 -- Данные для таблицы afisha
