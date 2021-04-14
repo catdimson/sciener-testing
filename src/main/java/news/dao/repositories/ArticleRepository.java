@@ -78,8 +78,8 @@ public class ArticleRepository implements ExtendRepository<Article> {
                 while (result.next()) {
                 // добавляем в результат статью
 
-                // ветвь добавления новой статьи
-                if (result.getInt(1) != idCurrentArticle) {
+                    // ветвь добавления новой статьи
+                    if (result.getInt(1) != idCurrentArticle) {
                     Article article = new Article(
                             result.getInt(2),
                             result.getString(3),
@@ -97,35 +97,35 @@ public class ArticleRepository implements ExtendRepository<Article> {
                     indexCurrentArticleInResultQuery = queryResult.size() - 1;
 
                     // добавляем к существующей статье (которая хранится в списке ответов) изображения и id тэгов
-                } else {
-                    Article currentArticle = queryResult.get(indexCurrentArticleInResultQuery);
-                    result.previous();
+                    } else {
+                        Article currentArticle = queryResult.get(indexCurrentArticleInResultQuery);
+                        result.previous();
 
-                    // добавили в статью все изображения
-                    while (result.next()) {
-                        if (result.getInt(12) == 0) {
-                            result.previous();
-                            break;
+                        // добавили в статью все изображения
+                        while (result.next()) {
+                            if (result.getInt(12) == 0) {
+                                result.previous();
+                                break;
+                            }
+                            Article.ArticleImage articleImage = new Article.ArticleImage(
+                                    result.getInt(12),
+                                    result.getString(13),
+                                    result.getString(14),
+                                    result.getInt(15)
+                            );
+                            currentArticle.addNewImage(articleImage);
                         }
-                        Article.ArticleImage articleImage = new Article.ArticleImage(
-                                result.getInt(12),
-                                result.getString(13),
-                                result.getString(14),
-                                result.getInt(15)
-                        );
-                        currentArticle.addNewImage(articleImage);
-                    }
 
-                    // добавляем id тегов
-                    while (result.next()) {
-                        if (result.getInt(16) == 0) {
-                            result.previous();
-                            break;
+                        // добавляем id тегов
+                        while (result.next()) {
+                            if (result.getInt(16) == 0) {
+                                result.previous();
+                                break;
+                            }
+                            currentArticle.addNewTagId(result.getInt(18));
                         }
-                        currentArticle.addNewTagId(result.getInt(18));
                     }
                 }
-            }
             }
         }
 
