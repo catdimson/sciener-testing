@@ -291,12 +291,12 @@ public class ArticleRepository implements ExtendRepository<Article> {
         String sqlQueryImages = "SELECT * FROM image WHERE article_id=?;";
 
         // для работы с id тегов
-        List<Integer> tagsId = (ArrayList<Integer>) instanceArticle[11];
-        Set<Integer> tagsIdSet = new HashSet<>(tagsId);
+        //List<Integer> tagsId = (ArrayList<Integer>) instanceArticle[11];
+        Set<Integer> tagsIdSet = (HashSet) instanceArticle[11];
         String sqlQueryTags = "SELECT * FROM article_tag WHERE article_id=?;";
 
         // получение изображений
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlQueryImages);
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlQueryImages, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
         preparedStatement.setInt(1, (int) instanceArticle[0]);
         ResultSet result = preparedStatement.executeQuery();
 
@@ -351,17 +351,18 @@ public class ArticleRepository implements ExtendRepository<Article> {
         preparedStatement.setInt(7, (int) instanceArticle[7]);
         preparedStatement.setInt(8, (int) instanceArticle[8]);
         preparedStatement.setInt(9, (int) instanceArticle[9]);
-        preparedStatement.executeUpdate(sqlUpdateArticle);
+        preparedStatement.setInt(10, (int) instanceArticle[0]);
+        preparedStatement.executeUpdate();
 
         // получение id тегов
-        preparedStatement = connection.prepareStatement(sqlQueryTags);
+        preparedStatement = connection.prepareStatement(sqlQueryTags, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
         preparedStatement.setInt(1, (int) instanceArticle[0]);
         result = preparedStatement.executeQuery();
 
         // работа с тегами
         outer:
         while (!result.wasNull() && result.next()) {
-            for (Integer tagId : tagsId) {
+            for (Integer tagId : tagsIdSet) {
                 if (result.getInt("tag_id") == tagId) {
                     // оставляем id тегов
                     tagsIdSet.remove(tagId);

@@ -500,60 +500,89 @@ class ArticleRepositoryTest {
             exception.printStackTrace();
         }
     }
-}
 
-    /*@Test
-    void updateComment() {
+    @Test
+    void updateArticle() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            CommentRepository commentRepository = new CommentRepository(this.poolConnection);
+            ArticleRepository articleRepository = new ArticleRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            // данные В БД, которые будем обновлять
-            String sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
-                            "VALUES ('%s', '%s', '%s', %s, %s);",
-                    "Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()), Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
-            statement.executeUpdate(sqlInsertComment);
-            String sqlInsertAttachments = String.format("INSERT INTO attachment (title, path, comment_id) " +
-                            "VALUES ('%s', '%s', %s), ('%s', '%s', %s);",
-                    "Прикрепление 1", "/static/attachments/image1.png", 1,
-                    "Прикрепление 2", "/static/attachments/image2.png", 1);
-            statement.executeUpdate(sqlInsertAttachments);
-            // объект, которым будем обновлять данные в БД
-            Comment comment = new Comment(1,"Текст комментария новый", createDateComment.plusDays(1), editDateComment.plusDays(1), 2, 1);
-            Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment(2,"Прикрепление 2 новое", "/static/attachments/image2_новое.png", 1);
-            Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 3", "/static/attachments/image3.png", 1);
-            comment.addNewAttachment(commentAttachment1);
-            comment.addNewAttachment(commentAttachment2);
+            // добавляем данные в БД, которые будем обновлять
+            // добавляем статью
+            String sqlInsertArticle = String.format("INSERT INTO article (title, lead, create_date, edit_date, text, is_published, " +
+                            "category_id, user_id, source_id) VALUES ('%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);",
+                    "Заголовок 1", "Лид 1", Timestamp.valueOf(createDateArticle.atStartOfDay()),
+                    Timestamp.valueOf(editDateArticle.atStartOfDay()), "Текст 1", true, 1, 1, 1);
+            statement.executeUpdate(sqlInsertArticle);
+            // добавляем 2 картинки к статье в БД
+            String sqlInsertImages = String.format("INSERT INTO image (title, path, article_id) " +
+                            "VALUES ('%s', '%s', %d), ('%s', '%s', %d);",
+                    "Изображение 1", "/static/images/image1.png", 1,
+                    "Изображение 2", "/static/images/image2.png", 1);
+            // добавляем 2 тега к статье в БД
+            statement.executeUpdate(sqlInsertImages);
+            String sqlInsertTagsId = "INSERT INTO article_tag (article_id, tag_id) VALUES " +
+                    "(1, 1), (1, 2);";
+            statement.executeUpdate(sqlInsertTagsId);
+            // создаем объект статьи, которым будем обновлять
+            // статья
+            Article article = new Article(1,"Заголовок 1 новый", "Лид 1 новый", createDateArticle, editDateArticle,
+                    "Текст 1 новый", true, 2, 1, 2);
+            // изображения и теги
+            Article.ArticleImage articleImage1 = new Article.ArticleImage("Изображение 2", "/static/images/image2.png", 1);
+            Article.ArticleImage articleImage2 = new Article.ArticleImage("Изображение 3", "/static/images/image3.png", 1);
+            article.addNewImage(articleImage1);
+            article.addNewImage(articleImage2);
+            article.addNewTagId(2);
+            article.addNewTagId(3);
 
-            commentRepository.update(comment);
+            // обновляем данные
+            articleRepository.update(article);
 
-            String sqlQueryComment = String.format("SELECT * FROM comment WHERE id=%s;", 1);
-            String sqlQueryAttachment = String.format("SELECT * FROM attachment WHERE comment_id=%s;", 1);
-            ResultSet resultComment = statement.executeQuery(sqlQueryComment);
-            resultComment.next();
-            soft.assertThat(comment)
-                    .hasFieldOrPropertyWithValue("text", resultComment.getString("text"))
-                    .hasFieldOrPropertyWithValue("createDate", resultComment.getTimestamp("create_date").toLocalDateTime().toLocalDate())
-                    .hasFieldOrPropertyWithValue("editDate", resultComment.getTimestamp("edit_date").toLocalDateTime().toLocalDate())
-                    .hasFieldOrPropertyWithValue("articleId", resultComment.getInt("article_id"))
-                    .hasFieldOrPropertyWithValue("userId", resultComment.getInt("user_id"));
+            // получаем данные из БД и сверяем с объектами, которыми обновляли
+            // сверяем статью
+            String sqlQueryArticle = "SELECT * FROM article WHERE id=1;";
+            ResultSet resultArticle = statement.executeQuery(sqlQueryArticle);
+            resultArticle.next();
+            soft.assertThat(article)
+                    .hasFieldOrPropertyWithValue("title", resultArticle.getString("title"))
+                    .hasFieldOrPropertyWithValue("lead", resultArticle.getString("lead"))
+                    .hasFieldOrPropertyWithValue("createDate", resultArticle.getTimestamp("create_date").toLocalDateTime().toLocalDate())
+                    .hasFieldOrPropertyWithValue("editDate", resultArticle.getTimestamp("edit_date").toLocalDateTime().toLocalDate())
+                    .hasFieldOrPropertyWithValue("text", resultArticle.getString("text"))
+                    .hasFieldOrPropertyWithValue("isPublished", resultArticle.getBoolean("is_published"))
+                    .hasFieldOrPropertyWithValue("categoryId", resultArticle.getInt("category_id"))
+                    .hasFieldOrPropertyWithValue("userId", resultArticle.getInt("user_id"))
+                    .hasFieldOrPropertyWithValue("sourceId", resultArticle.getInt("source_id"));
             soft.assertAll();
-            ResultSet resultAttachments = statement.executeQuery(sqlQueryAttachment);
-            resultAttachments.next();
-            soft.assertThat(commentAttachment1)
-                    .hasFieldOrPropertyWithValue("title", resultAttachments.getString("title"))
-                    .hasFieldOrPropertyWithValue("path", resultAttachments.getString("path"))
-                    .hasFieldOrPropertyWithValue("commentId", resultAttachments.getInt("comment_id"));
+            // сверяем изображения
+            String sqlQueryImages = "SELECT * FROM image WHERE article_id=1 ORDER BY id DESC;";
+            ResultSet resultImages = statement.executeQuery(sqlQueryImages);
+            resultImages.next();
+            soft.assertThat(articleImage1)
+                    .hasFieldOrPropertyWithValue("title", resultImages.getString("title"))
+                    .hasFieldOrPropertyWithValue("path", resultImages.getString("path"))
+                    .hasFieldOrPropertyWithValue("articleId", resultImages.getInt("article_id"));
             soft.assertAll();
-            resultAttachments.next();
-            soft.assertThat(commentAttachment2)
-                    .hasFieldOrPropertyWithValue("title", resultAttachments.getString("title"))
-                    .hasFieldOrPropertyWithValue("path", resultAttachments.getString("path"))
-                    .hasFieldOrPropertyWithValue("commentId", resultAttachments.getInt("comment_id"));
+            resultImages.next();
+            soft.assertThat(articleImage2)
+                    .hasFieldOrPropertyWithValue("title", resultImages.getString("title"))
+                    .hasFieldOrPropertyWithValue("path", resultImages.getString("path"))
+                    .hasFieldOrPropertyWithValue("articleId", resultImages.getInt("article_id"));
             soft.assertAll();
+            // сверяем id тегов
+            String sqlQueryIdTags = "SELECT * FROM article_tag WHERE article_id=1;";
+            ResultSet resultIdTags = statement.executeQuery(sqlQueryIdTags);
+            resultIdTags.next();
+            assertThat(resultIdTags.getInt("tag_id")).isEqualTo(2);
+            resultIdTags.next();
+            assertThat(resultIdTags.getInt("tag_id")).isEqualTo(3);
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-    }*/
+    }
+}
+
+
