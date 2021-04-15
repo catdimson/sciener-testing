@@ -217,7 +217,7 @@ class ArticleRepositoryTest {
                     Timestamp.valueOf(editDateArticle.atStartOfDay()), "Текст 1", true, 1, 1, 1);
             statement.executeUpdate(sqlInsertArticle);
             String sqlInsertImages = String.format("INSERT INTO image (title, path, article_id) " +
-                    "VALUES ('%s', '%s', %d), ('%s', '%s', %d);",
+                            "VALUES ('%s', '%s', %d), ('%s', '%s', %d);",
                     "Изображение 1", "/static/images/image1.png", 1,
                     "Изображение 2", "/static/images/image2.png", 1);
             statement.executeUpdate(sqlInsertImages);
@@ -231,7 +231,7 @@ class ArticleRepositoryTest {
             List images = (ArrayList) resultFindByIdArticleInstance[10];
             List tagsId = new ArrayList((HashSet) resultFindByIdArticleInstance[11]);
             Article.ArticleImage resultFindByIdImage1 = (Article.ArticleImage) images.get(0);
-            Article.ArticleImage resultFindByIdImage2 =  (Article.ArticleImage) images.get(1);
+            Article.ArticleImage resultFindByIdImage2 = (Article.ArticleImage) images.get(1);
             int tagId1 = (int) tagsId.get(0);
             int tagId2 = (int) tagsId.get(1);
             int tagId3 = (int) tagsId.get(2);
@@ -321,9 +321,9 @@ class ArticleRepositoryTest {
             List images2 = (ArrayList) resultFindByIdArticleInstance2[10];
             List tagsId2 = new ArrayList((HashSet) resultFindByIdArticleInstance2[11]);
             Article.ArticleImage resultFindByIdImage1 = (Article.ArticleImage) images1.get(0);
-            Article.ArticleImage resultFindByIdImage2 =  (Article.ArticleImage) images1.get(1);
+            Article.ArticleImage resultFindByIdImage2 = (Article.ArticleImage) images1.get(1);
             Article.ArticleImage resultFindByIdImage3 = (Article.ArticleImage) images2.get(0);
-            Article.ArticleImage resultFindByIdImage4 =  (Article.ArticleImage) images2.get(1);
+            Article.ArticleImage resultFindByIdImage4 = (Article.ArticleImage) images2.get(1);
             int tagId1 = (int) tagsId1.get(0);
             int tagId2 = (int) tagsId1.get(1);
             int tagId3 = (int) tagsId2.get(0);
@@ -446,37 +446,63 @@ class ArticleRepositoryTest {
         }
     }
 
-    /*@Test
-    void deleteComment() {
+    @Test
+    void deleteArticle() {
         try {
-            CommentRepository commentRepository = new CommentRepository(this.poolConnection);
+            ArticleRepository articleRepository = new ArticleRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            String sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
-                            "VALUES ('%s', '%s', '%s', %s, %s);",
-                    "Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()), Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
-            statement.executeUpdate(sqlInsertComment);
-            String sqlInsertAttachments = String.format("INSERT INTO attachment (title, path, comment_id) " +
-                            "VALUES ('%s', '%s', %s), ('%s', '%s', %s);",
-                    "Прикрепление 1", "/static/attachments/image1.png", 1,
-                    "Прикрепление 2", "/static/attachments/image2.png", 1);
-            statement.executeUpdate(sqlInsertAttachments);
+            // создаем статью которую будем удалять
+            Article article = new Article("Заголовок 1", "Лид 1", createDateArticle, editDateArticle,
+                    "Текст 1", true, 1, 1, 1);
+            // изображения к статьям и id тегов
+            Article.ArticleImage articleImage1 = new Article.ArticleImage("Изображение 1", "/static/images/image1.png", 1);
+            Article.ArticleImage articleImage2 = new Article.ArticleImage("Изображение 2", "/static/images/image2.png", 1);
+            article.addNewImage(articleImage1);
+            article.addNewImage(articleImage2);
+            article.addNewTagId(1);
+            article.addNewTagId(2);
+            // добавляем статью в БД
+            String sqlInsertArticle = String.format("INSERT INTO article (title, lead, create_date, edit_date, text, is_published, " +
+                            "category_id, user_id, source_id) VALUES ('%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);",
+                    "Заголовок 1", "Лид 1", Timestamp.valueOf(createDateArticle.atStartOfDay()),
+                    Timestamp.valueOf(editDateArticle.atStartOfDay()), "Текст 1", true, 1, 1, 1);
+            statement.executeUpdate(sqlInsertArticle);
+            // добавляем 2 картинки к статье в БД
+            String sqlInsertImages = String.format("INSERT INTO image (title, path, article_id) " +
+                            "VALUES ('%s', '%s', %d), ('%s', '%s', %d);",
+                    "Изображение 1", "/static/images/image1.png", 1,
+                    "Изображение 2", "/static/images/image2.png", 1);
+            // добавляем 2 тега к статье в БД
+            statement.executeUpdate(sqlInsertImages);
+            String sqlInsertTagsId = "INSERT INTO article_tag (article_id, tag_id) VALUES " +
+                    "(1, 1), (1, 2);";
+            statement.executeUpdate(sqlInsertTagsId);
 
-            commentRepository.delete(1);
+            // выполняем удаление
+            articleRepository.delete(1);
 
-            String sqlQueryComment = String.format("SELECT * FROM comment WHERE id=%d;", 1);
-            ResultSet result = statement.executeQuery(sqlQueryComment);
-            assertThat(result.next()).as("Запись класса Comment не была удалена").isFalse();
-            String sqlQueryAttachment = String.format("SELECT * FROM attachment WHERE comment_id=%d;", 1);
-            result = statement.executeQuery(sqlQueryAttachment);
-            assertThat(result.next()).as("Запись класса Attachment не была удалена").isFalse();
+            // делаем запросы в БД и проверяем, удалена ли статья
+            // получаем статью
+            String sqlQueryArticle = "SELECT * FROM article WHERE id=1;";
+            ResultSet result = statement.executeQuery(sqlQueryArticle);
+            assertThat(result.next()).as("Запись класса Article не была удалена").isFalse();
+            // получаем изображения
+            String sqlQueryImages = "SELECT * FROM image WHERE article_id=1;";
+            result = statement.executeQuery(sqlQueryImages);
+            assertThat(result.next()).as("Запись класса Image не была удалена").isFalse();
+            // получаем id тегов
+            String sqlQueryTagsId = "SELECT * FROM article_tag WHERE article_id=1";
+            result = statement.executeQuery(sqlQueryTagsId);
+            assertThat(result.next()).as("Запись из таблицы article_tag не была удалена").isFalse();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
     }
+}
 
-    @Test
+    /*@Test
     void updateComment() {
         try {
             SoftAssertions soft = new SoftAssertions();
@@ -531,4 +557,3 @@ class ArticleRepositoryTest {
             exception.printStackTrace();
         }
     }*/
-}
