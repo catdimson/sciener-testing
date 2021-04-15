@@ -28,16 +28,6 @@ public class FindByIdArticleSpecification implements ExtendSqlSpecification<Arti
         "   WHERE article.id = ?" +
         ") result " +
         "ORDER BY result.new_id, tag_id";
-
-        /*"SELECT * FROM article" +
-                "    LEFT JOIN image ON article.id = image.article_id" +
-                "    LEFT JOIN article_tag ON article_tag.article_id=0" +
-                "    WHERE article.id=? " +
-                "UNION" +
-                "    SELECT * FROM article" +
-                "    LEFT JOIN image ON image.article_id=0" +
-                "    LEFT JOIN article_tag ON article.id=article_tag.article_id" +
-                "    WHERE article.id=?;";*/
     }
 
     public boolean isById() {

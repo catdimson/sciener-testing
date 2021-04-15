@@ -16,8 +16,18 @@ public class FindByTitleArticleSpecification implements ExtendSqlSpecification<A
 
     @Override
     public String toSqlClauses() {
-        return String.format("" +
-                "SELECT * FROM article WHERE title='%s';", this.title);
+        return "SELECT * FROM ( " +
+                "   SELECT article.id as new_id, * FROM article" +
+                "   LEFT JOIN image ON article.id = image.article_id" +
+                "   LEFT JOIN article_tag ON article_tag.article_id=0" +
+                "   WHERE article.title=?" +
+                "UNION" +
+                "   SELECT article.id as new_id, * FROM article" +
+                "   LEFT JOIN image ON image.article_id = 0" +
+                "   LEFT JOIN article_tag ON article.id = article_tag.article_id" +
+                "   WHERE article.title = ?" +
+                ") result " +
+                "ORDER BY result.new_id, 12, 16";
     }
 
     @Override

@@ -27,8 +27,14 @@ public class ArticleRepository implements ExtendRepository<Article> {
         boolean isById = articleSpecification.isById();
         String sqlQuery = articleSpecification.toSqlClauses();
         PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-        preparedStatement.setInt(1, (int) articleSpecification.getCriterial());
-        preparedStatement.setInt(2, (int) articleSpecification.getCriterial());
+        if (isById) {
+            preparedStatement.setInt(1, (int) articleSpecification.getCriterial());
+            preparedStatement.setInt(2, (int) articleSpecification.getCriterial());
+        } else {
+            preparedStatement.setString(1, (String) articleSpecification.getCriterial());
+            preparedStatement.setString(2, (String) articleSpecification.getCriterial());
+        }
+
         ResultSet result = preparedStatement.executeQuery();
         // переменная содержит id статьи, которая содержит вложенные сущности и с которым работаем в цикле
         int idCurrentArticle = 0;
@@ -75,34 +81,85 @@ public class ArticleRepository implements ExtendRepository<Article> {
                 // кладем статью в ответ
                 queryResult.add(article);
 
-            } else {
+            }
+            else {
+                result.previous();
+                /*while (result.next()) {
+                    System.out.println("|" + result.getInt(1) + "|" + result.getInt(2) + "|" + result.getString(3) + "|" +
+                            result.getString(4) + "|" + result.getTimestamp(5) + "|" + result.getTimestamp(6) + "|" +
+                            result.getString(7) + "|" + result.getBoolean(8) + "|" + result.getInt(9) + "|" +  result.getInt(10) + "|" +
+                            result.getInt(11) + "|" +  result.getInt(12) + "|" + result.getString(13) + "|" + result.getString(14) + "|" +
+                            result.getInt(15) + "|" + result.getInt(16) + "|" + result.getInt(17) + "|" + result.getInt(18));
+                }*/
+                while (result.next()) {
+                    // добавление в результат статью
+                    if (result.getInt(2) != idCurrentArticle) {
+                        Article article = new Article(
+                                result.getInt(2),
+                                result.getString(3),
+                                result.getString(4),
+                                result.getTimestamp(5).toLocalDateTime().toLocalDate(),
+                                result.getTimestamp(6).toLocalDateTime().toLocalDate(),
+                                result.getString(7),
+                                result.getBoolean(8),
+                                result.getInt(9),
+                                result.getInt(10),
+                                result.getInt(11)
+                        );
+                        queryResult.add(article);
+                        indexCurrentArticleInResultQuery = queryResult.size() - 1;
+                        idCurrentArticle = result.getInt(2);
+                    }
 
-                // поиск по заголовку
+                    Article currentArticle = queryResult.get(indexCurrentArticleInResultQuery);
+                    // добавление в статью всех изображений
+                    if (result.getInt(12) != 0) {
+                        Article.ArticleImage articleImage = new Article.ArticleImage(
+                                result.getInt(12),
+                                result.getString(13),
+                                result.getString(14),
+                                result.getInt(15)
+                        );
+                        currentArticle.addNewImage(articleImage);
+                    }
+                    // добавление все id тегов
+                    if (result.getInt(16) != 0) {
+                        currentArticle.addNewTagId(result.getInt(18));
+                    }
+                }
+                /*// поиск по заголовку
                 while (result.next()) {
                 // добавляем в результат статью
 
                     // ветвь добавления новой статьи
-                    if (result.getInt(1) != idCurrentArticle) {
-                    Article article = new Article(
-                            result.getInt(2),
-                            result.getString(3),
-                            result.getString(4),
-                            result.getTimestamp(5).toLocalDateTime().toLocalDate(),
-                            result.getTimestamp(6).toLocalDateTime().toLocalDate(),
-                            result.getString(7),
-                            result.getBoolean(8),
-                            result.getInt(9),
-                            result.getInt(10),
-                            result.getInt(11)
-                    );
-                    result.previous();
-                    queryResult.add(article);
-                    indexCurrentArticleInResultQuery = queryResult.size() - 1;
+                    if (result.getInt(2) != idCurrentArticle) {
+                        Article article = new Article(
+                                result.getInt(2),
+                                result.getString(3),
+                                result.getString(4),
+                                result.getTimestamp(5).toLocalDateTime().toLocalDate(),
+                                result.getTimestamp(6).toLocalDateTime().toLocalDate(),
+                                result.getString(7),
+                                result.getBoolean(8),
+                                result.getInt(9),
+                                result.getInt(10),
+                                result.getInt(11)
+                        );
+                        queryResult.add(article);
+                        indexCurrentArticleInResultQuery = queryResult.size() - 1;
+                        idCurrentArticle = result.getInt(2);
+                        result.previous();
 
                     // добавляем к существующей статье (которая хранится в списке ответов) изображения и id тэгов
-                    } else {
+                    }
+                        *//*System.out.println("|" + result.getInt(1) + "|" + result.getInt(2) + "|" + result.getString(3) + "|" +
+                                result.getString(4) + "|" + result.getTimestamp(5) + "|" + result.getTimestamp(6) + "|" +
+                                result.getString(7) + "|" + result.getBoolean(8) + "|" + result.getInt(9) + result.getInt(10) + "|" +
+                                result.getInt(11) + result.getInt(12) + "|" + result.getString(13) + "|" + result.getString(14) + "|" +
+                                result.getInt(15) + "|" + result.getInt(16) + "|" + result.getInt(17) + "|" + result.getInt(18));*//*
                         Article currentArticle = queryResult.get(indexCurrentArticleInResultQuery);
-                        result.previous();
+                        System.out.println("ssddsds");
+
 
                         // добавили в статью все изображения
                         while (result.next()) {
@@ -116,8 +173,9 @@ public class ArticleRepository implements ExtendRepository<Article> {
                                     result.getString(14),
                                     result.getInt(15)
                             );
-                            currentArticle.addNewImage(articleImage);
+
                         }
+
 
                         // добавляем id тегов
                         while (result.next()) {
@@ -127,10 +185,20 @@ public class ArticleRepository implements ExtendRepository<Article> {
                             }
                             currentArticle.addNewTagId(result.getInt(18));
                         }
-                    }
-                }
+
+
+
+
+
+                        //System.out.println("Hello");
+                        //while (result.next()){
+                        //    System.out.println(result.getMetaData());
+                        //}
+
+                }*/
             }
         }
+        result.beforeFirst();
 
         return queryResult;
     }
@@ -141,10 +209,10 @@ public class ArticleRepository implements ExtendRepository<Article> {
         Object[] instanceArticle = article.getObjects();
 
         // добавление статьи
-        String sqlCreateComment = "INSERT INTO article " +
+        String sqlCreateArticle = "INSERT INTO article " +
                 "(title, lead, create_date, edit_date, text, is_published, category_id, user_id, source_id) " +
                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);";
-        PreparedStatement statement = connection.prepareStatement(sqlCreateComment);
+        PreparedStatement statement = connection.prepareStatement(sqlCreateArticle, Statement.RETURN_GENERATED_KEYS);
         statement.setString(1, (String) instanceArticle[1]);
         statement.setString(2, (String) instanceArticle[2]);
         LocalDate createDate = (LocalDate) instanceArticle[3];
@@ -157,11 +225,14 @@ public class ArticleRepository implements ExtendRepository<Article> {
         statement.setInt(8, (int) instanceArticle[8]);
         statement.setInt(9, (int) instanceArticle[9]);
         statement.executeUpdate();
+        ResultSet generatedKeys = statement.getGeneratedKeys();
+        generatedKeys.next();
+        int idInstance = generatedKeys.getInt(1);
 
         // добавление изображений к статьям
         StringBuilder sqlInsertImages = new StringBuilder("INSERT INTO image (title, path, article_id) VALUES ");
         Statement statementWithoutParams = connection.createStatement();
-        List images = (ArrayList) instanceArticle[6];
+        List images = (ArrayList) instanceArticle[10];
         for (int i = 0; i < images.size(); i++) {
             Article.ArticleImage image = (Article.ArticleImage) images.get(i);
             Object[] instanceImage = image.getObjects();
@@ -181,7 +252,7 @@ public class ArticleRepository implements ExtendRepository<Article> {
         Stream stream = tagsId.stream();
         stream.forEach((tagId) -> {
             String sqlPath;
-            sqlPath = String.format("(%s, %s),", instanceArticle[0], tagId);
+            sqlPath = String.format("(%s, %s),", idInstance, tagId);
             sqlInsertIdTags.append(sqlPath);
         });
         sqlInsertIdTags.replace(sqlInsertIdTags.length()-1, sqlInsertIdTags.length(), ";");
