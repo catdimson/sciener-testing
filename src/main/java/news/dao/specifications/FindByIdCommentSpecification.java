@@ -11,23 +11,24 @@ public class FindByIdCommentSpecification implements ExtendSqlSpecification<Comm
 
     @Override
     public boolean isSpecified(Comment comment) {
-        return (int) comment.getObjects()[0] == this.id;
+        return comment.equalsWithId(this.id);
     }
 
     @Override
     public String toSqlClauses() {
-        return String.format("" +
-                "SELECT * FROM comment JOIN attachment " +
+        return "SELECT * FROM comment " +
+                "JOIN attachment " +
                 "ON comment.id = attachment.comment_id " +
-                "WHERE comment.id=%d;", this.id);
-    }
-
-    public boolean isById() {
-        return true;
+                "WHERE comment.id=?;";
     }
 
     @Override
     public Object getCriterial() {
         return this.id;
+    }
+
+    @Override
+    public boolean isById() {
+        return true;
     }
 }

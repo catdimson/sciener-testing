@@ -22,14 +22,14 @@ public class CommentRepository implements ExtendRepository<Comment> {
     public List<Comment> query(ExtendSqlSpecification<Comment> commentSpecification) throws SQLException {
         List<Comment> queryResult = new ArrayList<>();
         Connection connection = connectionPool.getConnection();
-        Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
-        boolean isById = commentSpecification.isById();
         String sqlQuery = commentSpecification.toSqlClauses();
-        ResultSet result = statement.executeQuery(sqlQuery);
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
+        preparedStatement.setInt(1, (int) commentSpecification.getCriterial());
+        ResultSet result = preparedStatement.executeQuery();
         // переменная содержит id комментария, который содержит вложенные сущности и с которым работаем в цикле
         int idCommentWithAttachments = 0;
         int indexCurrentCommentInResultQuery = 0;
-        if (isById) {
+        if (commentSpecification.isById()) {
             result.next();
             Comment comment = new Comment(
                     result.getInt(1),
@@ -101,13 +101,11 @@ public class CommentRepository implements ExtendRepository<Comment> {
     @Override
     public void create(Comment comment) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
-        Object[] instance = comment.getObjects();
-
-        // добавление комментариев
         String sqlCreateComment = "INSERT INTO comment " +
                 "(text, create_date, edit_date, article_id, user_id) " +
                 "VALUES(?, ?, ?, ?, ?);";
         PreparedStatement statement = connection.prepareStatement(sqlCreateComment);
+        Object[] instance = comment.getObjects();
         statement.setString(1, (String) instance[1]);
         LocalDate createDate = (LocalDate) instance[2];
         statement.setTimestamp(2, Timestamp.valueOf(createDate.atStartOfDay()));
@@ -138,22 +136,26 @@ public class CommentRepository implements ExtendRepository<Comment> {
     @Override
     public void delete(int id) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
-        Statement statement = connection.createStatement();
-        String sqlDeleteAttachments = String.format("DELETE FROM attachment WHERE comment_id=%d;", id);
-        statement.executeUpdate(sqlDeleteAttachments);
-        String sqlDeleteComment = String.format("DELETE FROM comment WHERE id=%d;", id);
-        statement.executeUpdate(sqlDeleteComment);
+        String sqlDeleteInstance = "DELETE FROM attachment WHERE comment_id=?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlDeleteInstance);
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
+        String sqlDeleteComment = "DELETE FROM comment WHERE id=?;";
+        preparedStatement = connection.prepareStatement(sqlDeleteComment);
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
     }
 
     @Override
     public void update(Comment comment) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
+        String sqlQueryAttachments = "SELECT * FROM attachment WHERE comment_id=?;";
         Object[] instanceComment = comment.getObjects();
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlQueryAttachments, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        preparedStatement.setInt(1, (int) instanceComment[0]);
+        ResultSet result = preparedStatement.executeQuery();
         ArrayList<Comment.CommentAttachment> attachments = (ArrayList<Comment.CommentAttachment>) instanceComment[6];
         Set<Comment.CommentAttachment> attachmentsSet = new HashSet<>(attachments);
-        Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-        String sqlQueryAttachments = String.format("SELECT * FROM attachment WHERE comment_id=%s;", instanceComment[0]);
-        ResultSet result = statement.executeQuery(sqlQueryAttachments);
 
         outer:
         while (!result.wasNull() && result.next()) {
@@ -162,8 +164,6 @@ public class CommentRepository implements ExtendRepository<Comment> {
                 if (result.getInt("id") == (int) instanceAttachment[0]) {
                     // обновляем записи в БД
                     attachmentsSet.remove(attachment);
-                    //String sqlUpdateAttachment = String.format("UPDATE attachment " +
-                    //        "SET title='%s', path='%s' WHERE id=%s;", instanceAttachment[1], instanceAttachment[2], instanceAttachment[0]);
                     result.updateString(2, (String) instanceAttachment[1]);
                     result.updateString(3, (String) instanceAttachment[2]);
                     result.updateRow();
@@ -176,6 +176,7 @@ public class CommentRepository implements ExtendRepository<Comment> {
         }
 
         // добавляем записи в БД
+        Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
         ArrayList<Comment.CommentAttachment> addingInDBAttachments = new ArrayList<>(attachmentsSet);
         StringBuilder sqlCreateAttachments = new StringBuilder("INSERT INTO attachment (title, path, comment_id) VALUES ");
         for (int i = 0; i < addingInDBAttachments.size(); i++) {
@@ -194,9 +195,14 @@ public class CommentRepository implements ExtendRepository<Comment> {
         // обновляем запись комментария
         LocalDate createDate = (LocalDate) instanceComment[2];
         LocalDate editDate = (LocalDate) instanceComment[3];
-        String sqlUpdateComment = String.format("UPDATE comment SET text='%s', create_date='%s', edit_date='%s', article_id=%s, user_id=%s WHERE id=%s;",
-                instanceComment[1], Timestamp.valueOf(createDate.atStartOfDay()),
-                Timestamp.valueOf(editDate.atStartOfDay()), instanceComment[4], instanceComment[5], instanceComment[0]);
-        statement.executeUpdate(sqlUpdateComment);
+        String sqlUpdateComment = "UPDATE comment SET text=?, create_date=?, edit_date=?, article_id=?, user_id=? WHERE id=?;";
+        preparedStatement = connection.prepareStatement(sqlUpdateComment);
+        preparedStatement.setString(1, (String) instanceComment[1]);
+        preparedStatement.setTimestamp(2, Timestamp.valueOf(createDate.atStartOfDay()));
+        preparedStatement.setTimestamp(3, Timestamp.valueOf(editDate.atStartOfDay()));
+        preparedStatement.setInt(4, (int) instanceComment[4]);
+        preparedStatement.setInt(5, (int) instanceComment[5]);
+        preparedStatement.setInt(6, (int) instanceComment[0]);
+        preparedStatement.executeUpdate();
     }
 }

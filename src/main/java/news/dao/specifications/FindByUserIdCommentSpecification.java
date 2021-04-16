@@ -11,24 +11,23 @@ public class FindByUserIdCommentSpecification implements ExtendSqlSpecification<
 
     @Override
     public boolean isSpecified(Comment comment) {
-        return (int) comment.getObjects()[1] == this.userId;
+        return comment.equalsWithUserId(this.userId);
     }
 
     @Override
     public String toSqlClauses() {
-
-        return String.format(
-                "SELECT * FROM comment LEFT JOIN attachment " +
+        return "SELECT * FROM comment LEFT JOIN attachment " +
                 "ON comment.id = attachment.comment_id " +
-                "WHERE comment.user_id=%d ORDER BY attachment.comment_id DESC", this.userId);
-    }
-
-    public boolean isById() {
-        return false;
+                "WHERE comment.user_id=? ORDER BY attachment.comment_id DESC";
     }
 
     @Override
     public Object getCriterial() {
         return this.userId;
+    }
+
+    @Override
+    public boolean isById() {
+        return false;
     }
 }

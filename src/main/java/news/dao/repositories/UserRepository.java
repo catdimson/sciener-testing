@@ -86,22 +86,22 @@ public class UserRepository implements ExtendRepository<User> {
         String sqlUpdateInstance = "UPDATE \"user\" SET " +
                 "password=?, username=?, first_name=?, last_name=?, email=?, last_login=?, date_joined=?, is_superuser=?, " +
                 "is_staff=?, is_active=?, group_id=? WHERE id=?;";
-        PreparedStatement statement = connection.prepareStatement(sqlUpdateInstance);
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdateInstance);
         Object[] instance = user.getObjects();
-        statement.setString(1, (String) instance[1]);
-        statement.setString(2, (String) instance[2]);
-        statement.setString(3, (String) instance[3]);
-        statement.setString(4, (String) instance[4]);
-        statement.setString(5, (String) instance[5]);
+        preparedStatement.setString(1, (String) instance[1]);
+        preparedStatement.setString(2, (String) instance[2]);
+        preparedStatement.setString(3, (String) instance[3]);
+        preparedStatement.setString(4, (String) instance[4]);
+        preparedStatement.setString(5, (String) instance[5]);
         LocalDate dateLogin = (LocalDate) instance[6];
-        statement.setTimestamp(6, Timestamp.valueOf(dateLogin.atStartOfDay()));
+        preparedStatement.setTimestamp(6, Timestamp.valueOf(dateLogin.atStartOfDay()));
         LocalDate dateJoined = (LocalDate) instance[7];
-        statement.setTimestamp(7, Timestamp.valueOf(dateJoined.atStartOfDay()));
-        statement.setBoolean(8, (Boolean) instance[8]);
-        statement.setBoolean(9, (Boolean) instance[9]);
-        statement.setBoolean(10, (Boolean) instance[10]);
-        statement.setInt(11, (int) instance[11]);
-        statement.setInt(12, (int) instance[0]);
-        statement.executeUpdate();
+        preparedStatement.setTimestamp(7, Timestamp.valueOf(dateJoined.atStartOfDay()));
+        preparedStatement.setBoolean(8, (Boolean) instance[8]);
+        preparedStatement.setBoolean(9, (Boolean) instance[9]);
+        preparedStatement.setBoolean(10, (Boolean) instance[10]);
+        preparedStatement.setInt(11, (int) instance[11]);
+        preparedStatement.setInt(12, (int) instance[0]);
+        preparedStatement.executeUpdate();
     }
 }
