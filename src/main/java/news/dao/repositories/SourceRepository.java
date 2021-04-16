@@ -1,17 +1,14 @@
 package news.dao.repositories;
 
 import news.dao.connection.DBPool;
-import news.dao.specifications.SqlSpecification;
+import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Source;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SourceRepository implements Repository<Source> {
+public class SourceRepository implements ExtendRepository<Source> {
     final private DBPool connectionPool;
 
     public SourceRepository(DBPool connectionPool) {
@@ -19,12 +16,17 @@ public class SourceRepository implements Repository<Source> {
     }
 
     @Override
-    public List<Source> query(SqlSpecification<Source> sourceSpecification) throws SQLException {
+    public List<Source> query(ExtendSqlSpecification<Source> sourceSpecification) throws SQLException {
         List<Source> queryResult = new ArrayList<>();
         Connection connection = connectionPool.getConnection();
-        Statement statement = connection.createStatement();
         String sqlQuery = sourceSpecification.toSqlClauses();
-        ResultSet result = statement.executeQuery(sqlQuery);
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
+        if (sourceSpecification.isById()) {
+            preparedStatement.setInt(1, (int) sourceSpecification.getCriterial());
+        } else {
+            preparedStatement.setString(1, (String) sourceSpecification.getCriterial());
+        }
+        ResultSet result = preparedStatement.executeQuery();
         while (result.next()) {
             Source source = new Source(result.getInt(1), result.getString(2), result.getString(3));
             queryResult.add(source);
@@ -35,26 +37,32 @@ public class SourceRepository implements Repository<Source> {
     @Override
     public void create(Source source) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
-        Statement statement = connection.createStatement();
+        String sqlCreateInstance = "INSERT INTO source(title, url) VALUES(?, ?);";
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateInstance);
         Object[] instance = source.getObjects();
-        String sqlCreateInstance = String.format("INSERT INTO source(title, url) VALUES('%s', '%s')", instance[1], instance[2]);
-        statement.executeUpdate(sqlCreateInstance);
+        preparedStatement.setString(1, (String) instance[1]);
+        preparedStatement.setString(2, (String) instance[2]);
+        preparedStatement.executeUpdate();
     }
 
     @Override
     public void delete(int id) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
-        Statement statement = connection.createStatement();
-        String sqlDeleteInstance = String.format("DELETE FROM source WHERE id=%d;", id);
-        statement.executeUpdate(sqlDeleteInstance);
+        String sqlDeleteInstance = "DELETE FROM source WHERE id=?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlDeleteInstance);
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
     }
 
     @Override
     public void update(Source source) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
-        Statement statement = connection.createStatement();
+        String sqlUpdateInstance = "UPDATE source SET title=?, url=? WHERE id=?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdateInstance);
         Object[] instance = source.getObjects();
-        String sqlUpdateInstance = String.format("UPDATE source SET title='%s', url='%s' WHERE id=%s;", instance[1], instance[2], instance[0]);
-        statement.executeUpdate(sqlUpdateInstance);
+        preparedStatement.setString(1, (String) instance[1]);
+        preparedStatement.setString(2, (String) instance[2]);
+        preparedStatement.setInt(3, (int) instance[0]);
+        preparedStatement.executeUpdate();
     }
 }

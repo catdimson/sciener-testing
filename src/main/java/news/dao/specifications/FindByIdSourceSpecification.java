@@ -2,7 +2,7 @@ package news.dao.specifications;
 
 import news.model.Source;
 
-public class FindByIdSourceSpecification implements SqlSpecification<Source> {
+public class FindByIdSourceSpecification implements ExtendSqlSpecification<Source> {
     final private int id;
 
     public FindByIdSourceSpecification(int id) {
@@ -11,16 +11,21 @@ public class FindByIdSourceSpecification implements SqlSpecification<Source> {
 
     @Override
     public boolean isSpecified(Source source) {
-        return (int) source.getObjects()[0] == this.id;
+        return source.equalsWithId(this.id);
     }
 
     @Override
     public String toSqlClauses() {
-        return String.format("SELECT * FROM source WHERE id='%d';", this.id);
+        return "SELECT * FROM source WHERE id=?;";
     }
 
     @Override
     public Object getCriterial() {
         return this.id;
+    }
+
+    @Override
+    public boolean isById() {
+        return true;
     }
 }

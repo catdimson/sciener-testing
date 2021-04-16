@@ -2,7 +2,7 @@ package news.dao.specifications;
 
 import news.model.Source;
 
-public class FindByTitleSourceSpecification implements SqlSpecification<Source> {
+public class FindByTitleSourceSpecification implements ExtendSqlSpecification<Source> {
     final private String title;
 
     public FindByTitleSourceSpecification(String title) {
@@ -11,16 +11,21 @@ public class FindByTitleSourceSpecification implements SqlSpecification<Source> 
 
     @Override
     public boolean isSpecified(Source source) {
-        return source.getObjects()[1] == this.title;
+        return source.equalsWithTitle(this.title);
     }
 
     @Override
     public String toSqlClauses() {
-        return String.format("SELECT * FROM source WHERE title='%s';", this.title);
+        return "SELECT * FROM source WHERE title=?;";
     }
 
     @Override
     public Object getCriterial() {
         return this.title;
+    }
+
+    @Override
+    public boolean isById() {
+        return false;
     }
 }
