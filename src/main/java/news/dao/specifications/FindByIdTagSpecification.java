@@ -18,4 +18,9 @@ public class FindByIdTagSpecification implements SqlSpecification<Tag> {
     public String toSqlClauses() {
         return String.format("SELECT * FROM tag WHERE id='%d';", this.id);
     }
+
+    @Override
+    public Object getCriterial() {
+        return this.id;
+    }
 }

@@ -18,4 +18,9 @@ public class FindByIdUserSpecification implements SqlSpecification<User> {
     public String toSqlClauses() {
         return String.format("SELECT * FROM \"user\" WHERE id='%d';", this.id);
     }
+
+    @Override
+    public Object getCriterial() {
+        return this.id;
+    }
 }

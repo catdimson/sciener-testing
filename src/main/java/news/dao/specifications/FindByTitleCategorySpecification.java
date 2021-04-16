@@ -18,4 +18,9 @@ public class FindByTitleCategorySpecification implements SqlSpecification<Catego
     public String toSqlClauses() {
         return String.format("SELECT * FROM category WHERE title='%s';", this.title);
     }
+
+    @Override
+    public Object getCriterial() {
+        return this.title;
+    }
 }

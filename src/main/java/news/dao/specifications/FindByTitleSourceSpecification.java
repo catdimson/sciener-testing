@@ -18,4 +18,9 @@ public class FindByTitleSourceSpecification implements SqlSpecification<Source> 
     public String toSqlClauses() {
         return String.format("SELECT * FROM source WHERE title='%s';", this.title);
     }
+
+    @Override
+    public Object getCriterial() {
+        return this.title;
+    }
 }

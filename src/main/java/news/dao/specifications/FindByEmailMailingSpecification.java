@@ -18,4 +18,9 @@ public class FindByEmailMailingSpecification implements SqlSpecification<Mailing
     public String toSqlClauses() {
         return String.format("SELECT * FROM mailing WHERE email='%s';", this.email);
     }
+
+    @Override
+    public Object getCriterial() {
+        return this.email;
+    }
 }

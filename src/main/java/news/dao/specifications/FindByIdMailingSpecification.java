@@ -18,4 +18,9 @@ public class FindByIdMailingSpecification implements SqlSpecification<Mailing> {
     public String toSqlClauses() {
         return String.format("SELECT * FROM mailing WHERE id='%d';", this.id);
     }
+
+    @Override
+    public Object getCriterial() {
+        return this.id;
+    }
 }

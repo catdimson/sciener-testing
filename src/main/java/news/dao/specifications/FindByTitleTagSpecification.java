@@ -18,4 +18,9 @@ public class FindByTitleTagSpecification implements SqlSpecification<Tag> {
     public String toSqlClauses() {
         return String.format("SELECT * FROM tag WHERE title='%s';", this.title);
     }
+
+    @Override
+    public Object getCriterial() {
+        return this.title;
+    }
 }

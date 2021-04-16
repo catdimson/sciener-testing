@@ -18,4 +18,9 @@ public class FindByIdSourceSpecification implements SqlSpecification<Source> {
     public String toSqlClauses() {
         return String.format("SELECT * FROM source WHERE id='%d';", this.id);
     }
+
+    @Override
+    public Object getCriterial() {
+        return this.id;
+    }
 }

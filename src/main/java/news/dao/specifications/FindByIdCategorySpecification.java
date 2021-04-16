@@ -18,4 +18,9 @@ public class FindByIdCategorySpecification implements SqlSpecification<Category>
     public String toSqlClauses() {
         return String.format("SELECT * FROM category WHERE id='%d';", this.id);
     }
+
+    @Override
+    public Object getCriterial() {
+        return this.id;
+    }
 }

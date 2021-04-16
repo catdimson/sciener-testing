@@ -18,4 +18,9 @@ public class FindByIdAfishaSpecification implements SqlSpecification<Afisha> {
     public String toSqlClauses() {
         return String.format("SELECT * FROM afisha WHERE id='%d';", this.id);
     }
+
+    @Override
+    public Object getCriterial() {
+        return this.id;
+    }
 }
