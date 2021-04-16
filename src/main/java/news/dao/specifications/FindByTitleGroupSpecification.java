@@ -11,7 +11,7 @@ public class FindByTitleGroupSpecification implements ExtendSqlSpecification<Gro
 
     @Override
     public boolean isSpecified(Group group) {
-        return group.getObjects()[1] == this.title;
+        return group.equalsWithTitle(this.title);
     }
 
     @Override

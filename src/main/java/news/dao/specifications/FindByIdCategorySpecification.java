@@ -2,7 +2,7 @@ package news.dao.specifications;
 
 import news.model.Category;
 
-public class FindByIdCategorySpecification implements SqlSpecification<Category> {
+public class FindByIdCategorySpecification implements ExtendSqlSpecification<Category> {
     final private int id;
 
     public FindByIdCategorySpecification(int id) {
@@ -11,16 +11,21 @@ public class FindByIdCategorySpecification implements SqlSpecification<Category>
 
     @Override
     public boolean isSpecified(Category category) {
-        return (int) category.getObjects()[0] == this.id;
+        return category.equalsWithId(this.id);
     }
 
     @Override
     public String toSqlClauses() {
-        return String.format("SELECT * FROM category WHERE id='%d';", this.id);
+        return "SELECT * FROM category WHERE id=?;";
     }
 
     @Override
     public Object getCriterial() {
         return this.id;
+    }
+
+    @Override
+    public boolean isById() {
+        return true;
     }
 }

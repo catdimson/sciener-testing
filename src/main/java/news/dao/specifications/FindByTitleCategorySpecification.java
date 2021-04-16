@@ -2,7 +2,7 @@ package news.dao.specifications;
 
 import news.model.Category;
 
-public class FindByTitleCategorySpecification implements SqlSpecification<Category> {
+public class FindByTitleCategorySpecification implements ExtendSqlSpecification<Category> {
     final private String title;
 
     public FindByTitleCategorySpecification(String title) {
@@ -11,16 +11,21 @@ public class FindByTitleCategorySpecification implements SqlSpecification<Catego
 
     @Override
     public boolean isSpecified(Category category) {
-        return category.getObjects()[1] == this.title;
+        return category.equalsWithTitle(this.title);
     }
 
     @Override
     public String toSqlClauses() {
-        return String.format("SELECT * FROM category WHERE title='%s';", this.title);
+        return "SELECT * FROM category WHERE title=?;";
     }
 
     @Override
     public Object getCriterial() {
         return this.title;
+    }
+
+    @Override
+    public boolean isById() {
+        return false;
     }
 }

@@ -72,6 +72,14 @@ public class Afisha {
         this.sourceId = sourceId;
     }
 
+    public boolean equalsWithId(int id) {
+        return this.id == id;
+    }
+
+    public boolean equalsWithTitle(String title) {
+        return this.title.equals(title);
+    }
+
     public Object[] getObjects() {
         return new Object[] {
                 id,

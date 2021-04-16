@@ -88,6 +88,14 @@ public class Comment {
         return this.attachments.contains(attachment);
     }
 
+    public boolean equalsWithId(int id) {
+        return this.id == id;
+    }
+
+    public boolean equalsWithUserId(int userId) {
+        return this.userId == userId;
+    }
+
     public Object[] getObjects() {
         return new Object[] {
                 id,

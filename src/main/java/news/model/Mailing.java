@@ -32,6 +32,14 @@ public class Mailing {
         }
     }
 
+    public boolean equalsWithId(int id) {
+        return this.id == id;
+    }
+
+    public boolean equalsWithEmail(String email) {
+        return this.email.equals(email);
+    }
+
     public Object[] getObjects() {
         return new Object[] {
                 id,
