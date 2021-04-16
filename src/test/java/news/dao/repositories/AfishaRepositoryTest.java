@@ -320,7 +320,7 @@ class AfishaRepositoryTest {
     }
 
     @Test
-    void updateUser() {
+    void updateAfisha() {
         try {
             SoftAssertions soft = new SoftAssertions();
             AfishaRepository afishaRepository = new AfishaRepository(this.poolConnection);

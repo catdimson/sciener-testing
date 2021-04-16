@@ -2,7 +2,7 @@ package news.dao.specifications;
 
 import news.model.Afisha;
 
-public class FindByIdAfishaSpecification implements SqlSpecification<Afisha> {
+public class FindByIdAfishaSpecification implements ExtendSqlSpecification<Afisha> {
     final private int id;
 
     public FindByIdAfishaSpecification(int id) {
@@ -11,12 +11,12 @@ public class FindByIdAfishaSpecification implements SqlSpecification<Afisha> {
 
     @Override
     public boolean isSpecified(Afisha afisha) {
-        return (int) afisha.getObjects()[0] == this.id;
+        return afisha.equalsWithId(this.id);
     }
 
     @Override
     public String toSqlClauses() {
-        return String.format("SELECT * FROM afisha WHERE id='%d';", this.id);
+        return "SELECT * FROM afisha WHERE id=?;";
     }
 
     @Override
@@ -24,5 +24,8 @@ public class FindByIdAfishaSpecification implements SqlSpecification<Afisha> {
         return this.id;
     }
 
-
+    @Override
+    public boolean isById() {
+        return true;
+    }
 }

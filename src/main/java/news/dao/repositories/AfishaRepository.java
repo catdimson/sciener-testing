@@ -1,7 +1,7 @@
 package news.dao.repositories;
 
 import news.dao.connection.DBPool;
-import news.dao.specifications.SqlSpecification;
+import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Afisha;
 
 import java.sql.*;
@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AfishaRepository implements Repository<Afisha> {
+public class AfishaRepository implements ExtendRepository<Afisha> {
     final private DBPool connectionPool;
 
     public AfishaRepository(DBPool connectionPool) {
@@ -17,12 +17,17 @@ public class AfishaRepository implements Repository<Afisha> {
     }
 
     @Override
-    public List<Afisha> query(SqlSpecification<Afisha> afishaSpecification) throws SQLException {
+    public List<Afisha> query(ExtendSqlSpecification<Afisha> afishaSpecification) throws SQLException {
         List<Afisha> queryResult = new ArrayList<>();
         Connection connection = connectionPool.getConnection();
-        Statement statement = connection.createStatement();
         String sqlQuery = afishaSpecification.toSqlClauses();
-        ResultSet result = statement.executeQuery(sqlQuery);
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
+        if (afishaSpecification.isById()) {
+            preparedStatement.setInt(1, (int) afishaSpecification.getCriterial());
+        } else {
+            preparedStatement.setString(1, (String) afishaSpecification.getCriterial());
+        }
+        ResultSet result = preparedStatement.executeQuery();
         while (result.next()) {
             Afisha afisha = new Afisha(
                     result.getInt(1),
@@ -46,12 +51,11 @@ public class AfishaRepository implements Repository<Afisha> {
     @Override
     public void create(Afisha afisha) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
-        Object[] instance = afisha.getObjects();
         String sqlCreateInstance = "INSERT INTO afisha" +
                 "(title, image_url, lead, description, age_limit, timing, place, phone, date, is_commercial, user_id, source_id) " +
                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-
         PreparedStatement statement = connection.prepareStatement(sqlCreateInstance);
+        Object[] instance = afisha.getObjects();
         statement.setString(1, (String) instance[1]);
         statement.setString(2, (String) instance[2]);
         statement.setString(3, (String) instance[3]);
@@ -71,20 +75,20 @@ public class AfishaRepository implements Repository<Afisha> {
     @Override
     public void delete(int id) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
-        Statement statement = connection.createStatement();
-        String sqlDeleteInstance = String.format("DELETE FROM afisha WHERE id=%d;", id);
-        statement.executeUpdate(sqlDeleteInstance);
+        String sqlDeleteInstance = "DELETE FROM afisha WHERE id=?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlDeleteInstance);
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
     }
 
     @Override
     public void update(Afisha afisha) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
-        Object[] instance = afisha.getObjects();
         String sqlUpdateInstance = "UPDATE afisha SET " +
                 "title=?, image_url=?, lead=?, description=?, age_limit=?, timing=?, place=?, phone=?, " +
                 "date=?, is_commercial=?, user_id=?, source_id=? WHERE id=?;";
-
         PreparedStatement statement = connection.prepareStatement(sqlUpdateInstance);
+        Object[] instance = afisha.getObjects();
         statement.setString(1, (String) instance[1]);
         statement.setString(2, (String) instance[2]);
         statement.setString(3, (String) instance[3]);
