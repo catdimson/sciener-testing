@@ -2,7 +2,7 @@ package news.dao.specifications;
 
 import news.model.User;
 
-public class FindByIdUserSpecification implements SqlSpecification<User> {
+public class FindByIdUserSpecification implements ExtendSqlSpecification<User> {
     final private int id;
 
     public FindByIdUserSpecification(int id) {
@@ -11,16 +11,21 @@ public class FindByIdUserSpecification implements SqlSpecification<User> {
 
     @Override
     public boolean isSpecified(User user) {
-        return (int) user.getObjects()[0] == this.id;
+        return user.equalsWithId(this.id);
     }
 
     @Override
     public String toSqlClauses() {
-        return String.format("SELECT * FROM \"user\" WHERE id='%d';", this.id);
+        return "SELECT * FROM \"user\" WHERE id=?;";
     }
 
     @Override
     public Object getCriterial() {
         return this.id;
+    }
+
+    @Override
+    public boolean isById() {
+        return true;
     }
 }

@@ -143,8 +143,8 @@ public class User {
         return this.id == id;
     }
 
-    public boolean equalsWithFirstname(String firstname) {
-        return this.firstName.equals(firstname);
+    public boolean equalsWithFirstname(String firstName) {
+        return this.firstName.equals(firstName);
     }
 
     public Object[] getObjects() {
