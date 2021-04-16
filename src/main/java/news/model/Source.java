@@ -8,15 +8,15 @@ public class Source {
     private String title;
     private String url;
 
-    public Source(int id, String url, String title) {
+    public Source(int id, String title, String url) {
         this.id = id;
         this.url = url;
         this.title = title;
     }
 
-    public Source(String url, String title) {
-        this.url = url;
+    public Source(String title, String url) {
         this.title = title;
+        this.url = url;
     }
 
     /**
@@ -27,7 +27,11 @@ public class Source {
         this.title = title;
     }
 
-    public String getSourceUrl() {
-        return this.url;
+    public Object[] getObjects() {
+        return new Object[] {
+                id,
+                title,
+                url
+        };
     }
 }

@@ -3,6 +3,8 @@ package news.model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Новость
@@ -19,7 +21,7 @@ public class Article {
     private int userId;
     private int sourceId;
     private Collection<ArticleImage> images = new ArrayList<>();
-    private Collection<Integer> tagsId = new ArrayList<>();
+    private Set<Integer> tagsId = new HashSet<>();
 
     public Article(int id, String title, String lead, LocalDate createDate, LocalDate editDate, String text,
                    boolean isPublished, int categoryId, int userId, int sourceId) {
@@ -51,20 +53,32 @@ public class Article {
     /**
      * Изображение новости
      */
-    static class ArticleImage {
+    public static class ArticleImage {
         private int id;
         private String title;
         private String path;
+        private int articleId;
 
-        public ArticleImage(int id, String title, String path) {
+        public ArticleImage(int id, String title, String path, int articleId) {
             this.id = id;
             this.title = title;
             this.path = path;
+            this.articleId = articleId;
         }
 
-        public ArticleImage(String title, String path) {
+        public ArticleImage(String title, String path, int articleId) {
             this.title = title;
             this.path = path;
+            this.articleId = articleId;
+        }
+
+        public Object[] getObjects() {
+            return new Object[] {
+                    id,
+                    title,
+                    path,
+                    articleId
+            };
         }
     }
 
@@ -136,5 +150,26 @@ public class Article {
 
     public boolean getStatusPublished() {
         return this.isPublished;
+    }
+
+    public boolean equalsWithId(int id) {
+        return this.id == id;
+    }
+
+    public Object[] getObjects() {
+        return new Object[] {
+                id,
+                title,
+                lead,
+                createDate,
+                editDate,
+                text,
+                isPublished,
+                categoryId,
+                userId,
+                sourceId,
+                images,
+                tagsId
+        };
     }
 }

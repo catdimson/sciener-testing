@@ -19,11 +19,11 @@ class ArticlesTest {
 
     @Mock
     final private Article.ArticleImage articleImage = new Article.ArticleImage(1, "Забастовка на площади",
-            "/static/images/zabastovka.jpg");
+            "/static/images/zabastovka.jpg", 1);
 
     @Mock
     final private Article.ArticleImage articleImage2 = new Article.ArticleImage(2, "Забастовка на площади 2",
-            "/static/images/zabastovka2.jpg");
+            "/static/images/zabastovka2.jpg", 1);
 
     @BeforeAll
     static void beforeAll() {

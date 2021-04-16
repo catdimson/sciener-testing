@@ -13,7 +13,7 @@ class SourceTest {
      */
     @Test
     void editUrl() {
-        Source source = new Source(1, "https://rambler.ru/comments/news/2021/04/03/bil/", "Рамблер новости");
+        Source source = new Source(1, "Рамблер новости", "https://rambler.ru/comments/news/2021/04/03/bil/");
         SoftAssertions soft = new SoftAssertions();
 
         source.editSource("https://lenta.ru/", "Лента РУ");
