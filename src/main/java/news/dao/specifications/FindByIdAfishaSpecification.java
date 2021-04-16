@@ -23,4 +23,6 @@ public class FindByIdAfishaSpecification implements SqlSpecification<Afisha> {
     public Object getCriterial() {
         return this.id;
     }
+
+
 }
