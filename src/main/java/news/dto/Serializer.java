@@ -13,6 +13,6 @@ public interface Serializer<T> {
     /**
      * Сериализация строки JSON в объект доменной модели
      */
-    public T toObject();
+    T toObject();
 
 }

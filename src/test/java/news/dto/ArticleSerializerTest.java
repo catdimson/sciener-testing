@@ -66,8 +66,10 @@ class ArticleSerializerTest {
                 "\t\t3,\n" +
                 "\t]\n" +
                 "}";
+
         ArticleSerializer articleSerializer = new ArticleSerializer(article);
         String result = articleSerializer.toJSON();
+
         //System.out.println(expectedJSON);
         //System.out.println(result);
         assertThat(result).isEqualTo(expectedJSON);
