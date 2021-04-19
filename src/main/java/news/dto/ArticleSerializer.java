@@ -23,7 +23,7 @@ public class ArticleSerializer implements Serializer<Article> {
         this.json = json;
     }
 
-    /*String test = "{\n" +
+    String test = "{\n" +
             "\t     \"id\"           :   1,\n" +
             "\t     \"title\"        :   \"заголовок\",\n" +
             "\t     \"lead\"         :   \"лид\",\n" +
@@ -43,7 +43,7 @@ public class ArticleSerializer implements Serializer<Article> {
             "\t\t      },\n" +
             "]\n," +
             "\t     \"tagsID\"       :   [1,2,3,4,5]\n" +
-            "}";*/
+            "}";
 
     @Override
     public String toJSON() {
