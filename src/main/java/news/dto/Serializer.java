@@ -8,7 +8,7 @@ public interface Serializer<T> {
     /**
      * Сериализация в строку JSON
      */
-    public String toJSON() throws ClassNotFoundException;
+    String toJSON() throws ClassNotFoundException;
 
     /**
      * Сериализация строки JSON в объект доменной модели

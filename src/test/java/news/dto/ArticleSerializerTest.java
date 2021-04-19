@@ -4,7 +4,10 @@ import news.model.Article;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ArticleSerializerTest {
     private static LocalDate createDateArticle;
@@ -12,13 +15,12 @@ class ArticleSerializerTest {
 
     @BeforeAll
     static void beforeAll() {
-        // article (дата создания, дата редактирования, id юзера создавший новость)
         createDateArticle = LocalDate.of(2019, 4, 25);
         editDateArticle = LocalDate.of(2019, 6, 25);
     }
 
     @Test
-    void toJSON() throws ClassNotFoundException {
+    void toJSON() {
         Article article = new Article(1,"Заголовок 1", "Лид 1", createDateArticle, editDateArticle,
                 "Текст 1", true, 1, 1, 1);
         Article.ArticleImage articleImage1 = new Article.ArticleImage(1, "Изображение 1", "/static/images/image1.png", 1);
@@ -28,11 +30,43 @@ class ArticleSerializerTest {
         article.addNewTagId(1);
         article.addNewTagId(2);
         article.addNewTagId(3);
-
+        final String expectedJSON =
+                "{\n" +
+                "\t\"id\":1,\n" +
+                "\t\"title\":\"Заголовок 1\",\n" +
+                "\t\"lead\":\"Лид 1\",\n" +
+                "\t\"createDate\":" + Timestamp.valueOf(createDateArticle.atStartOfDay()).getTime() / 1000 + ",\n" +
+                "\t\"editDate\":" + Timestamp.valueOf(editDateArticle.atStartOfDay()).getTime() / 1000 + ",\n" +
+                "\t\"text\":\"Текст 1\",\n" +
+                "\t\"isPublished\":true,\n" +
+                "\t\"categoryId\":1,\n" +
+                "\t\"userId\":1,\n" +
+                "\t\"sourceId\":1,\n" +
+                "\t\"images\":[\n" +
+                "\t\t{\n" +
+                "\t\t\t\"id\":1,\n" +
+                "\t\t\t\"title\":\"Изображение 1\",\n" +
+                "\t\t\t\"path\":\"/static/images/image1.png\",\n" +
+                "\t\t\t\"articleId\":1,\n" +
+                "\t\t},\n" +
+                "\t\t{\n" +
+                "\t\t\t\"id\":2,\n" +
+                "\t\t\t\"title\":\"Изображение 2\",\n" +
+                "\t\t\t\"path\":\"/static/images/image2.png\",\n" +
+                "\t\t\t\"articleId\":1,\n" +
+                "\t\t},\n" +
+                "\t],\n" +
+                "\t\"tagsId\":[\n" +
+                "\t\t1,\n" +
+                "\t\t2,\n" +
+                "\t\t3,\n" +
+                "\t]\n" +
+                "}";
         ArticleSerializer articleSerializer = new ArticleSerializer(article);
         String result = articleSerializer.toJSON();
-
-        System.out.println(result);
+        //System.out.println(expectedJSON);
+        //System.out.println(result);
+        assertThat(result).isEqualTo(expectedJSON);
     }
 
     @Test
