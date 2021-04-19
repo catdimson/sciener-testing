@@ -69,9 +69,9 @@ public class ArticleSerializer implements Serializer<Article> {
         int sourceId;
 
         String[] lines = json.split("\n");
-        for (int i = 0; i < lines.length; i++) {
+        /*for (int i = 0; i < lines.length; i++) {
             System.out.println(i + ":" + lines[i]);
-        }
+        }*/
 
         // id
         Pattern p = Pattern.compile(":(\\d+),");
@@ -95,7 +95,7 @@ public class ArticleSerializer implements Serializer<Article> {
         m = Pattern.compile(":(\\d+),").matcher(lines[5]);
         m.find();
         int timestampEditDate = Integer.parseInt(m.group(1));
-        editDate = Timestamp.from(Instant.ofEpochSecond(timestampCreateDate)).toLocalDateTime().toLocalDate();
+        editDate = Timestamp.from(Instant.ofEpochSecond(timestampEditDate)).toLocalDateTime().toLocalDate();
         // text
         m = Pattern.compile(":\"(.+)\",").matcher(lines[6]);
         m.find();
@@ -159,36 +159,32 @@ public class ArticleSerializer implements Serializer<Article> {
                 // id
                 Matcher m1 = Pattern.compile(":(\\d+),").matcher(lines[indexEndImages]);
                 m1.find();
-                idImage = Integer.parseInt(m.group(1));
+                idImage = Integer.parseInt(m1.group(1));
                 indexEndImages += 1;
 
                 // title
                 Matcher m2 = Pattern.compile(":\"(.+)\",").matcher(lines[indexEndImages]);
                 m2.find();
-                titleImage = m.group(1);
+                titleImage = m2.group(1);
                 indexEndImages += 1;
 
                 // path
                 Matcher m3 = Pattern.compile(":\"(.+)\",").matcher(lines[indexEndImages]);
                 m3.find();
-                pathImage = m.group(1);
+                pathImage = m3.group(1);
                 indexEndImages += 1;
 
                 // articleId
                 Matcher m4 = Pattern.compile(":(\\d+),").matcher(lines[indexEndImages]);
                 m4.find();
-                articleIdImage = Integer.parseInt(m.group(1));
+                articleIdImage = Integer.parseInt(m4.group(1));
                 indexEndImages += 3;
 
                 // создаем изображение и добавляем в статью
                 Article.ArticleImage articleImage = new Article.ArticleImage(idImage, titleImage, pathImage, articleIdImage);
                 article.addNewImage(articleImage);
 
-                System.out.println("indexEndImages: " + indexEndImages);
-                System.out.println(articleIdImage);
-
                 if (Pattern.compile("tagsId").matcher(lines[indexEndImages]).find()) {
-                    System.out.println("break!");
                     break;
                 }
             }
@@ -198,8 +194,7 @@ public class ArticleSerializer implements Serializer<Article> {
             while (true) {
                 Matcher localMatcher = Pattern.compile("(\\d+)").matcher(lines[indexEndTag]);
                 localMatcher.find();
-                int idTag = Integer.parseInt(m.group(1));
-                System.out.println("idTag: " + idTag);
+                int idTag = Integer.parseInt(localMatcher.group(1));
                 article.addNewTagId(idTag);
                 indexEndTag += 1;
                 if (!Pattern.compile("(\\d+)").matcher(lines[indexEndTag]).find()) {
