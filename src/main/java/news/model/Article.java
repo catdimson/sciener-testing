@@ -156,6 +156,10 @@ public class Article {
         return this.id == id;
     }
 
+    public boolean equalsWithTitle(String title) {
+        return this.title.equals(title);
+    }
+
     public Object[] getObjects() {
         return new Object[] {
                 id,

@@ -27,6 +27,14 @@ public class Group {
         return this.title;
     }
 
+    public boolean equalsWithId(int id) {
+        return this.id == id;
+    }
+
+    public boolean equalsWithTitle(String title) {
+        return this.title.equals(title);
+    }
+
     public Object[] getObjects() {
         return new Object[] {
                 id,

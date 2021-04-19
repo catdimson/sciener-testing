@@ -139,6 +139,14 @@ public class User {
         return this.isStaff && this.isActive;
     }
 
+    public boolean equalsWithId(int id) {
+        return this.id == id;
+    }
+
+    public boolean equalsWithFirstname(String firstName) {
+        return this.firstName.equals(firstName);
+    }
+
     public Object[] getObjects() {
         return new Object[] {
                 id,

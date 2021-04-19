@@ -143,7 +143,7 @@ class SourceRepositoryTest {
     }
 
     @Test
-    void updateCategory() {
+    void updateSource() {
         try {
             SoftAssertions soft = new SoftAssertions();
             SourceRepository sourceRepository = new SourceRepository(this.poolConnection);

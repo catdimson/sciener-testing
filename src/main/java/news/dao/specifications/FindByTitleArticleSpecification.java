@@ -11,7 +11,7 @@ public class FindByTitleArticleSpecification implements ExtendSqlSpecification<A
 
     @Override
     public boolean isSpecified(Article article) {
-        return article.getObjects()[1] == this.title;
+        return article.equalsWithTitle(this.title);
     }
 
     @Override
@@ -40,22 +40,3 @@ public class FindByTitleArticleSpecification implements ExtendSqlSpecification<A
         return this.title;
     }
 }
-
-
-/*SELECT * FROM (
-
-        SELECT article.id as new_id, * FROM article
-        LEFT JOIN image ON article.id = image.article_id
-        LEFT JOIN article_tag ON article_tag.article_id=0
-        WHERE article.title='title_1'
-
-        UNION
-
-        SELECT article.id as new_id, * FROM article
-        LEFT JOIN image ON image.article_id = 0
-        LEFT JOIN article_tag ON article.id = article_tag.article_id
-        WHERE article.title = 'title_1'
-
-        ) result
-
-        ORDER BY result.new_id*/

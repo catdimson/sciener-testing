@@ -1,17 +1,17 @@
 package news.dao.repositories;
 
 import news.dao.connection.DBPool;
-import news.dao.specifications.SqlSpecification;
+import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Group;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GroupRepository implements Repository<Group> {
+public class GroupRepository implements ExtendRepository<Group> {
     final private DBPool connectionPool;
 
     public GroupRepository(DBPool connectionPool) {
@@ -19,12 +19,17 @@ public class GroupRepository implements Repository<Group> {
     }
 
     @Override
-    public List<Group> query(SqlSpecification<Group> groupSpecification) throws SQLException {
+    public List<Group> query(ExtendSqlSpecification<Group> groupSpecification) throws SQLException {
         List<Group> queryResult = new ArrayList<>();
         Connection connection = connectionPool.getConnection();
-        Statement statement = connection.createStatement();
         String sqlQuery = groupSpecification.toSqlClauses();
-        ResultSet result = statement.executeQuery(sqlQuery);
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
+        if (groupSpecification.isById()) {
+            preparedStatement.setInt(1, (int) groupSpecification.getCriterial());
+        } else {
+            preparedStatement.setString(1, (String) groupSpecification.getCriterial());
+        }
+        ResultSet result = preparedStatement.executeQuery();
         while (result.next()) {
             Group group = new Group(result.getInt(1), result.getString(2));
             queryResult.add(group);
@@ -35,26 +40,30 @@ public class GroupRepository implements Repository<Group> {
     @Override
     public void create(Group group) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
-        Statement statement = connection.createStatement();
+        String sqlCreateInstance = "INSERT INTO \"group\" (title) VALUES(?);";
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateInstance);
         Object[] instance = group.getObjects();
-        String sqlCreateInstance = String.format("INSERT INTO \"group\"(title) VALUES('%s')", instance[1]);
-        statement.executeUpdate(sqlCreateInstance);
+        preparedStatement.setString(1, (String) instance[1]);
+        preparedStatement.executeUpdate();
     }
 
     @Override
     public void delete(int id) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
-        Statement statement = connection.createStatement();
-        String sqlDeleteInstance = String.format("DELETE FROM \"group\" WHERE id=%d;", id);
-        statement.executeUpdate(sqlDeleteInstance);
+        String sqlDeleteInstance = "DELETE FROM \"group\" WHERE id=?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlDeleteInstance);
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
     }
 
     @Override
     public void update(Group group) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
-        Statement statement = connection.createStatement();
+        String sqlUpdateInstance = "UPDATE \"group\" SET title=? WHERE id=?;";
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdateInstance);
         Object[] instance = group.getObjects();
-        String sqlUpdateInstance = String.format("UPDATE \"group\" SET title='%s' WHERE id=%s;", instance[1], instance[0]);
-        statement.executeUpdate(sqlUpdateInstance);
+        preparedStatement.setString(1, (String) instance[1]);
+        preparedStatement.setInt(2, (int) instance[0]);
+        preparedStatement.executeUpdate();
     }
 }

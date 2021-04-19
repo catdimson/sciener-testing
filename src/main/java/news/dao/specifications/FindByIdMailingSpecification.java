@@ -2,7 +2,7 @@ package news.dao.specifications;
 
 import news.model.Mailing;
 
-public class FindByIdMailingSpecification implements SqlSpecification<Mailing> {
+public class FindByIdMailingSpecification implements ExtendSqlSpecification<Mailing> {
     final private int id;
 
     public FindByIdMailingSpecification(int id) {
@@ -11,11 +11,21 @@ public class FindByIdMailingSpecification implements SqlSpecification<Mailing> {
 
     @Override
     public boolean isSpecified(Mailing mailing) {
-        return (int) mailing.getObjects()[0] == this.id;
+        return mailing.equalsWithId(this.id);
     }
 
     @Override
     public String toSqlClauses() {
-        return String.format("SELECT * FROM mailing WHERE id='%d';", this.id);
+        return "SELECT * FROM mailing WHERE id=?;";
+    }
+
+    @Override
+    public Object getCriterial() {
+        return this.id;
+    }
+
+    @Override
+    public boolean isById() {
+        return true;
     }
 }

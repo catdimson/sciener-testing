@@ -2,7 +2,7 @@ package news.dao.specifications;
 
 import news.model.Group;
 
-public class FindByTitleGroupSpecification implements SqlSpecification<Group> {
+public class FindByTitleGroupSpecification implements ExtendSqlSpecification<Group> {
     final private String title;
 
     public FindByTitleGroupSpecification(String title) {
@@ -11,11 +11,21 @@ public class FindByTitleGroupSpecification implements SqlSpecification<Group> {
 
     @Override
     public boolean isSpecified(Group group) {
-        return group.getObjects()[1] == this.title;
+        return group.equalsWithTitle(this.title);
     }
 
     @Override
     public String toSqlClauses() {
-        return String.format("SELECT * FROM \"group\" WHERE title='%s';", this.title);
+        return "SELECT * FROM \"group\" WHERE title=?;";
+    }
+
+    @Override
+    public Object getCriterial() {
+        return this.title;
+    }
+
+    @Override
+    public boolean isById() {
+        return false;
     }
 }
