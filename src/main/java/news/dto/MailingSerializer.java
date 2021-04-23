@@ -35,7 +35,7 @@ public class MailingSerializer implements Serializer<Mailing> {
     @Override
     public Mailing toObject() {
         int id;
-        String title;
+        String email;
 
         String[] lines = json.split("\n");
         /*for (int i = 0; i < lines.length; i++) {
@@ -47,13 +47,13 @@ public class MailingSerializer implements Serializer<Mailing> {
         Matcher m = p.matcher(lines[1]);
         m.find();
         id = Integer.parseInt(m.group(1));
-        // title
+        // email
         m = Pattern.compile(":\"(.+)\",").matcher(lines[2]);
         m.find();
-        title = m.group(1);
+        email = m.group(1);
 
         // создаем по распарсеным данным объект рассылки
-        Mailing mailing = new Mailing(id, title);
+        Mailing mailing = new Mailing(id, email);
 
         return mailing;
     }
