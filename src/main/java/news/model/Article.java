@@ -22,7 +22,6 @@ public class Article {
     private int sourceId;
     private Collection<ArticleImage> images = new ArrayList<>();
     private Set<Integer> tagsId = new HashSet<>();
-    public String hzchzt = "wqeeqwewqeqwwqerewferg";
 
     public Article(int id, String title, String lead, LocalDate createDate, LocalDate editDate, String text,
                    boolean isPublished, int categoryId, int userId, int sourceId) {

@@ -97,4 +97,11 @@ public class Afisha {
                 sourceId
         };
     }
+
+    public static String[] getFields() {
+        return new String[] {
+                "id", "title", "imageUrl", "lead", "description", "ageLimit", "timing", "place", "phone",
+                "date", "isCommercial", "userId", "sourceId"
+        };
+    }
 }
