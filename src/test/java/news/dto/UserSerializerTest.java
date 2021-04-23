@@ -43,8 +43,6 @@ class UserSerializerTest {
         UserSerializer userSerializer = new UserSerializer(user);
         String result = userSerializer.toJSON();
 
-        //System.out.println(expectedJSON);
-        //System.out.println(result);
         assertThat(result).isEqualTo(expectedJSON);
     }
 

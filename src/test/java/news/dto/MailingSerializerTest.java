@@ -20,8 +20,6 @@ class MailingSerializerTest {
         MailingSerializer mailingSerializer = new MailingSerializer(mailing);
         String result = mailingSerializer.toJSON();
 
-        /*System.out.println(expectedJSON);
-        System.out.println(result);*/
         assertThat(result).isEqualTo(expectedJSON);
     }
 

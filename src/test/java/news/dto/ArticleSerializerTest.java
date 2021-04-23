@@ -70,8 +70,6 @@ class ArticleSerializerTest {
         ArticleSerializer articleSerializer = new ArticleSerializer(article);
         String result = articleSerializer.toJSON();
 
-        //System.out.println(expectedJSON);
-        //System.out.println(result);
         assertThat(result).isEqualTo(expectedJSON);
     }
 

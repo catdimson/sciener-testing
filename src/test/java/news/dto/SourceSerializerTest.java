@@ -21,8 +21,6 @@ class SourceSerializerTest {
         SourceSerializer sourceSerializer = new SourceSerializer(source);
         String result = sourceSerializer.toJSON();
 
-        /*System.out.println(expectedJSON);
-        System.out.println(result);*/
         assertThat(result).isEqualTo(expectedJSON);
     }
 

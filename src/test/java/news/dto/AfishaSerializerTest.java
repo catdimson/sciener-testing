@@ -43,8 +43,6 @@ class AfishaSerializerTest {
         AfishaSerializer afishaSerializer = new AfishaSerializer(afisha);
         String result = afishaSerializer.toJSON();
 
-        /*System.out.println(expectedJSON);
-        System.out.println(result);*/
         assertThat(result).isEqualTo(expectedJSON);
     }
 

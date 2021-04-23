@@ -20,8 +20,6 @@ class GroupSerializerTest {
         GroupSerializer groupSerializer = new GroupSerializer(group);
         String result = groupSerializer.toJSON();
 
-        /*System.out.println(expectedJSON);
-        System.out.println(result);*/
         assertThat(result).isEqualTo(expectedJSON);
     }
 

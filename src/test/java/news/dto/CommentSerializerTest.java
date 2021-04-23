@@ -56,8 +56,6 @@ class CommentSerializerTest {
         CommentSerializer commentSerializer = new CommentSerializer(comment);
         String result = commentSerializer.toJSON();
 
-        /*System.out.println(expectedJSON);
-        System.out.println(result);*/
         assertThat(result).isEqualTo(expectedJSON);
     }
 

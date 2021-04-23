@@ -20,8 +20,6 @@ class TagSerializerTest {
         TagSerializer tagSerializer = new TagSerializer(tag);
         String result = tagSerializer.toJSON();
 
-        /*System.out.println(expectedJSON);
-        System.out.println(result);*/
         assertThat(result).isEqualTo(expectedJSON);
     }
 

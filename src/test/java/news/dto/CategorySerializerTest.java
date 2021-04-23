@@ -20,8 +20,6 @@ class CategorySerializerTest {
         CategorySerializer categorySerializer = new CategorySerializer(category);
         String result = categorySerializer.toJSON();
 
-        /*System.out.println(expectedJSON);
-        System.out.println(result);*/
         assertThat(result).isEqualTo(expectedJSON);
     }
 
