@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Класс сериализации статьи в JSON
+ * Класс сериализации комментария в JSON
  */
 public class CommentSerializer implements Serializer<Comment> {
     private String json;
@@ -129,7 +129,7 @@ public class CommentSerializer implements Serializer<Comment> {
                 commentIdAttachment = Integer.parseInt(m4.group(1));
                 indexEndAttachments += 2;
 
-                // создаем изображение и добавляем в статью
+                // создаем пркрепление и добавляем в комментарию
                 Comment.CommentAttachment commentAttachment = new Comment.CommentAttachment(idAttachment, titleAttachment, pathAttachment, commentIdAttachment);
                 comment.addNewAttachment(commentAttachment);
 

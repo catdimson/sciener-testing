@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Класс сериализации статьи в JSON
+ * Класс сериализации афиши в JSON
  */
 public class AfishaSerializer implements Serializer<Afisha> {
     private String json;

@@ -163,4 +163,11 @@ public class User {
                 groupId
         };
     }
+
+    public static String[] getFields() {
+        return new String[] {
+                "id", "password", "username", "firstName", "lastName", "email", "lastLogin", "dateJoined", "isSuperuser",
+                "isStaff", "isActive", "groupId"
+        };
+    }
 }
