@@ -42,4 +42,10 @@ public class Source {
                 url
         };
     }
+
+    public static String[] getFields() {
+        return new String[] {
+                "id", "title", "url"
+        };
+    }
 }

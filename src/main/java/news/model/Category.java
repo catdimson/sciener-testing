@@ -41,4 +41,10 @@ public class Category {
                 title
         };
     }
+
+    public static String[] getFields() {
+        return new String[] {
+                "id", "title"
+        };
+    }
 }
