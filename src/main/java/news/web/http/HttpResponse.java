@@ -1,10 +1,15 @@
 
 package news.web.http;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class HttpResponse implements Response {
     int statusCode;
     String statusText;
     String version;
+    String body;
+    private final Map<String, String> headers = new HashMap<>();
 
     @Override
     public void setStatusCode(int statusCode) {
@@ -23,11 +28,15 @@ public class HttpResponse implements Response {
 
     @Override
     public void setHeader(String key, String value) {
+        this.headers.put(key, value);
+    }
 
+    public void setBody(String body) {
+        this.body = body;
     }
 
     @Override
-    public String buildResponse() {
+    public String getResponse() {
         return null;
     }
 }

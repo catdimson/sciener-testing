@@ -46,6 +46,6 @@ public class NewsApp extends Thread {
         // afisha
         afishaRepository = new AfishaRepository(dbPool);
         afishaService = new AfishaService(afishaRepository);
-        afishaController = new AfishaController(afishaService);
+        //afishaController = new AfishaController(afishaService);
     }
 }

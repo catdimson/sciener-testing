@@ -11,6 +11,4 @@ public class ArticleController {
         this.articleService = articleService;
         this.request = request;
     }
-
-    public
 }
