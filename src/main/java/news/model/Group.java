@@ -41,4 +41,10 @@ public class Group {
                 title
         };
     }
+
+    public static String[] getFields() {
+        return new String[] {
+                "id", "title"
+        };
+    }
 }

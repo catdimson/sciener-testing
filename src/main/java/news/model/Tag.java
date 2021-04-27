@@ -41,4 +41,10 @@ public class Tag {
                 title
         };
     }
+
+    public static String[] getFields() {
+        return new String[] {
+                "id", "title"
+        };
+    }
 }

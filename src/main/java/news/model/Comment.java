@@ -9,8 +9,8 @@ import java.util.Collection;
  */
 public class Comment {
     private int id;
-    final private LocalDate createDate;
     private String text;
+    final private LocalDate createDate;
     private LocalDate editDate;
     final private int userId;
     private int articleId;
@@ -63,6 +63,12 @@ public class Comment {
                     commentId
             };
         }
+
+        public static String[] getFields() {
+            return new String[] {
+                    "id", "title", "path", "commentId"
+            };
+        }
     }
 
     /**
@@ -105,6 +111,12 @@ public class Comment {
                 articleId,
                 userId,
                 attachments
+        };
+    }
+
+    public static String[] getFields() {
+        return new String[] {
+                "id", "text", "createDate", "editDate", "userId", "articleId", "attachments"
         };
     }
 }

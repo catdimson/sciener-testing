@@ -80,6 +80,12 @@ public class Article {
                     articleId
             };
         }
+
+        public static String[] getFields() {
+            return new String[] {
+                    "id", "title", "path", "articleId"
+            };
+        }
     }
 
     /**
@@ -174,6 +180,13 @@ public class Article {
                 sourceId,
                 images,
                 tagsId
+        };
+    }
+
+    public static String[] getFields() {
+        return new String[] {
+            "id", "title", "lead", "createDate", "editDate", "text", "isPublished", "categoryId",
+                "userId", "sourceId", "images", "tagsId"
         };
     }
 }

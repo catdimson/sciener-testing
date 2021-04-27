@@ -46,4 +46,10 @@ public class Mailing {
                 email
         };
     }
+
+    public static String[] getFields() {
+        return new String[] {
+                "id", "email"
+        };
+    }
 }
