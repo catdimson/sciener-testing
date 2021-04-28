@@ -9,6 +9,7 @@ public class HttpResponse implements Response {
     String statusText;
     String version;
     String body;
+    String response;
     private final Map<String, String> headers = new HashMap<>();
 
     @Override
@@ -37,7 +38,15 @@ public class HttpResponse implements Response {
 
     @Override
     public String getResponse() {
-        return null;
+        String requestLine = String.format("%s %s %s\n", version, statusCode, statusText);
+        StringBuilder headersLines = new StringBuilder();
+        for (Map.Entry<String, String> pair : headers.entrySet()) {
+            headersLines.append(pair.getKey()).append(": ").append(pair.getValue()).append("\n");
+        }
+        headersLines.append("\n");
+        String responseBody = body;
+        response = requestLine + headersLines + responseBody;
+        return response;
     }
 }
 

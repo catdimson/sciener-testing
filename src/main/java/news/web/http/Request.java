@@ -4,11 +4,11 @@ import java.util.Map;
 
 public interface Request {
 
-    String getMethod(String method);
+    String getMethod();
 
-    String getVersion(String version);
+    String getVersion();
 
-    String getPath(String path);
+    String getPath();
 
     Map<String, String> getHeaders();
 

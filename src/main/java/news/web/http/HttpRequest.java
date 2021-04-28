@@ -59,17 +59,17 @@ public class HttpRequest implements Request {
     }
 
     @Override
-    public String getMethod(String method) {
+    public String getMethod() {
         return method;
     }
 
     @Override
-    public String getVersion(String version) {
+    public String getVersion() {
         return version;
     }
 
     @Override
-    public String getPath(String path) {
+    public String getPath() {
         return path;
     }
 

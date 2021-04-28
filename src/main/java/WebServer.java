@@ -1,5 +1,4 @@
 import news.NewsApp;
-import news.dto.CategorySerializer;
 import news.web.http.HttpRequest;
 
 import java.io.BufferedReader;
@@ -23,9 +22,9 @@ public class WebServer {
                 Thread app = new NewsApp(request);
 
 
-                CategorySerializer categorySerializer = new CategorySerializer(request.getBody());
-                System.out.println(request.getBody());
-                System.out.println(categorySerializer.toObject());
+                //CategorySerializer categorySerializer = new CategorySerializer(request.getBody());
+                //System.out.println(request.getBody());
+                //System.out.println(categorySerializer.toObject());
                 String httpResponse = "" +
                         "HTTP/1.1 200 OK\r\n" +
                         "Content-Type: text/html\r\n\r\n" +
