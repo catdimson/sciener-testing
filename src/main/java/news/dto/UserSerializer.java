@@ -43,13 +43,13 @@ public class UserSerializer implements Serializer<User> {
             "\t" + "\"" + userFields[8] + "\"" + ":" + userInstance[8] + ",\n" +
             "\t" + "\"" + userFields[9] + "\"" + ":" + userInstance[9] + ",\n" +
             "\t" + "\"" + userFields[10] + "\"" + ":" + userInstance[10] + ",\n" +
-            "\t" + "\"" + userFields[11] + "\"" + ":" + userInstance[11] + ",\n" +
+            "\t" + "\"" + userFields[11] + "\"" + ":" + userInstance[11] + "\n" +
             "}";
     }
 
     @Override
     public User toObject() {
-        int id;
+        int id = 0;
         String password;
         String username;
         String firstName;
@@ -61,49 +61,62 @@ public class UserSerializer implements Serializer<User> {
         boolean isStaff = false;
         boolean isActive = false;
         int groupId;
+        int indexLine = 1;
+        boolean withId;
 
         String[] lines = json.split("\n");
         /*for (int i = 0; i < lines.length; i++) {
             System.out.println(i + ":" + lines[i]);
         }*/
-
-        // id
-        Pattern p = Pattern.compile(":(\\d+),");
-        Matcher m = p.matcher(lines[1]);
-        m.find();
-        id = Integer.parseInt(m.group(1));
+        Pattern p = Pattern.compile("\"id\":.+");
+        Matcher m = p.matcher(lines[indexLine]);
+        withId = m.find();
+        if (withId) {
+            p = Pattern.compile(":(\\d+),");
+            m = p.matcher(lines[indexLine]);
+            m.find();
+            id = Integer.parseInt(m.group(1));
+            indexLine++;
+        }
         // password
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[2]);
+        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         password = m.group(1);
+        indexLine++;
         // username
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[3]);
+        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         username = m.group(1);
+        indexLine++;
         // firstName
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[4]);
+        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         firstName = m.group(1);
+        indexLine++;
         // lastName
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[5]);
+        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         lastName = m.group(1);
+        indexLine++;
         // email
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[6]);
+        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         email = m.group(1);
+        indexLine++;
         // lastLogin
-        m = Pattern.compile(":(\\d+),").matcher(lines[7]);
+        m = Pattern.compile(":(\\d+),").matcher(lines[indexLine]);
         m.find();
         int timestampLastLogin = Integer.parseInt(m.group(1));
         lastLogin = Timestamp.from(Instant.ofEpochSecond(timestampLastLogin)).toLocalDateTime().toLocalDate();
+        indexLine++;
         // dateJoined
-        m = Pattern.compile(":(\\d+),").matcher(lines[8]);
+        m = Pattern.compile(":(\\d+),").matcher(lines[indexLine]);
         m.find();
         int timestampDateJoined= Integer.parseInt(m.group(1));
         dateJoined = Timestamp.from(Instant.ofEpochSecond(timestampDateJoined)).toLocalDateTime().toLocalDate();
+        indexLine++;
         // isSuperuser
-        m = Pattern.compile(":(\\w{4,5}),").matcher(lines[9]);
+        m = Pattern.compile(":(\\w{4,5}),").matcher(lines[indexLine]);
         if (m.find()) {
             if (m.group(1).equals("true")) {
                 isSuperuser = true;
@@ -112,8 +125,9 @@ public class UserSerializer implements Serializer<User> {
                 isSuperuser = false;
             }
         }
+        indexLine++;
         // isStaff
-        m = Pattern.compile(":(\\w{4,5}),").matcher(lines[10]);
+        m = Pattern.compile(":(\\w{4,5}),").matcher(lines[indexLine]);
         if (m.find()) {
             if (m.group(1).equals("true")) {
                 isStaff = true;
@@ -122,8 +136,9 @@ public class UserSerializer implements Serializer<User> {
                 isStaff = false;
             }
         }
+        indexLine++;
         // isActive
-        m = Pattern.compile(":(\\w{4,5}),").matcher(lines[11]);
+        m = Pattern.compile(":(\\w{4,5}),").matcher(lines[indexLine]);
         if (m.find()) {
             if (m.group(1).equals("true")) {
                 isActive = true;
@@ -132,14 +147,21 @@ public class UserSerializer implements Serializer<User> {
                 isActive = false;
             }
         }
+        indexLine++;
         // groupId
-        m = Pattern.compile(":(\\d+),").matcher(lines[12]);
+        m = Pattern.compile(":(\\d+)").matcher(lines[indexLine]);
         m.find();
         groupId = Integer.parseInt(m.group(1));
 
         // создаем по распарсеным данным объект пользователя
-        User user = new User(id, password, username, firstName, lastName, email, lastLogin, dateJoined, isSuperuser,
-                isStaff, isActive, groupId);
+        User user;
+        if (withId) {
+            user = new User(id, password, username, firstName, lastName, email, lastLogin, dateJoined, isSuperuser,
+                    isStaff, isActive, groupId);
+        } else {
+            user = new User(password, username, firstName, lastName, email, lastLogin, dateJoined, isSuperuser,
+                    isStaff, isActive, groupId);
+        }
 
         return user;
     }
