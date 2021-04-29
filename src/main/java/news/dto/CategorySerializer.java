@@ -28,35 +28,34 @@ public class CategorySerializer implements Serializer<Category> {
         return "" +
             "{\n" +
             "\t" + "\"" + categoryFields[0] + "\"" + ":" + categoryInstance[0] + ",\n" +
-            "\t" + "\"" + categoryFields[1] + "\"" + ":" + "\"" + categoryInstance[1] + "\"" + ",\n" +
+            "\t" + "\"" + categoryFields[1] + "\"" + ":" + "\"" + categoryInstance[1] + "\"" + "\n" +
             "}";
     }
 
     @Override
     public Category toObject() {
-        int id;
+        int id = 0;
         String title;
         Category category;
+        int indexLine = 1;
+        boolean withId;
 
         String[] lines = json.split("\n");
-
-        // id
-        Pattern p = Pattern.compile(":(\\d+),");
-        Matcher m = p.matcher(lines[1]);
-        if (m.find()) {
+        Pattern p = Pattern.compile("\"id\":.+");
+        Matcher m = p.matcher(lines[indexLine]);
+        withId = m.find();
+        if (withId) {
+            p = Pattern.compile(":(\\d+),");
+            m = p.matcher(lines[indexLine]);
+            m.find();
             id = Integer.parseInt(m.group(1));
-            // title
-            m = Pattern.compile(":\"(.+)\",").matcher(lines[2]);
-            m.find();
-            title = m.group(1);
-            category = new Category(id, title);
-        } else {
-            // title
-            m = Pattern.compile(":\"(.+)\",").matcher(lines[1]);
-            m.find();
-            title = m.group(1);
-            category = new Category(title);
+            indexLine++;
         }
+        // title
+        m = Pattern.compile(":\"(.+)\"").matcher(lines[indexLine]);
+        m.find();
+        title = m.group(1);
+        category = new Category(id, title);
 
         return category;
     }
