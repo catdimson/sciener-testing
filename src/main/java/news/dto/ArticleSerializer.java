@@ -74,7 +74,6 @@ public class ArticleSerializer implements Serializer<Article> {
         /*for (int i = 0; i < lines.length; i++) {
             System.out.println(i + ":" + lines[i]);
         }*/
-        // проверка, есть ли id в строке или нет
         Pattern p = Pattern.compile("\"id\":.+");
         Matcher m = p.matcher(lines[indexLine]);
         withId = m.find();
