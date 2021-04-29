@@ -24,7 +24,9 @@ public class MailingRepository implements ExtendRepository<Mailing> {
         if (mailingSpecification.isById()) {
             preparedStatement.setInt(1, (int) mailingSpecification.getCriterial());
         } else {
-            preparedStatement.setString(1, (String) mailingSpecification.getCriterial());
+            if (mailingSpecification.getCriterial() != null) {
+                preparedStatement.setString(1, (String) mailingSpecification.getCriterial());
+            }
         }
         ResultSet result = preparedStatement.executeQuery();
         while (result.next()) {

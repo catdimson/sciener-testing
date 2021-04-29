@@ -1,6 +1,7 @@
 package news.dao.repositories;
 
 import news.dao.connection.DBPool;
+import news.dao.specifications.FindAllTagSpecification;
 import news.dao.specifications.FindByIdTagSpecification;
 import news.dao.specifications.FindByTitleTagSpecification;
 import news.model.Tag;
@@ -81,6 +82,35 @@ class TagRepositoryTest {
             soft.assertThat(tag)
                     .hasFieldOrPropertyWithValue("id", resultFindByIdTag.get(0).getObjects()[0])
                     .hasFieldOrPropertyWithValue("title", resultFindByIdTag.get(0).getObjects()[1]);
+            soft.assertAll();
+            this.poolConnection.pullConnection(connection);
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    @Test
+    void findAll() {
+        try {
+            SoftAssertions soft = new SoftAssertions();
+            TagRepository tagRepository = new TagRepository(this.poolConnection);
+            Connection connection = this.poolConnection.getConnection();
+            Statement statement = connection.createStatement();
+            String sqlInsertInstance = "INSERT INTO tag (title) VALUES('ufc'), ('балет');";
+            statement.executeUpdate(sqlInsertInstance);
+            Tag tag1 = new Tag(1,"ufc");
+            Tag tag2 = new Tag(2,"балет");
+
+            FindAllTagSpecification findAll = new FindAllTagSpecification();
+            List<Tag> resultFindAllTag = tagRepository.query(findAll);
+
+            soft.assertThat(tag1)
+                    .hasFieldOrPropertyWithValue("id", resultFindAllTag.get(0).getObjects()[0])
+                    .hasFieldOrPropertyWithValue("title", resultFindAllTag.get(0).getObjects()[1]);
+            soft.assertAll();
+            soft.assertThat(tag2)
+                    .hasFieldOrPropertyWithValue("id", resultFindAllTag.get(1).getObjects()[0])
+                    .hasFieldOrPropertyWithValue("title", resultFindAllTag.get(1).getObjects()[1]);
             soft.assertAll();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {

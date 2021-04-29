@@ -24,7 +24,9 @@ public class GroupRepository implements ExtendRepository<Group> {
         if (groupSpecification.isById()) {
             preparedStatement.setInt(1, (int) groupSpecification.getCriterial());
         } else {
-            preparedStatement.setString(1, (String) groupSpecification.getCriterial());
+            if (groupSpecification.getCriterial() != null) {
+                preparedStatement.setString(1, (String) groupSpecification.getCriterial());
+            }
         }
         ResultSet result = preparedStatement.executeQuery();
         while (result.next()) {

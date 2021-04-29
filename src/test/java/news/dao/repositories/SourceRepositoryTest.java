@@ -1,6 +1,7 @@
 package news.dao.repositories;
 
 import news.dao.connection.DBPool;
+import news.dao.specifications.FindAllSourceSpecification;
 import news.dao.specifications.FindByIdSourceSpecification;
 import news.dao.specifications.FindByTitleSourceSpecification;
 import news.model.Source;
@@ -89,6 +90,41 @@ class SourceRepositoryTest {
             soft.assertThat(source2)
                     .hasFieldOrPropertyWithValue("title", resultFindByIdSource.get(1).getObjects()[1])
                     .hasFieldOrPropertyWithValue("url", resultFindByIdSource.get(1).getObjects()[2]);
+            soft.assertAll();
+            this.poolConnection.pullConnection(connection);
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    @Test
+    void findAll() {
+        try {
+            SoftAssertions soft = new SoftAssertions();
+            SourceRepository sourceRepository = new SourceRepository(this.poolConnection);
+            Connection connection = this.poolConnection.getConnection();
+            Statement statement = connection.createStatement();
+            String sqlInsertInstance = "INSERT INTO source (title, url) VALUES('Яндекс ДЗЕН', 'https://zen.yandex.ru/'), " +
+                    "('РИА Новости', 'https://ria.ru/'), ('Яндекс ДЗЕН', 'https://zen.yandex.ru/1234');";
+            statement.executeUpdate(sqlInsertInstance);
+            Source source1 = new Source("Яндекс ДЗЕН", "https://zen.yandex.ru/");
+            Source source2 = new Source("РИА Новости", "https://ria.ru/");
+            Source source3 = new Source("Яндекс ДЗЕН", "https://zen.yandex.ru/1234");
+
+            FindAllSourceSpecification findAll = new FindAllSourceSpecification();
+            List<Source> resultFindAllSource = sourceRepository.query(findAll);
+
+            soft.assertThat(source1)
+                    .hasFieldOrPropertyWithValue("title", resultFindAllSource.get(0).getObjects()[1])
+                    .hasFieldOrPropertyWithValue("url", resultFindAllSource.get(0).getObjects()[2]);
+            soft.assertAll();
+            soft.assertThat(source2)
+                    .hasFieldOrPropertyWithValue("title", resultFindAllSource.get(1).getObjects()[1])
+                    .hasFieldOrPropertyWithValue("url", resultFindAllSource.get(1).getObjects()[2]);
+            soft.assertAll();
+            soft.assertThat(source3)
+                    .hasFieldOrPropertyWithValue("title", resultFindAllSource.get(2).getObjects()[1])
+                    .hasFieldOrPropertyWithValue("url", resultFindAllSource.get(2).getObjects()[2]);
             soft.assertAll();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {

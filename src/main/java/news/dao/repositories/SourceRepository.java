@@ -24,7 +24,9 @@ public class SourceRepository implements ExtendRepository<Source> {
         if (sourceSpecification.isById()) {
             preparedStatement.setInt(1, (int) sourceSpecification.getCriterial());
         } else {
-            preparedStatement.setString(1, (String) sourceSpecification.getCriterial());
+            if (sourceSpecification.getCriterial() != null) {
+                preparedStatement.setString(1, (String) sourceSpecification.getCriterial());
+            }
         }
         ResultSet result = preparedStatement.executeQuery();
         while (result.next()) {

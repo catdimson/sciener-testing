@@ -25,7 +25,9 @@ public class UserRepository implements ExtendRepository<User> {
         if (userSpecification.isById()) {
             preparedStatement.setInt(1, (int) userSpecification.getCriterial());
         } else {
-            preparedStatement.setString(1, (String) userSpecification.getCriterial());
+            if (userSpecification.getCriterial() != null) {
+                preparedStatement.setString(1, (String) userSpecification.getCriterial());
+            }
         }
         ResultSet result = preparedStatement.executeQuery();
         while (result.next()) {

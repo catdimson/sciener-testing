@@ -1,6 +1,7 @@
 package news.dao.repositories;
 
 import news.dao.connection.DBPool;
+import news.dao.specifications.FindAllGroupSpecification;
 import news.dao.specifications.FindByIdGroupSpecification;
 import news.dao.specifications.FindByTitleGroupSpecification;
 import news.model.Group;
@@ -82,6 +83,35 @@ class GroupRepositoryTest {
             soft.assertThat(group)
                     .hasFieldOrPropertyWithValue("id", resultFindByIdGroup.get(0).getObjects()[0])
                     .hasFieldOrPropertyWithValue("title", resultFindByIdGroup.get(0).getObjects()[1]);
+            soft.assertAll();
+            this.poolConnection.pullConnection(connection);
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    @Test
+    void findAll() {
+        try {
+            SoftAssertions soft = new SoftAssertions();
+            GroupRepository groupRepository = new GroupRepository(this.poolConnection);
+            Connection connection = this.poolConnection.getConnection();
+            Statement statement = connection.createStatement();
+            String sqlInsertInstance = "INSERT INTO \"group\" (title) VALUES ('Редактор'), ('Администратор');";
+            statement.executeUpdate(sqlInsertInstance);
+            Group group1 = new Group(1,"Редактор");
+            Group group2 = new Group(2,"Администратор");
+
+            FindAllGroupSpecification findAll = new FindAllGroupSpecification();
+            List<Group> resultFindAllGroup = groupRepository.query(findAll);
+
+            soft.assertThat(group1)
+                    .hasFieldOrPropertyWithValue("id", resultFindAllGroup.get(0).getObjects()[0])
+                    .hasFieldOrPropertyWithValue("title", resultFindAllGroup.get(0).getObjects()[1]);
+            soft.assertAll();
+            soft.assertThat(group2)
+                    .hasFieldOrPropertyWithValue("id", resultFindAllGroup.get(1).getObjects()[0])
+                    .hasFieldOrPropertyWithValue("title", resultFindAllGroup.get(1).getObjects()[1]);
             soft.assertAll();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {

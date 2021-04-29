@@ -24,7 +24,9 @@ public class CategoryRepository implements ExtendRepository<Category> {
         if (categorySpecification.isById()) {
             preparedStatement.setInt(1, (int) categorySpecification.getCriterial());
         } else {
-            preparedStatement.setString(1, (String) categorySpecification.getCriterial());
+            if (categorySpecification.getCriterial() != null) {
+                preparedStatement.setString(1, (String) categorySpecification.getCriterial());
+            }
         }
         ResultSet result = preparedStatement.executeQuery();
         while (result.next()) {

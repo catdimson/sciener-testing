@@ -1,6 +1,7 @@
 package news.dao.repositories;
 
 import news.dao.connection.DBPool;
+import news.dao.specifications.FindAllUserSpecification;
 import news.dao.specifications.FindByFirstnameUserSpecification;
 import news.dao.specifications.FindByIdUserSpecification;
 import news.model.User;
@@ -192,6 +193,74 @@ class UserRepositoryTest {
                     .hasFieldOrPropertyWithValue("isStaff", resultFindByFirstnameUserInstance2[9])
                     .hasFieldOrPropertyWithValue("isActive", resultFindByFirstnameUserInstance2[10])
                     .hasFieldOrPropertyWithValue("groupId", resultFindByFirstnameUserInstance2[11]);
+            soft.assertAll();
+            this.poolConnection.pullConnection(connection);
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    @Test
+    void findAll() {
+        try {
+            SoftAssertions soft = new SoftAssertions();
+            UserRepository userRepository = new UserRepository(this.poolConnection);
+            Connection connection = this.poolConnection.getConnection();
+
+            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", lastLogin, dateJoined,
+                    true, true, true, 1);
+            User user2 = new User(4, "ytrewq321", "cyber777", "Александр", "Жбанов", "jban1990@mail.ru", lastLogin, dateJoined,
+                    false, false, true, 2);
+            Object[] userInstance = user.getObjects();
+            Object[] userInstance2 = user2.getObjects();
+            LocalDate localDateLogin = (LocalDate) userInstance[6];
+            LocalDate localDateJoined = (LocalDate) userInstance[7];
+            LocalDate localDateLogin2 = (LocalDate) userInstance2[6];
+            LocalDate localDateJoined2 = (LocalDate) userInstance2[7];
+
+            String sqlCreateUser1 = String.format("INSERT INTO \"user\"" +
+                    "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
+                    "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance[1], userInstance[2], userInstance[3], userInstance[4], userInstance[5],
+                    Timestamp.valueOf(localDateLogin.atStartOfDay()), Timestamp.valueOf(localDateJoined.atStartOfDay()), userInstance[8], userInstance[9], userInstance[10], userInstance[11]);
+            String sqlCreateUser2 = String.format("INSERT INTO \"user\"" +
+                    "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
+                    "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance2[1], userInstance2[2], userInstance2[3], userInstance2[4], userInstance2[5],
+                    Timestamp.valueOf(localDateLogin2.atStartOfDay()), Timestamp.valueOf(localDateJoined2.atStartOfDay()), userInstance2[8], userInstance2[9], userInstance2[10], userInstance2[11]);
+
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(sqlCreateUser1);
+            statement.executeUpdate(sqlCreateUser2);
+
+            FindAllUserSpecification findAll = new FindAllUserSpecification();
+            List<User> resultFindAllUserList = userRepository.query(findAll);
+            Object[] resultFindAllUserInstance = resultFindAllUserList.get(0).getObjects();
+            Object[] resultFindAllUserInstance2 = resultFindAllUserList.get(1).getObjects();
+
+            soft.assertThat(user)
+                    .hasFieldOrPropertyWithValue("password", resultFindAllUserInstance[1])
+                    .hasFieldOrPropertyWithValue("username", resultFindAllUserInstance[2])
+                    .hasFieldOrPropertyWithValue("firstName", resultFindAllUserInstance[3])
+                    .hasFieldOrPropertyWithValue("lastName", resultFindAllUserInstance[4])
+                    .hasFieldOrPropertyWithValue("email", resultFindAllUserInstance[5])
+                    .hasFieldOrPropertyWithValue("lastLogin", resultFindAllUserInstance[6])
+                    .hasFieldOrPropertyWithValue("dateJoined", resultFindAllUserInstance[7])
+                    .hasFieldOrPropertyWithValue("isSuperuser", resultFindAllUserInstance[8])
+                    .hasFieldOrPropertyWithValue("isStaff", resultFindAllUserInstance[9])
+                    .hasFieldOrPropertyWithValue("isActive", resultFindAllUserInstance[10])
+                    .hasFieldOrPropertyWithValue("groupId", resultFindAllUserInstance[11]);
+            soft.assertAll();
+            soft.assertThat(user2)
+                    .hasFieldOrPropertyWithValue("password", resultFindAllUserInstance2[1])
+                    .hasFieldOrPropertyWithValue("username", resultFindAllUserInstance2[2])
+                    .hasFieldOrPropertyWithValue("firstName", resultFindAllUserInstance2[3])
+                    .hasFieldOrPropertyWithValue("lastName", resultFindAllUserInstance2[4])
+                    .hasFieldOrPropertyWithValue("email", resultFindAllUserInstance2[5])
+                    .hasFieldOrPropertyWithValue("lastLogin", resultFindAllUserInstance2[6])
+                    .hasFieldOrPropertyWithValue("dateJoined", resultFindAllUserInstance2[7])
+                    .hasFieldOrPropertyWithValue("isSuperuser", resultFindAllUserInstance2[8])
+                    .hasFieldOrPropertyWithValue("isStaff", resultFindAllUserInstance2[9])
+                    .hasFieldOrPropertyWithValue("isActive", resultFindAllUserInstance2[10])
+                    .hasFieldOrPropertyWithValue("groupId", resultFindAllUserInstance2[11]);
             soft.assertAll();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {

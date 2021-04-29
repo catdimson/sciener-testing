@@ -25,7 +25,9 @@ public class AfishaRepository implements ExtendRepository<Afisha> {
         if (afishaSpecification.isById()) {
             preparedStatement.setInt(1, (int) afishaSpecification.getCriterial());
         } else {
-            preparedStatement.setString(1, (String) afishaSpecification.getCriterial());
+            if (afishaSpecification.getCriterial() != null) {
+                preparedStatement.setString(1, (String) afishaSpecification.getCriterial());
+            }
         }
         ResultSet result = preparedStatement.executeQuery();
         while (result.next()) {

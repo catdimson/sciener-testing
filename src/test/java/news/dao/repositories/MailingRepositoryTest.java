@@ -1,6 +1,7 @@
 package news.dao.repositories;
 
 import news.dao.connection.DBPool;
+import news.dao.specifications.FindAllMailingSpecification;
 import news.dao.specifications.FindByEmailMailingSpecification;
 import news.dao.specifications.FindByIdMailingSpecification;
 import news.model.Mailing;
@@ -82,6 +83,35 @@ class MailingRepositoryTest {
             soft.assertThat(mailing)
                     .hasFieldOrPropertyWithValue("id", resultFindByIdMailing.get(0).getObjects()[0])
                     .hasFieldOrPropertyWithValue("email", resultFindByIdMailing.get(0).getObjects()[1]);
+            soft.assertAll();
+            this.poolConnection.pullConnection(connection);
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    @Test
+    void findAll() {
+        try {
+            SoftAssertions soft = new SoftAssertions();
+            MailingRepository mailingRepository = new MailingRepository(this.poolConnection);
+            Connection connection = this.poolConnection.getConnection();
+            Statement statement = connection.createStatement();
+            String sqlInsertInstance = "INSERT INTO mailing (email) VALUES ('test@mail.ru'), ('test2@mail.ru');";
+            statement.executeUpdate(sqlInsertInstance);
+            Mailing mailing1 = new Mailing(1,"test@mail.ru");
+            Mailing mailing2 = new Mailing(2,"test2@mail.ru");
+
+            FindAllMailingSpecification findAll = new FindAllMailingSpecification();
+            List<Mailing> resultFindAllMailing = mailingRepository.query(findAll);
+
+            soft.assertThat(mailing1)
+                    .hasFieldOrPropertyWithValue("id", resultFindAllMailing.get(0).getObjects()[0])
+                    .hasFieldOrPropertyWithValue("email", resultFindAllMailing.get(0).getObjects()[1]);
+            soft.assertAll();
+            soft.assertThat(mailing2)
+                    .hasFieldOrPropertyWithValue("id", resultFindAllMailing.get(1).getObjects()[0])
+                    .hasFieldOrPropertyWithValue("email", resultFindAllMailing.get(1).getObjects()[1]);
             soft.assertAll();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {

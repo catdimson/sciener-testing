@@ -24,7 +24,9 @@ public class TagRepository implements ExtendRepository<Tag> {
         if (tagSpecification.isById()) {
             preparedStatement.setInt(1, (int) tagSpecification.getCriterial());
         } else {
-            preparedStatement.setString(1, (String) tagSpecification.getCriterial());
+            if (tagSpecification.getCriterial() != null) {
+                preparedStatement.setString(1, (String) tagSpecification.getCriterial());
+            }
         }
         ResultSet result = preparedStatement.executeQuery();
         while (result.next()) {
