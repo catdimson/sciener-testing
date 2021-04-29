@@ -202,13 +202,13 @@ public class ArticleSerializer implements Serializer<Article> {
                 indexEndImages += 3;
 
                 // создаем изображение и добавляем в статью
+                Article.ArticleImage articleImage;
                 if (withId) {
-                    Article.ArticleImage articleImage = new Article.ArticleImage(idImage, titleImage, pathImage, articleIdImage);
-                    article.addNewImage(articleImage);
+                    articleImage = new Article.ArticleImage(idImage, titleImage, pathImage, articleIdImage);
                 } else {
-                    Article.ArticleImage articleImage = new Article.ArticleImage(titleImage, pathImage, articleIdImage);
-                    article.addNewImage(articleImage);
+                    articleImage = new Article.ArticleImage(titleImage, pathImage, articleIdImage);
                 }
+                article.addNewImage(articleImage);
 
                 if (Pattern.compile("tagsId").matcher(lines[indexEndImages]).find()) {
                     break;
