@@ -15,7 +15,7 @@ class SourceSerializerTest {
                 "{\n" +
                 "\t\"id\":1,\n" +
                 "\t\"title\":\"РИА новости\",\n" +
-                "\t\"url\":\"https://ria.ru/\",\n" +
+                "\t\"url\":\"https://ria.ru/\"\n" +
                 "}";
 
         SourceSerializer sourceSerializer = new SourceSerializer(source);
@@ -31,7 +31,7 @@ class SourceSerializerTest {
                 "{\n" +
                 "\t\"id\":1,\n" +
                 "\t\"title\":\"РИА новости\",\n" +
-                "\t\"url\":\"https://ria.ru\",\n" +
+                "\t\"url\":\"https://ria.ru\"\n" +
                 "}";
 
         SourceSerializer sourceSerializer = new SourceSerializer(json);

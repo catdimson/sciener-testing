@@ -36,7 +36,6 @@ public class CategorySerializer implements Serializer<Category> {
     public Category toObject() {
         int id = 0;
         String title;
-        Category category;
         int indexLine = 1;
         boolean withId;
 
@@ -55,7 +54,12 @@ public class CategorySerializer implements Serializer<Category> {
         m = Pattern.compile(":\"(.+)\"").matcher(lines[indexLine]);
         m.find();
         title = m.group(1);
-        category = new Category(id, title);
+        Category category;
+        if (withId) {
+            category = new Category(id, title);
+        } else {
+            category = new Category(title);
+        }
 
         return category;
     }

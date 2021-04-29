@@ -14,7 +14,7 @@ class TagSerializerTest {
         final String expectedJSON =
                 "{\n" +
                 "\t\"id\":1,\n" +
-                "\t\"title\":\"ufc\",\n" +
+                "\t\"title\":\"ufc\"\n" +
                 "}";
 
         TagSerializer tagSerializer = new TagSerializer(tag);
@@ -29,7 +29,7 @@ class TagSerializerTest {
         final String json =
                 "{\n" +
                 "\t\"id\":1,\n" +
-                "\t\"title\":\"ufc\",\n" +
+                "\t\"title\":\"ufc\"\n" +
                 "}";
 
         TagSerializer tagSerializer = new TagSerializer(json);

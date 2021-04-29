@@ -14,7 +14,7 @@ class GroupSerializerTest {
         final String expectedJSON =
                 "{\n" +
                 "\t\"id\":1,\n" +
-                "\t\"title\":\"Редактор\",\n" +
+                "\t\"title\":\"Редактор\"\n" +
                 "}";
 
         GroupSerializer groupSerializer = new GroupSerializer(group);
@@ -29,7 +29,7 @@ class GroupSerializerTest {
         final String json =
                 "{\n" +
                 "\t\"id\":1,\n" +
-                "\t\"title\":\"Редактор\",\n" +
+                "\t\"title\":\"Редактор\"\n" +
                 "}";
 
         GroupSerializer groupSerializer = new GroupSerializer(json);

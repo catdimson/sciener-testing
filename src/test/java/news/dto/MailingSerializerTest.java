@@ -14,7 +14,7 @@ class MailingSerializerTest {
         final String expectedJSON =
                 "{\n" +
                 "\t\"id\":1,\n" +
-                "\t\"email\":\"test@mail.ru\",\n" +
+                "\t\"email\":\"test@mail.ru\"\n" +
                 "}";
 
         MailingSerializer mailingSerializer = new MailingSerializer(mailing);
@@ -29,7 +29,7 @@ class MailingSerializerTest {
         final String json =
                 "{\n" +
                 "\t\"id\":1,\n" +
-                "\t\"email\":\"test@mail.ru\",\n" +
+                "\t\"email\":\"test@mail.ru\"\n" +
                 "}";
 
         MailingSerializer mailingSerializer = new MailingSerializer(json);

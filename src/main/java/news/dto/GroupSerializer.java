@@ -28,32 +28,42 @@ public class GroupSerializer implements Serializer<Group> {
         return "" +
             "{\n" +
             "\t" + "\"" + groupFields[0] + "\"" + ":" + groupInstance[0] + ",\n" +
-            "\t" + "\"" + groupFields[1] + "\"" + ":" + "\"" + groupInstance[1] + "\"" + ",\n" +
+            "\t" + "\"" + groupFields[1] + "\"" + ":" + "\"" + groupInstance[1] + "\"" + "\n" +
             "}";
     }
 
     @Override
     public Group toObject() {
-        int id;
+        int id = 0;
         String title;
+        int indexLine = 1;
+        boolean withId;
 
         String[] lines = json.split("\n");
         /*for (int i = 0; i < lines.length; i++) {
             System.out.println(i + ":" + lines[i]);
         }*/
 
-        // id
-        Pattern p = Pattern.compile(":(\\d+),");
-        Matcher m = p.matcher(lines[1]);
-        m.find();
-        id = Integer.parseInt(m.group(1));
+        Pattern p = Pattern.compile("\"id\":.+");
+        Matcher m = p.matcher(lines[indexLine]);
+        withId = m.find();
+        if (withId) {
+            p = Pattern.compile(":(\\d+),");
+            m = p.matcher(lines[indexLine]);
+            m.find();
+            id = Integer.parseInt(m.group(1));
+            indexLine++;
+        }
         // title
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[2]);
+        m = Pattern.compile(":\"(.+)\"").matcher(lines[indexLine]);
         m.find();
         title = m.group(1);
-
-        // создаем по распарсеным данным объект группы
-        Group group = new Group(id, title);
+        Group group;
+        if (withId) {
+            group = new Group(id, title);
+        } else {
+            group = new Group(title);
+        }
 
         return group;
     }
