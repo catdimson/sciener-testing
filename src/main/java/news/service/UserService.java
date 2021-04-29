@@ -20,8 +20,8 @@ public class UserService implements Service<User> {
     }
 
     @Override
-    public void create(User instance) throws SQLException {
-        userRepository.create(instance);
+    public int create(User instance) throws SQLException {
+        return userRepository.create(instance);
     }
 
     @Override

@@ -35,13 +35,16 @@ public class CategoryRepository implements ExtendRepository<Category> {
     }
 
     @Override
-    public void create(Category category) throws SQLException {
+    public int create(Category category) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlCreateInstance = "INSERT INTO category (title) VALUES(?)";
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateInstance);
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateInstance, PreparedStatement.RETURN_GENERATED_KEYS);
         Object[] instance = category.getObjects();
         preparedStatement.setString(1, (String) instance[1]);
         preparedStatement.executeUpdate();
+        ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+        generatedKeys.next();
+        return generatedKeys.getInt(1);
     }
 
     @Override

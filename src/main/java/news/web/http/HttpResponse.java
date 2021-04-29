@@ -37,7 +37,7 @@ public class HttpResponse implements Response {
     }
 
     @Override
-    public String getResponse() {
+    public String getRawResponse() {
         String requestLine = String.format("%s %s %s\n", version, statusCode, statusText);
         StringBuilder headersLines = new StringBuilder();
         for (Map.Entry<String, String> pair : headers.entrySet()) {

@@ -48,12 +48,12 @@ public class UserRepository implements ExtendRepository<User> {
     }
 
     @Override
-    public void create(User user) throws SQLException {
+    public int create(User user) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlCreateInstance = "INSERT INTO \"user\"" +
                 "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-        PreparedStatement statement = connection.prepareStatement(sqlCreateInstance);
+        PreparedStatement statement = connection.prepareStatement(sqlCreateInstance, Statement.RETURN_GENERATED_KEYS);
         Object[] instance = user.getObjects();
         statement.setString(1, (String) instance[1]);
         statement.setString(2, (String) instance[2]);
@@ -69,6 +69,9 @@ public class UserRepository implements ExtendRepository<User> {
         statement.setBoolean(10, (Boolean) instance[10]);
         statement.setInt(11, (int) instance[11]);
         statement.executeUpdate();
+        ResultSet generatedKeys = statement.getGeneratedKeys();
+        generatedKeys.next();
+        return generatedKeys.getInt(1);
     }
 
     @Override

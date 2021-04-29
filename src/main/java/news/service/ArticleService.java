@@ -20,8 +20,8 @@ public class ArticleService implements Service<Article> {
     }
 
     @Override
-    public void create(Article instance) throws SQLException {
-        articleRepository.create(instance);
+    public int create(Article instance) throws SQLException {
+        return articleRepository.create(instance);
     }
 
     @Override

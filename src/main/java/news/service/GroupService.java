@@ -20,8 +20,8 @@ public class GroupService implements Service<Group> {
     }
 
     @Override
-    public void create(Group instance) throws SQLException {
-        groupRepository.create(instance);
+    public int create(Group instance) throws SQLException {
+        return groupRepository.create(instance);
     }
 
     @Override

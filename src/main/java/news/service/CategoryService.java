@@ -20,8 +20,8 @@ public class CategoryService implements Service<Category> {
     }
 
     @Override
-    public void create(Category instance) throws SQLException {
-        categoryRepository.create(instance);
+    public int create(Category instance) throws SQLException {
+        return categoryRepository.create(instance);
     }
 
     @Override

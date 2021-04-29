@@ -24,7 +24,9 @@ public class CommentRepository implements ExtendRepository<Comment> {
         Connection connection = connectionPool.getConnection();
         String sqlQuery = commentSpecification.toSqlClauses();
         PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_READ_ONLY);
-        preparedStatement.setInt(1, (int) commentSpecification.getCriterial());
+        if (commentSpecification.getCriterial() != null) {
+            preparedStatement.setInt(1, (int) commentSpecification.getCriterial());
+        }
         ResultSet result = preparedStatement.executeQuery();
         // переменная содержит id комментария, который содержит вложенные сущности и с которым работаем в цикле
         int idCommentWithAttachments = 0;
@@ -50,6 +52,12 @@ public class CommentRepository implements ExtendRepository<Comment> {
             }
             queryResult.add(comment);
         } else {
+            /*while (result.next()) {
+                    System.out.println("|" + result.getInt(1) + "|" + result.getString(2) + "|" + result.getTimestamp(3) +
+                            "|" + result.getTimestamp(4) + "|" + result.getInt(5) + "|" +  result.getInt(6) + "|" +
+                            result.getInt(7) + "|" + result.getString(8) + "|" + result.getString(9) + "|" +
+                            result.getInt(10));
+                }*/
             while (result.next()) {
                 // добавляем в результат комментарии без прикреплений
                 if (result.getInt(7) == 0) {
@@ -99,12 +107,12 @@ public class CommentRepository implements ExtendRepository<Comment> {
     }
 
     @Override
-    public void create(Comment comment) throws SQLException {
+    public int create(Comment comment) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlCreateComment = "INSERT INTO comment " +
                 "(text, create_date, edit_date, article_id, user_id) " +
                 "VALUES(?, ?, ?, ?, ?);";
-        PreparedStatement statement = connection.prepareStatement(sqlCreateComment);
+        PreparedStatement statement = connection.prepareStatement(sqlCreateComment, Statement.RETURN_GENERATED_KEYS);
         Object[] instance = comment.getObjects();
         statement.setString(1, (String) instance[1]);
         LocalDate createDate = (LocalDate) instance[2];
@@ -131,6 +139,9 @@ public class CommentRepository implements ExtendRepository<Comment> {
             sqlCreateAttachments.append(sqlPath);
         }
         statementWithoutParams.executeUpdate(String.valueOf(sqlCreateAttachments));
+        ResultSet generatedKeys = statement.getGeneratedKeys();
+        generatedKeys.next();
+        return generatedKeys.getInt(1);
     }
 
     @Override

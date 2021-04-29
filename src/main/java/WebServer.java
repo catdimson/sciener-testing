@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 
 public class WebServer {
 
@@ -19,13 +20,9 @@ public class WebServer {
                 Socket server = serverSocket.accept();
                 BufferedReader in = new BufferedReader(new InputStreamReader(server.getInputStream()));
                 HttpRequest request = new HttpRequest(in);
-                Thread app = new NewsApp(request);
-
-
-                //CategorySerializer categorySerializer = new CategorySerializer(request.getBody());
-                //System.out.println(request.getBody());
-                //System.out.println(categorySerializer.toObject());
-                String httpResponse = "" +
+                NewsApp app = new NewsApp(request);
+                String httpResponse = app.getResponse().getRawResponse();
+                /*String httpResponse = "" +
                         "HTTP/1.1 200 OK\r\n" +
                         "Content-Type: text/html\r\n\r\n" +
                         "<!DOCTYPE>\n" +
@@ -39,12 +36,13 @@ public class WebServer {
                         "<p>Your browser sent a request that this server could not understand.</p>\n" +
                         "<p>The request line contained invalid characters following the protocol string.</p>\n" +
                         "</body>\n" +
-                        "</html>";
+                        "</html>";*/
+
                 PrintWriter out = new PrintWriter(server.getOutputStream(), true);
                 out.println(httpResponse);
                 out.close();
             }
-        } catch (IOException e) {
+        } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
     }

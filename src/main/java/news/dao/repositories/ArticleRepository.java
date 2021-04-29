@@ -31,8 +31,10 @@ public class ArticleRepository implements ExtendRepository<Article> {
             preparedStatement.setInt(1, (int) articleSpecification.getCriterial());
             preparedStatement.setInt(2, (int) articleSpecification.getCriterial());
         } else {
-            preparedStatement.setString(1, (String) articleSpecification.getCriterial());
-            preparedStatement.setString(2, (String) articleSpecification.getCriterial());
+            if (articleSpecification.getCriterial() != null) {
+                preparedStatement.setString(1, (String) articleSpecification.getCriterial());
+                preparedStatement.setString(2, (String) articleSpecification.getCriterial());
+            }
         }
 
         ResultSet result = preparedStatement.executeQuery();
@@ -204,7 +206,7 @@ public class ArticleRepository implements ExtendRepository<Article> {
     }
 
     @Override
-    public void create(Article article) throws SQLException {
+    public int create(Article article) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         Object[] instanceArticle = article.getObjects();
 
@@ -257,6 +259,7 @@ public class ArticleRepository implements ExtendRepository<Article> {
         });
         sqlInsertIdTags.replace(sqlInsertIdTags.length()-1, sqlInsertIdTags.length(), ";");
         statementWithoutParams.executeUpdate(String.valueOf(sqlInsertIdTags));
+        return idInstance;
     }
 
     @Override

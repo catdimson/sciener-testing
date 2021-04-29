@@ -20,8 +20,8 @@ public class CommentService implements Service<Comment> {
     }
 
     @Override
-    public void create(Comment instance) throws SQLException {
-        commentRepository.create(instance);
+    public int create(Comment instance) throws SQLException {
+        return commentRepository.create(instance);
     }
 
     @Override

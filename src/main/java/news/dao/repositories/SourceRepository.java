@@ -35,14 +35,17 @@ public class SourceRepository implements ExtendRepository<Source> {
     }
 
     @Override
-    public void create(Source source) throws SQLException {
+    public int create(Source source) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlCreateInstance = "INSERT INTO source(title, url) VALUES(?, ?);";
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateInstance);
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateInstance, Statement.RETURN_GENERATED_KEYS);
         Object[] instance = source.getObjects();
         preparedStatement.setString(1, (String) instance[1]);
         preparedStatement.setString(2, (String) instance[2]);
         preparedStatement.executeUpdate();
+        ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+        generatedKeys.next();
+        return generatedKeys.getInt(1);
     }
 
     @Override

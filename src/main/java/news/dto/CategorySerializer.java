@@ -36,24 +36,27 @@ public class CategorySerializer implements Serializer<Category> {
     public Category toObject() {
         int id;
         String title;
+        Category category;
 
         String[] lines = json.split("\n");
-        /*for (int i = 0; i < lines.length; i++) {
-            System.out.println(i + ":" + lines[i]);
-        }*/
 
         // id
         Pattern p = Pattern.compile(":(\\d+),");
         Matcher m = p.matcher(lines[1]);
-        m.find();
-        id = Integer.parseInt(m.group(1));
-        // title
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[2]);
-        m.find();
-        title = m.group(1);
-
-        // создаем по распарсеным данным объект категории
-        Category category = new Category(id, title);
+        if (m.find()) {
+            id = Integer.parseInt(m.group(1));
+            // title
+            m = Pattern.compile(":\"(.+)\",").matcher(lines[2]);
+            m.find();
+            title = m.group(1);
+            category = new Category(id, title);
+        } else {
+            // title
+            m = Pattern.compile(":\"(.+)\",").matcher(lines[1]);
+            m.find();
+            title = m.group(1);
+            category = new Category(title);
+        }
 
         return category;
     }

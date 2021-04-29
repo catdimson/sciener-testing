@@ -35,13 +35,16 @@ public class TagRepository implements ExtendRepository<Tag> {
     }
 
     @Override
-    public void create(Tag tag) throws SQLException {
+    public int create(Tag tag) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlCreateInstance = "INSERT INTO tag (title) VALUES(?);";
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateInstance);
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateInstance, Statement.RETURN_GENERATED_KEYS);
         Object[] instance = tag.getObjects();
         preparedStatement.setString(1, (String) instance[1]);
         preparedStatement.executeUpdate();
+        ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+        generatedKeys.next();
+        return generatedKeys.getInt(1);
     }
 
     @Override

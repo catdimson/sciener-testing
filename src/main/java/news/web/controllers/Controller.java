@@ -6,8 +6,8 @@ import java.sql.SQLException;
 
 public interface Controller {
 
-    public void buildResponse() throws SQLException;
+    void buildResponse() throws SQLException;
 
-    public HttpResponse getResponse();
+    HttpResponse getResponse();
 
 }

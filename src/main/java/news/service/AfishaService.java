@@ -20,8 +20,8 @@ public class AfishaService implements Service<Afisha> {
     }
 
     @Override
-    public void create(Afisha instance) throws SQLException {
-        afishaRepository.create(instance);
+    public int create(Afisha instance) throws SQLException {
+        return afishaRepository.create(instance);
     }
 
     @Override

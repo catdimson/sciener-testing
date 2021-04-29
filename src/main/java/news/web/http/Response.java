@@ -10,7 +10,7 @@ public interface Response {
 
     void setHeader(String key, String value);
 
-    String getResponse();
+    String getRawResponse();
 
 }
 

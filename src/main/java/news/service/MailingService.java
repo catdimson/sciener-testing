@@ -20,8 +20,8 @@ public class MailingService implements Service<Mailing> {
     }
 
     @Override
-    public void create(Mailing instance) throws SQLException {
-        mailingRepository.create(instance);
+    public int create(Mailing instance) throws SQLException {
+        return mailingRepository.create(instance);
     }
 
     @Override

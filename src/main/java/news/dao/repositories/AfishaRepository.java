@@ -49,12 +49,12 @@ public class AfishaRepository implements ExtendRepository<Afisha> {
     }
 
     @Override
-    public void create(Afisha afisha) throws SQLException {
+    public int create(Afisha afisha) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlCreateInstance = "INSERT INTO afisha" +
                 "(title, image_url, lead, description, age_limit, timing, place, phone, date, is_commercial, user_id, source_id) " +
                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-        PreparedStatement statement = connection.prepareStatement(sqlCreateInstance);
+        PreparedStatement statement = connection.prepareStatement(sqlCreateInstance, PreparedStatement.RETURN_GENERATED_KEYS);
         Object[] instance = afisha.getObjects();
         statement.setString(1, (String) instance[1]);
         statement.setString(2, (String) instance[2]);
@@ -70,6 +70,9 @@ public class AfishaRepository implements ExtendRepository<Afisha> {
         statement.setInt(11, (int) instance[11]);
         statement.setInt(12, (int) instance[12]);
         statement.executeUpdate();
+        ResultSet generatedKeys = statement.getGeneratedKeys();
+        generatedKeys.next();
+        return generatedKeys.getInt(1);
     }
 
     @Override

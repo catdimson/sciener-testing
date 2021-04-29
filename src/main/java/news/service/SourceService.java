@@ -20,8 +20,8 @@ public class SourceService implements Service<Source> {
     }
 
     @Override
-    public void create(Source instance) throws SQLException {
-        sourceRepository.create(instance);
+    public int create(Source instance) throws SQLException {
+        return sourceRepository.create(instance);
     }
 
     @Override

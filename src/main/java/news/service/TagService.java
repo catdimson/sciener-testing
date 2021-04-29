@@ -20,8 +20,8 @@ public class TagService implements Service<Tag> {
     }
 
     @Override
-    public void create(Tag instance) throws SQLException {
-        tagRepository.create(instance);
+    public int create(Tag instance) throws SQLException {
+        return tagRepository.create(instance);
     }
 
     @Override

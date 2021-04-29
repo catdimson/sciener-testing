@@ -25,6 +25,7 @@ public class RootController {
     // category
     CategoryRepository categoryRepository;
     CategoryService categoryService;
+    CategoryController categoryController;
     // comment
     CommentRepository commentRepository;
     CommentService commentService;
@@ -59,7 +60,6 @@ public class RootController {
                     afishaRepository = new AfishaRepository(dbPool);
                     afishaService = new AfishaService(afishaRepository);
                     afishaController = new AfishaController(afishaService, request);
-                    // вызов метода у контроллера
                     afishaController.buildResponse();
                     response = afishaController.getResponse();
                     break;
@@ -70,12 +70,22 @@ public class RootController {
                     // вызов метода у контроллера
                     response = articleController.getResponse();
                     break;*/
+                case ("category"):
+                    categoryRepository = new CategoryRepository(dbPool);
+                    categoryService = new CategoryService(categoryRepository);
+                    categoryController = new CategoryController(categoryService, request);
+                    categoryController.buildResponse();
+                    response = categoryController.getResponse();
+                    break;
                 default:
-                    System.out.println("default: Вернуть HttpResponse с notFound");
-                    // создать response вручную
+                    response.setStatusCode(400);
+                    response.setVersion("HTTP/1.1");
+                    response.setStatusText("Некорректный запрос");
             }
         } else {
-            System.out.println("Вернуть HttpResponse с notFound");
+            response.setStatusCode(404);
+            response.setVersion("HTTP/1.1");
+            response.setStatusText("Не найдено");
         }
 
         return response;

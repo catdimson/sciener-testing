@@ -1,26 +1,27 @@
 package news.web.controllers;
 
-import news.dto.AfishaSerializer;
-import news.service.AfishaService;
+import news.dto.CategorySerializer;
+import news.service.CategoryService;
 import news.web.http.HttpRequest;
 import news.web.http.HttpResponse;
 
+import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AfishaController implements Controller {
+public class CategoryController implements Controller {
     HttpRequest request;
-    HttpResponse response;
-    AfishaService afishaService;
-    AfishaSerializer afishaSerializer;
+    HttpResponse response = new HttpResponse();
+    CategoryService categoryService;
+    CategorySerializer categorySerializer;
 
-    public AfishaController(AfishaService afishaService, HttpRequest request) {
-        this.afishaService = afishaService;
+    public CategoryController(CategoryService categoryService, HttpRequest request) {
+        this.categoryService = categoryService;
         this.request = request;
     }
 
     @Override
-    public void buildResponse() {
+    public void buildResponse() throws SQLException {
         String urlUnit = request.getPath();
         Pattern p = Pattern.compile("/.+/(.+)/");
         Matcher m = p.matcher(urlUnit);
@@ -31,26 +32,27 @@ public class AfishaController implements Controller {
             m = p.matcher(urlUnit);
             // получение по id, редактирование, удаление записи
             if (m.find()) {
-                System.out.println("Получение по id, редактирование или удаление");
+                System.out.println("Получение по id, редактирование или удаление в зависимости от типп зпроса");
             // поиск по title
             } else {
-                /* КОД ПОИСКА ПО TITLE */
+                System.out.println("Поиск по title");
             }
         } else {
-            System.out.println("Добавляем новую запись или получаем список");
+            System.out.println("Добавляем новую запись или получаем список записей");
             switch (request.getMethod()) {
                 case ("GET"):
                     System.out.println("Получаем список записей (GET)");
                     break;
                 case ("POST"):
                     try {
-                        afishaSerializer = new AfishaSerializer(request.getBody());
-                        int id = afishaService.create(afishaSerializer.toObject());
+                        System.out.println("Добавляем запись (POST)");
+                        categorySerializer = new CategorySerializer(request.getBody());
+                        int id = categoryService.create(categorySerializer.toObject());
                         response.setStatusCode(201);
-                        response.setStatusText("Афиша создана");
+                        response.setStatusText("Категория создана");
                         response.setVersion("HTTP/1.1");
-                        response.setHeader("Location", String.format("/afisha/%s", id));
-                        response.setBody("<!DOCTYPE>\n" +
+                        response.setHeader("Location", String.format("/category/%s", id));
+                        /*response.setBody("<!DOCTYPE>\n" +
                                 "<html>\n" +
                                 "<head>\n" +
                                 "<title>Работает!</title>\n" +
@@ -61,11 +63,12 @@ public class AfishaController implements Controller {
                                 "<p>Your browser sent a request that this server could not understand.</p>\n" +
                                 "<p>The request line contained invalid characters following the protocol string.</p>\n" +
                                 "</body>\n" +
-                                "</html>");
+                                "</html>");*/
                     } catch (Exception e) {
                         response.setStatusCode(405);
                         response.setStatusText("Ошибка добавления");
                         response.setVersion("HTTP/1.1");
+                        System.out.println("Ошибка добавления!");
                     }
 
                     break;
