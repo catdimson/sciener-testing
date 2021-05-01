@@ -1,11 +1,14 @@
 package news.web.controllers;
 
+import news.dao.specifications.FindByIdCategorySpecification;
 import news.dto.CategorySerializer;
+import news.model.Category;
 import news.service.CategoryService;
 import news.web.http.HttpRequest;
 import news.web.http.HttpResponse;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,12 +25,64 @@ public class CategoryController implements Controller {
 
     @Override
     public void buildResponse() throws SQLException {
-        String urlUnit = request.getPath();
-        Pattern p = Pattern.compile("/.+/(.+)/");
-        Matcher m = p.matcher(urlUnit);
+        String url = request.getPath();
+        Pattern p;
+        Matcher m;
 
         // работаем с конкретной записью
-        if (m.find()) {
+        switch(request.getMethod()) {
+            case "GET":
+                p = Pattern.compile("^/category/(?<id>(\\d+))/$");
+                m = p.matcher(url);
+                if (m.find()) {
+                    FindByIdCategorySpecification findById = new FindByIdCategorySpecification(Integer.parseInt(m.group("id")));
+                    List<Category> findByIdCategoryList = categoryService.query(findById);
+                    if (findByIdCategoryList.isEmpty()) {
+                        response.setStatusCode(404);
+                        response.setStatusText("Категория не найдена");
+                        response.setVersion("HTTP/1.1");
+                        response.setHeader("Content-Type", "application/json; charset=UTF-8");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                        response.setBody("[]");
+                    } else {
+                        Category category = findByIdCategoryList.get(0);
+                        categorySerializer = new CategorySerializer(category);
+                        response.setStatusCode(200);
+                        response.setStatusText("OK");
+                        response.setVersion("HTTP/1.1");
+                        response.setHeader("Content-Type", "application/json; charset=UTF-8");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                        response.setBody(categorySerializer.toJSON());
+                    }
+                }
+                break;
+            case "POST":
+                System.out.println(url);
+                p = Pattern.compile("^/category/$");
+                m = p.matcher(url);
+                if (m.find()) {
+                    categorySerializer = new CategorySerializer(request.getBody());
+                    int id = categoryService.create(categorySerializer.toObject());
+                    response.setStatusCode(201);
+                    response.setStatusText("Категория создана");
+                    response.setVersion("HTTP/1.1");
+                    response.setHeader("Location", String.format("/category/%s/", id));
+                }
+                break;
+            case "PUT":
+                // код
+                break;
+            case "DELETE":
+                // код
+                break;
+            default:
+                // данный метод не поддерживается
+        }
+
+
+        /*if (m.find()) {
             p = Pattern.compile("/.+/(\\d+)/");
             m = p.matcher(urlUnit);
             // получение по id, редактирование, удаление записи
@@ -51,19 +106,7 @@ public class CategoryController implements Controller {
                         response.setStatusCode(201);
                         response.setStatusText("Категория создана");
                         response.setVersion("HTTP/1.1");
-                        response.setHeader("Location", String.format("/category/%s", id));
-                        /*response.setBody("<!DOCTYPE>\n" +
-                                "<html>\n" +
-                                "<head>\n" +
-                                "<title>Работает!</title>\n" +
-                                "<meta charset=\"utf-8\">\n" +
-                                "</head>\n" +
-                                "<body>\n" +
-                                "<h1>Ответ пришел</h1>\n" +
-                                "<p>Your browser sent a request that this server could not understand.</p>\n" +
-                                "<p>The request line contained invalid characters following the protocol string.</p>\n" +
-                                "</body>\n" +
-                                "</html>");*/
+                        response.setHeader("Location", String.format("/category/%s/", id));
                     } catch (Exception e) {
                         response.setStatusCode(405);
                         response.setStatusText("Ошибка добавления");
@@ -76,7 +119,7 @@ public class CategoryController implements Controller {
                     // ошибка
                     break;
             }
-        }
+        }*/
     }
 
     @Override

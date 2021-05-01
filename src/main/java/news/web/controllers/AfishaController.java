@@ -22,12 +22,12 @@ public class AfishaController implements Controller {
     @Override
     public void buildResponse() {
         String urlUnit = request.getPath();
-        Pattern p = Pattern.compile("/.+/(.+)/");
+        Pattern p = Pattern.compile("^/.+/(.+)/");
         Matcher m = p.matcher(urlUnit);
 
         // работаем с конкретной записью
         if (m.find()) {
-            p = Pattern.compile("/.+/(\\d+)/");
+            p = Pattern.compile("^/.+/(\\d+)/");
             m = p.matcher(urlUnit);
             // получение по id, редактирование, удаление записи
             if (m.find()) {
@@ -49,7 +49,7 @@ public class AfishaController implements Controller {
                         response.setStatusCode(201);
                         response.setStatusText("Афиша создана");
                         response.setVersion("HTTP/1.1");
-                        response.setHeader("Location", String.format("/afisha/%s", id));
+                        response.setHeader("Location", String.format("/afisha/%s/", id));
                         response.setBody("<!DOCTYPE>\n" +
                                 "<html>\n" +
                                 "<head>\n" +

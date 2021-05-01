@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public class RootController {
     HttpRequest request;
-    HttpResponse response;
+    HttpResponse response = new HttpResponse();
     DBPool dbPool;
 
     // afisha
@@ -52,7 +52,7 @@ public class RootController {
 
     public HttpResponse getResponse() throws SQLException {
         String url = request.getPath();
-        Pattern p = Pattern.compile("/(.+)/");
+        Pattern p = Pattern.compile("/(.+?)/");
         Matcher m = p.matcher(url);
         if (m.find()) {
             switch (m.group(1)) {
@@ -81,6 +81,8 @@ public class RootController {
                     response.setStatusCode(400);
                     response.setVersion("HTTP/1.1");
                     response.setStatusText("Некорректный запрос");
+                    response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                    response.setHeader("Pragma", "no-cache");
             }
         } else {
             response.setStatusCode(404);
