@@ -50,7 +50,7 @@ public class RootController {
     // user
     UserRepository userRepository;
     UserService userService;
-    //UserController userController;
+    UserController userController;
 
     public RootController(HttpRequest request, DBPool dbPool) {
         this.request = request;
@@ -113,6 +113,13 @@ public class RootController {
                     tagController = new TagController(tagService, request);
                     tagController.buildResponse();
                     response = tagController.getResponse();
+                }
+                case ("user") -> {
+                    userRepository = new UserRepository(dbPool);
+                    userService = new UserService(userRepository);
+                    userController = new UserController(userService, request);
+                    userController.buildResponse();
+                    response = userController.getResponse();
                 }
                 default -> {
                     response.setStatusCode(400);
