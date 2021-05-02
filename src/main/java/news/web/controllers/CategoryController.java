@@ -2,6 +2,7 @@ package news.web.controllers;
 
 import news.dao.specifications.FindAllCategorySpecification;
 import news.dao.specifications.FindByIdCategorySpecification;
+import news.dao.specifications.FindByTitleCategorySpecification;
 import news.dto.CategorySerializer;
 import news.model.Category;
 import news.service.CategoryService;
@@ -26,16 +27,18 @@ public class CategoryController implements Controller {
 
     @Override
     public void buildResponse() throws SQLException {
-        String url = request.getPath();
+        String fullUrl = request.getPath(true);
+        String url = request.getPath(false);
+        System.out.println("CategoryController: fullUrl - " + fullUrl);
+        System.out.println("CategoryController: url - " + url);
         Pattern p;
         Matcher m;
 
         // работаем с конкретной записью
         switch (request.getMethod()) {
             case "GET" -> {
-                System.out.println("GET!!!!");
                 p = Pattern.compile("^/category/$");
-                m = p.matcher(url);
+                m = p.matcher(fullUrl);
                 // получение списка всех категорий
                 if (m.find()) {
                     FindAllCategorySpecification findAll = new FindAllCategorySpecification();
@@ -72,10 +75,46 @@ public class CategoryController implements Controller {
                     }
                 }
                 // получение списка категорий отобранных по параметру title
-
+                p = Pattern.compile("^/category\\?title=(?<title>(\\w+))$", Pattern.UNICODE_CHARACTER_CLASS);
+                m = p.matcher(fullUrl);
+                if (m.find()) {
+                    System.out.println("CategoryController: GET поиск по title");
+                    FindByTitleCategorySpecification findByTitle = new FindByTitleCategorySpecification(m.group("title"));
+                    List<Category> findByTitleCategoryList = categoryService.query(findByTitle);
+                    if (findByTitleCategoryList.isEmpty()) {
+                        response.setStatusCode(200);
+                        response.setStatusText("OK");
+                        response.setVersion("HTTP/1.1");
+                        response.setHeader("Content-Type", "application/json; charset=UTF-8");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                        response.setBody("[]");
+                        break;
+                    } else {
+                        response.setStatusCode(200);
+                        response.setStatusText("OK");
+                        response.setVersion("HTTP/1.1");
+                        response.setHeader("Content-Type", "application/json; charset=UTF-8");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                        StringBuilder body = new StringBuilder();
+                        for (int i = 0; i < findByTitleCategoryList.size(); i++) {
+                            categorySerializer = new CategorySerializer(findByTitleCategoryList.get(i));
+                            body.append(categorySerializer.toJSON());
+                            if (i != findByTitleCategoryList.size() - 1) {
+                                body.append(",\n");
+                            } else {
+                                body.append("\n");
+                            }
+                        }
+                        body.insert(0, "[\n").append("]\n");
+                        response.setBody(body.toString());
+                        break;
+                    }
+                }
                 // получение категории по id
                 p = Pattern.compile("^/category/(?<id>(\\d+))/$");
-                m = p.matcher(url);
+                m = p.matcher(fullUrl);
                 if (m.find()) {
                     FindByIdCategorySpecification findById = new FindByIdCategorySpecification(Integer.parseInt(m.group("id")));
                     List<Category> findByIdCategoryList = categoryService.query(findById);
@@ -133,7 +172,7 @@ public class CategoryController implements Controller {
                 int statusUpdate;
                 if (m.find()) {
                     categorySerializer = new CategorySerializer(request.getBody());
-                    // нужно сравнить id из url и id из body. Если не совпадают то вернуть ответ с "Некорректный запрос"
+                    // нужно сравнить id из fullUrl и id из body. Если не совпадают то вернуть ответ с "Некорректный запрос"
                     Category category = categorySerializer.toObject();
                     int idCategoryFromBody = (int) category.getObjects()[0];
                     if (Integer.parseInt(m.group("id")) != idCategoryFromBody) {

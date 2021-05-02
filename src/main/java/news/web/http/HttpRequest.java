@@ -2,6 +2,7 @@ package news.web.http;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -10,6 +11,7 @@ import java.util.regex.Pattern;
 public class HttpRequest implements Request {
     private String method;
     private String version;
+    private String pathWithoutParams;
     private String path;
     private StringBuilder body = new StringBuilder();
     private String requestLine;
@@ -23,19 +25,22 @@ public class HttpRequest implements Request {
         String[] requestPaths = requestLine.split(" ");
         method = requestPaths[0];
         version = requestPaths[2];
+        requestPaths[1] = java.net.URLDecoder.decode(requestPaths[1], StandardCharsets.UTF_8);
 
         // извлекаем параметры, если они есть
         if (requestPaths[1].contains("?")) {
-            Pattern p = Pattern.compile(".+\\?(.+)");
+            Pattern p = Pattern.compile("(?<path>(.+))\\?(?<param>(.+))");
             Matcher m = p.matcher(requestPaths[1]);
             m.find();
-            String[] paramsPair = m.group(1).split("&");
-
+            pathWithoutParams = m.group("path") + "/";
+            path = requestPaths[1];
+            String[] paramsPair = m.group("param").split("&");
             for (String pair : paramsPair) {
                 String[] keyValue = pair.split("=");
                 params.put(keyValue[0], keyValue[1]);
             }
         } else {
+            pathWithoutParams = requestPaths[1];
             path = requestPaths[1];
         }
 
@@ -69,8 +74,12 @@ public class HttpRequest implements Request {
     }
 
     @Override
-    public String getPath() {
-        return path;
+    public String getPath(boolean withParams) {
+        if (withParams) {
+            return path;
+        } else {
+            return pathWithoutParams;
+        }
     }
 
     @Override

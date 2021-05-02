@@ -8,7 +8,7 @@ public interface Request {
 
     String getVersion();
 
-    String getPath();
+    String getPath(boolean withParams);
 
     Map<String, String> getHeaders();
 

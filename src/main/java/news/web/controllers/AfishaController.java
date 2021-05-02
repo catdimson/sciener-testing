@@ -21,7 +21,7 @@ public class AfishaController implements Controller {
 
     @Override
     public void buildResponse() {
-        String urlUnit = request.getPath();
+        String urlUnit = request.getPath(true);
         Pattern p = Pattern.compile("^/.+/(.+)/");
         Matcher m = p.matcher(urlUnit);
 

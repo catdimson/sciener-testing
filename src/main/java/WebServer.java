@@ -26,6 +26,7 @@ public class WebServer {
 
                 PrintWriter out = new PrintWriter(server.getOutputStream(), true);
                 out.println(httpResponse);
+                in.close();
                 out.close();
             }
         } catch (IOException | SQLException e) {

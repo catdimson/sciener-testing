@@ -51,18 +51,20 @@ public class RootController {
     }
 
     public HttpResponse getResponse() throws SQLException {
-        String url = request.getPath();
+        String url = request.getPath(false);
+        System.out.println("RootController: fullUrl - " + request.getPath(true));
+        System.out.println("RootController: url - " + request.getPath(false));
         Pattern p = Pattern.compile("/(.+?)/");
         Matcher m = p.matcher(url);
         if (m.find()) {
             switch (m.group(1)) {
-                case ("afisha"):
+                case ("afisha") -> {
                     afishaRepository = new AfishaRepository(dbPool);
                     afishaService = new AfishaService(afishaRepository);
                     afishaController = new AfishaController(afishaService, request);
                     afishaController.buildResponse();
                     response = afishaController.getResponse();
-                    break;
+                }
                 /*case ("article"):
                     articleRepository = new ArticleRepository(dbPool);
                     articleService = new ArticleService(articleRepository);
@@ -70,19 +72,20 @@ public class RootController {
                     // вызов метода у контроллера
                     response = articleController.getResponse();
                     break;*/
-                case ("category"):
+                case ("category") -> {
                     categoryRepository = new CategoryRepository(dbPool);
                     categoryService = new CategoryService(categoryRepository);
                     categoryController = new CategoryController(categoryService, request);
                     categoryController.buildResponse();
                     response = categoryController.getResponse();
-                    break;
-                default:
+                }
+                default -> {
                     response.setStatusCode(400);
                     response.setVersion("HTTP/1.1");
                     response.setStatusText("Некорректный запрос");
                     response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                     response.setHeader("Pragma", "no-cache");
+                }
             }
         } else {
             response.setStatusCode(404);
