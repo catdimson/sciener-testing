@@ -22,21 +22,7 @@ public class WebServer {
                 HttpRequest request = new HttpRequest(in);
                 NewsApp app = new NewsApp(request);
                 String httpResponse = app.getResponse().getRawResponse();
-                /*String httpResponse = "" +
-                        "HTTP/1.1 200 OK\r\n" +
-                        "Content-Type: text/html\r\n\r\n" +
-                        "<!DOCTYPE>\n" +
-                        "<html>\n" +
-                        "<head>\n" +
-                        "<title>Работает!</title>\n" +
-                        "<meta charset=\"utf-8\">\n" +
-                        "</head>\n" +
-                        "<body>\n" +
-                        "<h1>Ответ пришел</h1>\n" +
-                        "<p>Your browser sent a request that this server could not understand.</p>\n" +
-                        "<p>The request line contained invalid characters following the protocol string.</p>\n" +
-                        "</body>\n" +
-                        "</html>";*/
+                //System.out.println(httpResponse);
 
                 PrintWriter out = new PrintWriter(server.getOutputStream(), true);
                 out.println(httpResponse);

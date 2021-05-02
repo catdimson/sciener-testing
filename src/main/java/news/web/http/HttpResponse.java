@@ -43,9 +43,13 @@ public class HttpResponse implements Response {
         for (Map.Entry<String, String> pair : headers.entrySet()) {
             headersLines.append(pair.getKey()).append(": ").append(pair.getValue()).append("\n");
         }
-        headersLines.append("\n");
         String responseBody = body;
-        response = requestLine + headersLines + responseBody;
+        if (responseBody != null) {
+            headersLines.append("\n");
+            response = requestLine + headersLines + responseBody;
+        } else {
+            response = requestLine + headersLines;
+        }
         return response;
     }
 }
