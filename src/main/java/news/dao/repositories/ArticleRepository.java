@@ -316,6 +316,7 @@ public class ArticleRepository implements ExtendRepository<Article> {
                     imagesSet.remove(image);
                     result.updateString(2, (String) instanceImage[1]);
                     result.updateString(3, (String) instanceImage[2]);
+                    result.updateRow();
                     beChange = 1;
                     continue outer;
                 }
@@ -342,6 +343,7 @@ public class ArticleRepository implements ExtendRepository<Article> {
             }
             beChange = statement.executeUpdate(String.valueOf(sqlCreateImages)) | beChange;
         }
+        //System.out.println("ОБНОВЛЯЕМ СТАТЬЮ: sql запрос на добавление картинок: " + sqlCreateImages);
 
         // обновляем запись статьи
         LocalDate createDate = (LocalDate) instanceArticle[3];

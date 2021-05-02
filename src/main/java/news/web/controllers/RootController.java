@@ -22,7 +22,7 @@ public class RootController {
     // article
     ArticleRepository articleRepository;
     ArticleService articleService;
-    //ArticleController articleController;
+    ArticleController articleController;
     // category
     CategoryRepository categoryRepository;
     CategoryService categoryService;
@@ -72,19 +72,21 @@ public class RootController {
                     afishaController.buildResponse();
                     response = afishaController.getResponse();
                 }*/
-                /*case ("article"):
+                case ("article") -> {
                     articleRepository = new ArticleRepository(dbPool);
                     articleService = new ArticleService(articleRepository);
-                    articleController = new ArticleController(articleService);
-                    // вызов метода у контроллера
+                    articleController = new ArticleController(articleService, request);
+                    articleController.buildResponse();
                     response = articleController.getResponse();
-                    break;*/
+                    break;
+                }
                 case ("category") -> {
                     categoryRepository = new CategoryRepository(dbPool);
                     categoryService = new CategoryService(categoryRepository);
                     categoryController = new CategoryController(categoryService, request);
                     categoryController.buildResponse();
                     response = categoryController.getResponse();
+                    break;
                 }
                 case ("group") -> {
                     groupRepository = new GroupRepository(dbPool);
@@ -92,6 +94,7 @@ public class RootController {
                     groupController = new GroupController(groupService, request);
                     groupController.buildResponse();
                     response = groupController.getResponse();
+                    break;
                 }
                 case ("source") -> {
                     sourceRepository = new SourceRepository(dbPool);
@@ -99,6 +102,7 @@ public class RootController {
                     sourceController = new SourceController(sourceService, request);
                     sourceController.buildResponse();
                     response = sourceController.getResponse();
+                    break;
                 }
                 case ("mailing") -> {
                     mailingRepository = new MailingRepository(dbPool);
@@ -106,6 +110,7 @@ public class RootController {
                     mailingController = new MailingController(mailingService, request);
                     mailingController.buildResponse();
                     response = mailingController.getResponse();
+                    break;
                 }
                 case ("tag") -> {
                     tagRepository = new TagRepository(dbPool);
@@ -113,6 +118,7 @@ public class RootController {
                     tagController = new TagController(tagService, request);
                     tagController.buildResponse();
                     response = tagController.getResponse();
+                    break;
                 }
                 case ("user") -> {
                     userRepository = new UserRepository(dbPool);
@@ -120,6 +126,7 @@ public class RootController {
                     userController = new UserController(userService, request);
                     userController.buildResponse();
                     response = userController.getResponse();
+                    break;
                 }
                 case ("afisha") -> {
                     afishaRepository = new AfishaRepository(dbPool);
@@ -127,6 +134,7 @@ public class RootController {
                     afishaController = new AfishaController(afishaService, request);
                     afishaController.buildResponse();
                     response = afishaController.getResponse();
+                    break;
                 }
                 default -> {
                     response.setStatusCode(400);
