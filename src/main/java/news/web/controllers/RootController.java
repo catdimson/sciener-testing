@@ -36,6 +36,7 @@ public class RootController {
     // mailing
     MailingRepository mailingRepository;
     MailingService mailingService;
+    MailingController mailingController;
     // source
     SourceRepository sourceRepository;
     SourceService sourceService;
@@ -86,6 +87,13 @@ public class RootController {
                     groupController = new GroupController(groupService, request);
                     groupController.buildResponse();
                     response = groupController.getResponse();
+                }
+                case ("mailing") -> {
+                    mailingRepository = new MailingRepository(dbPool);
+                    mailingService = new MailingService(mailingRepository);
+                    mailingController = new MailingController(mailingService, request);
+                    mailingController.buildResponse();
+                    response = mailingController.getResponse();
                 }
                 default -> {
                     response.setStatusCode(400);
