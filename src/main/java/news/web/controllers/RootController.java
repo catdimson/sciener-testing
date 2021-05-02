@@ -18,10 +18,11 @@ public class RootController {
     // afisha
     AfishaRepository afishaRepository;
     AfishaService afishaService;
-    AfishaController afishaController;
+    //AfishaController afishaController;
     // article
     ArticleRepository articleRepository;
     ArticleService articleService;
+    //ArticleController articleController;
     // category
     CategoryRepository categoryRepository;
     CategoryService categoryService;
@@ -29,6 +30,7 @@ public class RootController {
     // comment
     CommentRepository commentRepository;
     CommentService commentService;
+    //CommentController commentController;
     // group
     GroupRepository groupRepository;
     GroupService groupService;
@@ -44,9 +46,11 @@ public class RootController {
     // tag
     TagRepository tagRepository;
     TagService tagService;
+    TagController tagController;
     // user
     UserRepository userRepository;
     UserService userService;
+    //UserController userController;
 
     public RootController(HttpRequest request, DBPool dbPool) {
         this.request = request;
@@ -61,13 +65,13 @@ public class RootController {
         Matcher m = p.matcher(url);
         if (m.find()) {
             switch (m.group(1)) {
-                case ("afisha") -> {
+                /*case ("afisha") -> {
                     afishaRepository = new AfishaRepository(dbPool);
                     afishaService = new AfishaService(afishaRepository);
                     afishaController = new AfishaController(afishaService, request);
                     afishaController.buildResponse();
                     response = afishaController.getResponse();
-                }
+                }*/
                 /*case ("article"):
                     articleRepository = new ArticleRepository(dbPool);
                     articleService = new ArticleService(articleRepository);
@@ -102,6 +106,13 @@ public class RootController {
                     mailingController = new MailingController(mailingService, request);
                     mailingController.buildResponse();
                     response = mailingController.getResponse();
+                }
+                case ("tag") -> {
+                    tagRepository = new TagRepository(dbPool);
+                    tagService = new TagService(tagRepository);
+                    tagController = new TagController(tagService, request);
+                    tagController.buildResponse();
+                    response = tagController.getResponse();
                 }
                 default -> {
                     response.setStatusCode(400);
