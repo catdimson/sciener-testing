@@ -1,5 +1,6 @@
 package news.web.controllers;
 
+import news.dao.specifications.FindAllCategorySpecification;
 import news.dao.specifications.FindByIdCategorySpecification;
 import news.dto.CategorySerializer;
 import news.model.Category;
@@ -30,8 +31,49 @@ public class CategoryController implements Controller {
         Matcher m;
 
         // работаем с конкретной записью
-        switch(request.getMethod()) {
-            case "GET":
+        switch (request.getMethod()) {
+            case "GET" -> {
+                System.out.println("GET!!!!");
+                p = Pattern.compile("^/category/$");
+                m = p.matcher(url);
+                // получение списка всех категорий
+                if (m.find()) {
+                    FindAllCategorySpecification findAll = new FindAllCategorySpecification();
+                    List<Category> findAllCategoryList = categoryService.query(findAll);
+                    if (findAllCategoryList.isEmpty()) {
+                        response.setStatusCode(200);
+                        response.setStatusText("OK");
+                        response.setVersion("HTTP/1.1");
+                        response.setHeader("Content-Type", "application/json; charset=UTF-8");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                        response.setBody("[]");
+                        break;
+                    } else {
+                        response.setStatusCode(200);
+                        response.setStatusText("OK");
+                        response.setVersion("HTTP/1.1");
+                        response.setHeader("Content-Type", "application/json; charset=UTF-8");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                        StringBuilder body = new StringBuilder();
+                        for (int i = 0; i < findAllCategoryList.size(); i++) {
+                            categorySerializer = new CategorySerializer(findAllCategoryList.get(i));
+                            body.append(categorySerializer.toJSON());
+                            if (i != findAllCategoryList.size() - 1) {
+                                body.append(",\n");
+                            } else {
+                                body.append("\n");
+                            }
+                        }
+                        body.insert(0, "[\n").append("]\n");
+                        response.setBody(body.toString());
+                        break;
+                    }
+                }
+                // получение списка категорий отобранных по параметру title
+
+                // получение категории по id
                 p = Pattern.compile("^/category/(?<id>(\\d+))/$");
                 m = p.matcher(url);
                 if (m.find()) {
@@ -63,8 +105,8 @@ public class CategoryController implements Controller {
                     response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                     response.setHeader("Pragma", "no-cache");
                 }
-                break;
-            case "POST":
+            }
+            case "POST" -> {
                 // создание записи
                 p = Pattern.compile("^/category/$");
                 m = p.matcher(url);
@@ -82,8 +124,8 @@ public class CategoryController implements Controller {
                 }
                 response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                 response.setHeader("Pragma", "no-cache");
-                break;
-            case "PUT":
+            }
+            case "PUT" -> {
                 System.out.println("PUT");
                 p = Pattern.compile("^/category/(?<id>(\\d+))/$");
                 m = p.matcher(url);
@@ -95,9 +137,6 @@ public class CategoryController implements Controller {
                     Category category = categorySerializer.toObject();
                     int idCategoryFromBody = (int) category.getObjects()[0];
                     if (Integer.parseInt(m.group("id")) != idCategoryFromBody) {
-                        /*System.out.println("--------------------------------");
-                        System.out.println("400 Некорректный запрос");
-                        System.out.println("--------------------------------");*/
                         response.setStatusCode(400);
                         response.setVersion("HTTP/1.1");
                         response.setStatusText("Некорректный запрос");
@@ -119,9 +158,8 @@ public class CategoryController implements Controller {
                 }
                 response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                 response.setHeader("Pragma", "no-cache");
-                break;
-            case "DELETE":
-                System.out.println("DELETE!");
+            }
+            case "DELETE" -> {
                 p = Pattern.compile("^/category/(?<id>(\\d+))/$");
                 m = p.matcher(url);
                 if (m.find()) {
@@ -142,13 +180,14 @@ public class CategoryController implements Controller {
                 response.setVersion("HTTP/1.1");
                 response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                 response.setHeader("Pragma", "no-cache");
-                break;
-            default:
+            }
+            default -> {
                 response.setStatusCode(400);
                 response.setVersion("HTTP/1.1");
                 response.setStatusText("Некорректный запрос");
                 response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                 response.setHeader("Pragma", "no-cache");
+            }
         }
     }
 
