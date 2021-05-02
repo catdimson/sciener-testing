@@ -40,6 +40,7 @@ public class RootController {
     // source
     SourceRepository sourceRepository;
     SourceService sourceService;
+    SourceController sourceController;
     // tag
     TagRepository tagRepository;
     TagService tagService;
@@ -87,6 +88,13 @@ public class RootController {
                     groupController = new GroupController(groupService, request);
                     groupController.buildResponse();
                     response = groupController.getResponse();
+                }
+                case ("source") -> {
+                    sourceRepository = new SourceRepository(dbPool);
+                    sourceService = new SourceService(sourceRepository);
+                    sourceController = new SourceController(sourceService, request);
+                    sourceController.buildResponse();
+                    response = sourceController.getResponse();
                 }
                 case ("mailing") -> {
                     mailingRepository = new MailingRepository(dbPool);
