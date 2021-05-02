@@ -263,30 +263,33 @@ public class ArticleRepository implements ExtendRepository<Article> {
     }
 
     @Override
-    public void delete(int id) throws SQLException {
+    public int delete(int id) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
+        int beChange = 0;
         // удаление изображений
         String sqlDeleteImages = String.format("DELETE FROM image WHERE article_id=?;");
         PreparedStatement preparedStatement = connection.prepareStatement(sqlDeleteImages);
         preparedStatement.setInt(1, id);
-        preparedStatement.executeUpdate();
+        beChange = preparedStatement.executeUpdate() | beChange;
         // удаление связи с тегами из промежуточной таблицы article_tag
         String sqlDeleteTagsId = String.format("DELETE FROM article_tag WHERE article_id=?;");
         preparedStatement = connection.prepareStatement(sqlDeleteTagsId);
         preparedStatement.setInt(1, id);
-        preparedStatement.executeUpdate();
+        beChange = preparedStatement.executeUpdate() | beChange;
         // удаление статьи
         String sqlDeleteArticle = String.format("DELETE FROM article WHERE id=?;");
         preparedStatement = connection.prepareStatement(sqlDeleteArticle);
         preparedStatement.setInt(1, id);
-        preparedStatement.executeUpdate();
+        beChange = preparedStatement.executeUpdate() | beChange;
+        return beChange;
     }
 
     @Override
-    public void update(Article article) throws SQLException {
+    public int update(Article article) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         Statement statement = connection.createStatement();
         Object[] instanceArticle = article.getObjects();
+        int beChange = 0;
 
         // для работы с изображениями
         List<Article.ArticleImage> images = (ArrayList<Article.ArticleImage>) instanceArticle[10];
@@ -313,12 +316,13 @@ public class ArticleRepository implements ExtendRepository<Article> {
                     imagesSet.remove(image);
                     result.updateString(2, (String) instanceImage[1]);
                     result.updateString(3, (String) instanceImage[2]);
-                    result.updateRow();
+                    beChange = 1;
                     continue outer;
                 }
             }
             // удаляем записи из БД
             result.deleteRow();
+            beChange = 1;
         }
 
         // добавляем изображения в БД
@@ -336,7 +340,7 @@ public class ArticleRepository implements ExtendRepository<Article> {
                 }
                 sqlCreateImages.append(sqlPath);
             }
-            statement.executeUpdate(String.valueOf(sqlCreateImages));
+            beChange = statement.executeUpdate(String.valueOf(sqlCreateImages)) | beChange;
         }
 
         // обновляем запись статьи
@@ -355,7 +359,7 @@ public class ArticleRepository implements ExtendRepository<Article> {
         preparedStatement.setInt(8, (int) instanceArticle[8]);
         preparedStatement.setInt(9, (int) instanceArticle[9]);
         preparedStatement.setInt(10, (int) instanceArticle[0]);
-        preparedStatement.executeUpdate();
+        beChange = preparedStatement.executeUpdate() | beChange;
 
         // получение id тегов
         preparedStatement = connection.prepareStatement(sqlQueryTags, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -369,11 +373,13 @@ public class ArticleRepository implements ExtendRepository<Article> {
                 if (result.getInt("tag_id") == tagId) {
                     // оставляем id тегов
                     tagsIdSet.remove(tagId);
+                    beChange = 1;
                     continue outer;
                 }
             }
             // удаляем id тегов
             result.deleteRow();
+            beChange = 1;
         }
 
         // добавляем id тегов
@@ -389,7 +395,8 @@ public class ArticleRepository implements ExtendRepository<Article> {
                 }
                 sqlCreateTagsId.append(sqlPath);
             }
-            statement.executeUpdate(String.valueOf(sqlCreateTagsId));
+            beChange = statement.executeUpdate(String.valueOf(sqlCreateTagsId)) | beChange;
         }
+        return beChange;
     }
 }

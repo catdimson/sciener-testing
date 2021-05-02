@@ -56,10 +56,15 @@ public class CategoryController implements Controller {
                         response.setHeader("Pragma", "no-cache");
                         response.setBody(categorySerializer.toJSON());
                     }
+                } else {
+                    response.setStatusCode(400);
+                    response.setVersion("HTTP/1.1");
+                    response.setStatusText("Некорректный запрос");
+                    response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                    response.setHeader("Pragma", "no-cache");
                 }
                 break;
             case "POST":
-                System.out.println(url);
                 p = Pattern.compile("^/category/$");
                 m = p.matcher(url);
                 if (m.find()) {
@@ -69,57 +74,51 @@ public class CategoryController implements Controller {
                     response.setStatusText("Категория создана");
                     response.setVersion("HTTP/1.1");
                     response.setHeader("Location", String.format("/category/%s/", id));
+                } else {
+                    response.setStatusCode(400);
+                    response.setVersion("HTTP/1.1");
+                    response.setStatusText("Некорректный запрос");
                 }
+                response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                response.setHeader("Pragma", "no-cache");
                 break;
             case "PUT":
-                // код
+                p = Pattern.compile("^/category/(?<id>(\\d+))/$");
+                m = p.matcher(url);
+                if (m.find()) {
+                    categorySerializer = new CategorySerializer(request.getBody());
+                    categoryService.update(categorySerializer.toObject());
+                    response.setStatusCode(204);
+                    response.setVersion("HTTP/1.1");
+                    response.setStatusText("Нет данных");
+                } else {
+                    response.setStatusCode(400);
+                    response.setVersion("HTTP/1.1");
+                    response.setStatusText("Некорректный запрос");
+                }
+                response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                response.setHeader("Pragma", "no-cache");
                 break;
             case "DELETE":
-                // код
+                p = Pattern.compile("^/category/(?<id>(\\d+))/$");
+                m = p.matcher(url);
+                if (m.find()) {
+
+                } else {
+                    response.setStatusCode(400);
+                    response.setVersion("HTTP/1.1");
+                    response.setStatusText("Некорректный запрос");
+                }
+                response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                response.setHeader("Pragma", "no-cache");
                 break;
             default:
-                // данный метод не поддерживается
+                response.setStatusCode(400);
+                response.setVersion("HTTP/1.1");
+                response.setStatusText("Некорректный запрос");
+                response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                response.setHeader("Pragma", "no-cache");
         }
-
-
-        /*if (m.find()) {
-            p = Pattern.compile("/.+/(\\d+)/");
-            m = p.matcher(urlUnit);
-            // получение по id, редактирование, удаление записи
-            if (m.find()) {
-                System.out.println("Получение по id, редактирование или удаление в зависимости от типп зпроса");
-            // поиск по title
-            } else {
-                System.out.println("Поиск по title");
-            }
-        } else {
-            System.out.println("Добавляем новую запись или получаем список записей");
-            switch (request.getMethod()) {
-                case ("GET"):
-                    System.out.println("Получаем список записей (GET)");
-                    break;
-                case ("POST"):
-                    try {
-                        System.out.println("Добавляем запись (POST)");
-                        categorySerializer = new CategorySerializer(request.getBody());
-                        int id = categoryService.create(categorySerializer.toObject());
-                        response.setStatusCode(201);
-                        response.setStatusText("Категория создана");
-                        response.setVersion("HTTP/1.1");
-                        response.setHeader("Location", String.format("/category/%s/", id));
-                    } catch (Exception e) {
-                        response.setStatusCode(405);
-                        response.setStatusText("Ошибка добавления");
-                        response.setVersion("HTTP/1.1");
-                        System.out.println("Ошибка добавления!");
-                    }
-
-                    break;
-                default:
-                    // ошибка
-                    break;
-            }
-        }*/
     }
 
     @Override

@@ -25,12 +25,12 @@ public class ArticleService implements Service<Article> {
     }
 
     @Override
-    public void delete(int id) throws SQLException {
-        articleRepository.delete(id);
+    public int delete(int id) throws SQLException {
+        return articleRepository.delete(id);
     }
 
     @Override
-    public void update(Article instance) throws SQLException {
-        articleRepository.update(instance);
+    public int update(Article instance) throws SQLException {
+        return articleRepository.update(instance);
     }
 }

@@ -25,12 +25,12 @@ public class CommentService implements Service<Comment> {
     }
 
     @Override
-    public void delete(int id) throws SQLException {
-        commentRepository.delete(id);
+    public int delete(int id) throws SQLException {
+        return commentRepository.delete(id);
     }
 
     @Override
-    public void update(Comment instance) throws SQLException {
-        commentRepository.update(instance);
+    public int update(Comment instance) throws SQLException {
+        return commentRepository.update(instance);
     }
 }

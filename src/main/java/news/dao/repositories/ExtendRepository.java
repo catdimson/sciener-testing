@@ -10,7 +10,7 @@ public interface ExtendRepository<T> {
     List<T> query(ExtendSqlSpecification<T> specification) throws SQLException;
 
     int create(T instance) throws SQLException;
-    void delete(int id) throws SQLException;
-    void update(T instance) throws SQLException;
+    int delete(int id) throws SQLException;
+    int update(T instance) throws SQLException;
 
 }

@@ -77,16 +77,16 @@ public class UserRepository implements ExtendRepository<User> {
     }
 
     @Override
-    public void delete(int id) throws SQLException {
+    public int delete(int id) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlDeleteInstance = "DELETE FROM \"user\" WHERE id=?;";
         PreparedStatement preparedStatement = connection.prepareStatement(sqlDeleteInstance);
         preparedStatement.setInt(1, id);
-        preparedStatement.executeUpdate();
+        return preparedStatement.executeUpdate();
     }
 
     @Override
-    public void update(User user) throws SQLException {
+    public int update(User user) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlUpdateInstance = "UPDATE \"user\" SET " +
                 "password=?, username=?, first_name=?, last_name=?, email=?, last_login=?, date_joined=?, is_superuser=?, " +
@@ -107,6 +107,6 @@ public class UserRepository implements ExtendRepository<User> {
         preparedStatement.setBoolean(10, (Boolean) instance[10]);
         preparedStatement.setInt(11, (int) instance[11]);
         preparedStatement.setInt(12, (int) instance[0]);
-        preparedStatement.executeUpdate();
+        return preparedStatement.executeUpdate();
     }
 }

@@ -25,12 +25,12 @@ public class UserService implements Service<User> {
     }
 
     @Override
-    public void delete(int id) throws SQLException {
-        userRepository.delete(id);
+    public int delete(int id) throws SQLException {
+        return userRepository.delete(id);
     }
 
     @Override
-    public void update(User instance) throws SQLException {
-        userRepository.update(instance);
+    public int update(User instance) throws SQLException {
+        return userRepository.update(instance);
     }
 }

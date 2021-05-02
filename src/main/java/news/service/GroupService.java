@@ -25,12 +25,12 @@ public class GroupService implements Service<Group> {
     }
 
     @Override
-    public void delete(int id) throws SQLException {
-        groupRepository.delete(id);
+    public int delete(int id) throws SQLException {
+        return groupRepository.delete(id);
     }
 
     @Override
-    public void update(Group instance) throws SQLException {
-        groupRepository.update(instance);
+    public int update(Group instance) throws SQLException {
+        return groupRepository.update(instance);
     }
 }

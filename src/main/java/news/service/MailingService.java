@@ -25,12 +25,12 @@ public class MailingService implements Service<Mailing> {
     }
 
     @Override
-    public void delete(int id) throws SQLException {
-        mailingRepository.delete(id);
+    public int delete(int id) throws SQLException {
+        return mailingRepository.delete(id);
     }
 
     @Override
-    public void update(Mailing instance) throws SQLException {
-        mailingRepository.update(instance);
+    public int update(Mailing instance) throws SQLException {
+        return mailingRepository.update(instance);
     }
 }

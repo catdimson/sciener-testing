@@ -25,12 +25,12 @@ public class SourceService implements Service<Source> {
     }
 
     @Override
-    public void delete(int id) throws SQLException {
-        sourceRepository.delete(id);
+    public int delete(int id) throws SQLException {
+        return sourceRepository.delete(id);
     }
 
     @Override
-    public void update(Source instance) throws SQLException {
-        sourceRepository.update(instance);
+    public int update(Source instance) throws SQLException {
+        return sourceRepository.update(instance);
     }
 }

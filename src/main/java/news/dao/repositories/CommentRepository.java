@@ -145,23 +145,27 @@ public class CommentRepository implements ExtendRepository<Comment> {
     }
 
     @Override
-    public void delete(int id) throws SQLException {
+    public int delete(int id) throws SQLException {
+        int beChange = 0;
         Connection connection = this.connectionPool.getConnection();
         String sqlDeleteInstance = "DELETE FROM attachment WHERE comment_id=?;";
         PreparedStatement preparedStatement = connection.prepareStatement(sqlDeleteInstance);
         preparedStatement.setInt(1, id);
-        preparedStatement.executeUpdate();
+        beChange = preparedStatement.executeUpdate();
         String sqlDeleteComment = "DELETE FROM comment WHERE id=?;";
         preparedStatement = connection.prepareStatement(sqlDeleteComment);
         preparedStatement.setInt(1, id);
-        preparedStatement.executeUpdate();
+        beChange = preparedStatement.executeUpdate() | beChange;
+        return beChange;
     }
 
     @Override
-    public void update(Comment comment) throws SQLException {
+    public int update(Comment comment) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlQueryAttachments = "SELECT * FROM attachment WHERE comment_id=?;";
         Object[] instanceComment = comment.getObjects();
+        int beChange = 0;
+
         PreparedStatement preparedStatement = connection.prepareStatement(sqlQueryAttachments, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
         preparedStatement.setInt(1, (int) instanceComment[0]);
         ResultSet result = preparedStatement.executeQuery();
@@ -178,12 +182,14 @@ public class CommentRepository implements ExtendRepository<Comment> {
                     result.updateString(2, (String) instanceAttachment[1]);
                     result.updateString(3, (String) instanceAttachment[2]);
                     result.updateRow();
+                    beChange = 1;
                     //statement.executeUpdate(sqlUpdateAttachment);
                     continue outer;
                 }
             }
             // удаляем записи из БД
             result.deleteRow();
+            beChange = 1;
         }
 
         // добавляем записи в БД
@@ -201,7 +207,7 @@ public class CommentRepository implements ExtendRepository<Comment> {
             }
             sqlCreateAttachments.append(sqlPath);
         }
-        statement.executeUpdate(String.valueOf(sqlCreateAttachments));
+        beChange = statement.executeUpdate(String.valueOf(sqlCreateAttachments)) | beChange;
 
         // обновляем запись комментария
         LocalDate createDate = (LocalDate) instanceComment[2];
@@ -214,6 +220,7 @@ public class CommentRepository implements ExtendRepository<Comment> {
         preparedStatement.setInt(4, (int) instanceComment[4]);
         preparedStatement.setInt(5, (int) instanceComment[5]);
         preparedStatement.setInt(6, (int) instanceComment[0]);
-        preparedStatement.executeUpdate();
+        beChange = preparedStatement.executeUpdate() | beChange;
+        return beChange;
     }
 }

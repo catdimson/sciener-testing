@@ -25,12 +25,12 @@ public class TagService implements Service<Tag> {
     }
 
     @Override
-    public void delete(int id) throws SQLException {
-        tagRepository.delete(id);
+    public int delete(int id) throws SQLException {
+        return tagRepository.delete(id);
     }
 
     @Override
-    public void update(Tag instance) throws SQLException {
-        tagRepository.update(instance);
+    public int update(Tag instance) throws SQLException {
+        return tagRepository.update(instance);
     }
 }

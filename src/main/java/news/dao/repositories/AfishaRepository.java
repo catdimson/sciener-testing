@@ -78,16 +78,16 @@ public class AfishaRepository implements ExtendRepository<Afisha> {
     }
 
     @Override
-    public void delete(int id) throws SQLException {
+    public int delete(int id) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlDeleteInstance = "DELETE FROM afisha WHERE id=?;";
         PreparedStatement preparedStatement = connection.prepareStatement(sqlDeleteInstance);
         preparedStatement.setInt(1, id);
-        preparedStatement.executeUpdate();
+        return preparedStatement.executeUpdate();
     }
 
     @Override
-    public void update(Afisha afisha) throws SQLException {
+    public int update(Afisha afisha) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlUpdateInstance = "UPDATE afisha SET " +
                 "title=?, image_url=?, lead=?, description=?, age_limit=?, timing=?, place=?, phone=?, " +
@@ -108,6 +108,6 @@ public class AfishaRepository implements ExtendRepository<Afisha> {
         statement.setInt(11, (int) instance[11]);
         statement.setInt(12, (int) instance[12]);
         statement.setInt(13, (int) instance[0]);
-        statement.executeUpdate();
+        return statement.executeUpdate();
     }
 }

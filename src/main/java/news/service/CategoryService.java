@@ -25,12 +25,12 @@ public class CategoryService implements Service<Category> {
     }
 
     @Override
-    public void delete(int id) throws SQLException {
-        categoryRepository.delete(id);
+    public int delete(int id) throws SQLException {
+        return categoryRepository.delete(id);
     }
 
     @Override
-    public void update(Category instance) throws SQLException {
-        categoryRepository.update(instance);
+    public int update(Category instance) throws SQLException {
+        return categoryRepository.update(instance);
     }
 }

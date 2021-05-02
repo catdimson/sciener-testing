@@ -51,16 +51,16 @@ public class SourceRepository implements ExtendRepository<Source> {
     }
 
     @Override
-    public void delete(int id) throws SQLException {
+    public int delete(int id) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlDeleteInstance = "DELETE FROM source WHERE id=?;";
         PreparedStatement preparedStatement = connection.prepareStatement(sqlDeleteInstance);
         preparedStatement.setInt(1, id);
-        preparedStatement.executeUpdate();
+        return preparedStatement.executeUpdate();
     }
 
     @Override
-    public void update(Source source) throws SQLException {
+    public int update(Source source) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlUpdateInstance = "UPDATE source SET title=?, url=? WHERE id=?;";
         PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdateInstance);
@@ -68,6 +68,6 @@ public class SourceRepository implements ExtendRepository<Source> {
         preparedStatement.setString(1, (String) instance[1]);
         preparedStatement.setString(2, (String) instance[2]);
         preparedStatement.setInt(3, (int) instance[0]);
-        preparedStatement.executeUpdate();
+        return preparedStatement.executeUpdate();
     }
 }

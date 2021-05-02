@@ -25,12 +25,12 @@ public class AfishaService implements Service<Afisha> {
     }
 
     @Override
-    public void delete(int id) throws SQLException {
-        afishaRepository.delete(id);
+    public int delete(int id) throws SQLException {
+        return afishaRepository.delete(id);
     }
 
     @Override
-    public void update(Afisha instance) throws SQLException {
-        afishaRepository.update(instance);
+    public int update(Afisha instance) throws SQLException {
+        return afishaRepository.update(instance);
     }
 }

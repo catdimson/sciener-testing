@@ -50,22 +50,22 @@ public class CategoryRepository implements ExtendRepository<Category> {
     }
 
     @Override
-    public void delete(int id) throws SQLException {
+    public int delete(int id) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlDeleteInstance = "DELETE FROM category WHERE id=?;";
         PreparedStatement preparedStatement = connection.prepareStatement(sqlDeleteInstance);
         preparedStatement.setInt(1, id);
-        preparedStatement.executeUpdate();
+        return preparedStatement.executeUpdate();
     }
 
     @Override
-    public void update(Category category) throws SQLException {
+    public int update(Category category) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlUpdateInstance = "UPDATE category SET title=? WHERE id=?;";
         PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdateInstance);
         Object[] instance = category.getObjects();
         preparedStatement.setString(1, (String) instance[1]);
         preparedStatement.setInt(2, (int) instance[0]);
-        preparedStatement.executeUpdate();
+        return preparedStatement.executeUpdate();
     }
 }
