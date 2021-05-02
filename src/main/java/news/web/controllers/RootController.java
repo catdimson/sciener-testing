@@ -30,7 +30,7 @@ public class RootController {
     // comment
     CommentRepository commentRepository;
     CommentService commentService;
-    //CommentController commentController;
+    CommentController commentController;
     // group
     GroupRepository groupRepository;
     GroupService groupService;
@@ -65,13 +65,6 @@ public class RootController {
         Matcher m = p.matcher(url);
         if (m.find()) {
             switch (m.group(1)) {
-                /*case ("afisha") -> {
-                    afishaRepository = new AfishaRepository(dbPool);
-                    afishaService = new AfishaService(afishaRepository);
-                    afishaController = new AfishaController(afishaService, request);
-                    afishaController.buildResponse();
-                    response = afishaController.getResponse();
-                }*/
                 case ("article") -> {
                     articleRepository = new ArticleRepository(dbPool);
                     articleService = new ArticleService(articleRepository);
@@ -134,6 +127,14 @@ public class RootController {
                     afishaController = new AfishaController(afishaService, request);
                     afishaController.buildResponse();
                     response = afishaController.getResponse();
+                    break;
+                }
+                case ("comment") -> {
+                    commentRepository = new CommentRepository(dbPool);
+                    commentService = new CommentService(commentRepository);
+                    commentController = new CommentController(commentService, request);
+                    commentController.buildResponse();
+                    response = commentController.getResponse();
                     break;
                 }
                 default -> {

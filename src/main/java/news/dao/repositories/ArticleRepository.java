@@ -397,7 +397,6 @@ public class ArticleRepository implements ExtendRepository<Article> {
                 }
                 sqlCreateTagsId.append(sqlPath);
             }
-            System.out.println(String.valueOf(sqlCreateTagsId));
             beChange = statement.executeUpdate(String.valueOf(sqlCreateTagsId)) | beChange;
         }
         return beChange;
