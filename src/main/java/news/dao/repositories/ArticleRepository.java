@@ -385,7 +385,7 @@ public class ArticleRepository implements ExtendRepository<Article> {
         }
 
         // добавляем id тегов
-        if (!imagesSet.isEmpty()) {
+        if (!tagsIdSet.isEmpty()) {
             List<Integer> addingInDBTagsId = new ArrayList<>(tagsIdSet);
             StringBuilder sqlCreateTagsId = new StringBuilder("INSERT INTO article_tag (article_id, tag_id) VALUES ");
             for (int i = 0; i < addingInDBTagsId.size(); i++) {
@@ -397,6 +397,7 @@ public class ArticleRepository implements ExtendRepository<Article> {
                 }
                 sqlCreateTagsId.append(sqlPath);
             }
+            System.out.println(String.valueOf(sqlCreateTagsId));
             beChange = statement.executeUpdate(String.valueOf(sqlCreateTagsId)) | beChange;
         }
         return beChange;
