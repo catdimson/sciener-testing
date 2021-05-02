@@ -32,6 +32,7 @@ public class RootController {
     // group
     GroupRepository groupRepository;
     GroupService groupService;
+    GroupController groupController;
     // mailing
     MailingRepository mailingRepository;
     MailingService mailingService;
@@ -78,6 +79,13 @@ public class RootController {
                     categoryController = new CategoryController(categoryService, request);
                     categoryController.buildResponse();
                     response = categoryController.getResponse();
+                }
+                case ("group") -> {
+                    groupRepository = new GroupRepository(dbPool);
+                    groupService = new GroupService(groupRepository);
+                    groupController = new GroupController(groupService, request);
+                    groupController.buildResponse();
+                    response = groupController.getResponse();
                 }
                 default -> {
                     response.setStatusCode(400);

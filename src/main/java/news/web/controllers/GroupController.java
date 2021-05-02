@@ -1,11 +1,11 @@
 package news.web.controllers;
 
-import news.dao.specifications.FindAllCategorySpecification;
-import news.dao.specifications.FindByIdCategorySpecification;
-import news.dao.specifications.FindByTitleCategorySpecification;
-import news.dto.CategorySerializer;
-import news.model.Category;
-import news.service.CategoryService;
+import news.dao.specifications.FindAllGroupSpecification;
+import news.dao.specifications.FindByIdGroupSpecification;
+import news.dao.specifications.FindByTitleGroupSpecification;
+import news.dto.GroupSerializer;
+import news.model.Group;
+import news.service.GroupService;
 import news.web.http.HttpRequest;
 import news.web.http.HttpResponse;
 
@@ -14,14 +14,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CategoryController implements Controller {
+public class GroupController implements Controller {
     HttpRequest request;
     HttpResponse response = new HttpResponse();
-    CategoryService categoryService;
-    CategorySerializer categorySerializer;
+    GroupService groupService;
+    GroupSerializer groupSerializer;
 
-    public CategoryController(CategoryService categoryService, HttpRequest request) {
-        this.categoryService = categoryService;
+    public GroupController(GroupService groupService, HttpRequest request) {
+        this.groupService = groupService;
         this.request = request;
     }
 
@@ -34,13 +34,13 @@ public class CategoryController implements Controller {
 
         switch (request.getMethod()) {
             case "GET" -> {
-                p = Pattern.compile("^/category/$");
+                p = Pattern.compile("^/group/$");
                 m = p.matcher(fullUrl);
-                // получение списка всех категорий
+                // получение списка всех групп
                 if (m.find()) {
-                    FindAllCategorySpecification findAll = new FindAllCategorySpecification();
-                    List<Category> findAllCategoryList = categoryService.query(findAll);
-                    if (findAllCategoryList.isEmpty()) {
+                    FindAllGroupSpecification findAll = new FindAllGroupSpecification();
+                    List<Group> findAllGroupList = groupService.query(findAll);
+                    if (findAllGroupList.isEmpty()) {
                         response.setStatusCode(200);
                         response.setStatusText("OK");
                         response.setVersion("HTTP/1.1");
@@ -57,10 +57,10 @@ public class CategoryController implements Controller {
                         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                         response.setHeader("Pragma", "no-cache");
                         StringBuilder body = new StringBuilder();
-                        for (int i = 0; i < findAllCategoryList.size(); i++) {
-                            categorySerializer = new CategorySerializer(findAllCategoryList.get(i));
-                            body.append(categorySerializer.toJSON());
-                            if (i != findAllCategoryList.size() - 1) {
+                        for (int i = 0; i < findAllGroupList.size(); i++) {
+                            groupSerializer = new GroupSerializer(findAllGroupList.get(i));
+                            body.append(groupSerializer.toJSON());
+                            if (i != findAllGroupList.size() - 1) {
                                 body.append(",\n");
                             } else {
                                 body.append("\n");
@@ -71,13 +71,13 @@ public class CategoryController implements Controller {
                         break;
                     }
                 }
-                // получение списка категорий отобранных по параметру title
-                p = Pattern.compile("^/category\\?title=(?<title>(\\w+))$", Pattern.UNICODE_CHARACTER_CLASS);
+                // получение списка групп отобранных по параметру title
+                p = Pattern.compile("^/group\\?title=(?<title>(\\w+))$", Pattern.UNICODE_CHARACTER_CLASS);
                 m = p.matcher(fullUrl);
                 if (m.find()) {
-                    FindByTitleCategorySpecification findByTitle = new FindByTitleCategorySpecification(m.group("title"));
-                    List<Category> findByTitleCategoryList = categoryService.query(findByTitle);
-                    if (findByTitleCategoryList.isEmpty()) {
+                    FindByTitleGroupSpecification findByTitle = new FindByTitleGroupSpecification(m.group("title"));
+                    List<Group> findByTitleGroupList = groupService.query(findByTitle);
+                    if (findByTitleGroupList.isEmpty()) {
                         response.setStatusCode(200);
                         response.setStatusText("OK");
                         response.setVersion("HTTP/1.1");
@@ -94,10 +94,10 @@ public class CategoryController implements Controller {
                         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                         response.setHeader("Pragma", "no-cache");
                         StringBuilder body = new StringBuilder();
-                        for (int i = 0; i < findByTitleCategoryList.size(); i++) {
-                            categorySerializer = new CategorySerializer(findByTitleCategoryList.get(i));
-                            body.append(categorySerializer.toJSON());
-                            if (i != findByTitleCategoryList.size() - 1) {
+                        for (int i = 0; i < findByTitleGroupList.size(); i++) {
+                            groupSerializer = new GroupSerializer(findByTitleGroupList.get(i));
+                            body.append(groupSerializer.toJSON());
+                            if (i != findByTitleGroupList.size() - 1) {
                                 body.append(",\n");
                             } else {
                                 body.append("\n");
@@ -108,30 +108,30 @@ public class CategoryController implements Controller {
                         break;
                     }
                 }
-                // получение категории по id
-                p = Pattern.compile("^/category/(?<id>(\\d+))/$");
+                // получение группы по id
+                p = Pattern.compile("^/group/(?<id>(\\d+))/$");
                 m = p.matcher(fullUrl);
                 if (m.find()) {
-                    FindByIdCategorySpecification findById = new FindByIdCategorySpecification(Integer.parseInt(m.group("id")));
-                    List<Category> findByIdCategoryList = categoryService.query(findById);
-                    if (findByIdCategoryList.isEmpty()) {
+                    FindByIdGroupSpecification findById = new FindByIdGroupSpecification(Integer.parseInt(m.group("id")));
+                    List<Group> findByIdGroupList = groupService.query(findById);
+                    if (findByIdGroupList.isEmpty()) {
                         response.setStatusCode(404);
-                        response.setStatusText("Категория не найдена");
+                        response.setStatusText("Группа не найдена");
                         response.setVersion("HTTP/1.1");
                         response.setHeader("Content-Type", "application/json; charset=UTF-8");
                         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                         response.setHeader("Pragma", "no-cache");
                         response.setBody("[]");
                     } else {
-                        Category category = findByIdCategoryList.get(0);
-                        categorySerializer = new CategorySerializer(category);
+                        Group group = findByIdGroupList.get(0);
+                        groupSerializer = new GroupSerializer(group);
                         response.setStatusCode(200);
                         response.setStatusText("OK");
                         response.setVersion("HTTP/1.1");
                         response.setHeader("Content-Type", "application/json; charset=UTF-8");
                         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                         response.setHeader("Pragma", "no-cache");
-                        response.setBody(categorySerializer.toJSON());
+                        response.setBody(groupSerializer.toJSON());
                     }
                 } else {
                     response.setStatusCode(400);
@@ -143,15 +143,15 @@ public class CategoryController implements Controller {
             }
             case "POST" -> {
                 // создание записи
-                p = Pattern.compile("^/category/$");
+                p = Pattern.compile("^/group/$");
                 m = p.matcher(url);
                 if (m.find()) {
-                    categorySerializer = new CategorySerializer(request.getBody());
-                    int id = categoryService.create(categorySerializer.toObject());
+                    groupSerializer = new GroupSerializer(request.getBody());
+                    int id = groupService.create(groupSerializer.toObject());
                     response.setStatusCode(201);
-                    response.setStatusText("Категория создана");
+                    response.setStatusText("Группа создана");
                     response.setVersion("HTTP/1.1");
-                    response.setHeader("Location", String.format("/category/%s/", id));
+                    response.setHeader("Location", String.format("/group/%s/", id));
                 } else {
                     response.setStatusCode(400);
                     response.setVersion("HTTP/1.1");
@@ -161,27 +161,27 @@ public class CategoryController implements Controller {
                 response.setHeader("Pragma", "no-cache");
             }
             case "PUT" -> {
-                p = Pattern.compile("^/category/(?<id>(\\d+))/$");
+                p = Pattern.compile("^/group/(?<id>(\\d+))/$");
                 m = p.matcher(url);
                 // если status=0 - не было выполнено обновление, если не 0 - выполнено
                 int statusUpdate;
                 if (m.find()) {
-                    categorySerializer = new CategorySerializer(request.getBody());
+                    groupSerializer = new GroupSerializer(request.getBody());
                     // нужно сравнить id из fullUrl и id из body. Если не совпадают то вернуть ответ с "Некорректный запрос"
-                    Category category = categorySerializer.toObject();
-                    int idCategoryFromBody = (int) category.getObjects()[0];
-                    if (Integer.parseInt(m.group("id")) != idCategoryFromBody) {
+                    Group group = groupSerializer.toObject();
+                    int idGroupFromBody = (int) group.getObjects()[0];
+                    if (Integer.parseInt(m.group("id")) != idGroupFromBody) {
                         response.setStatusCode(400);
                         response.setVersion("HTTP/1.1");
                         response.setStatusText("Некорректный запрос");
                     } else {
-                        statusUpdate = categoryService.update(categorySerializer.toObject());
+                        statusUpdate = groupService.update(groupSerializer.toObject());
                         if (statusUpdate != 0) {
                             response.setStatusCode(204);
                             response.setStatusText("Нет данных");
                         } else {
                             response.setStatusCode(404);
-                            response.setStatusText("Категория для обновления не найдена");
+                            response.setStatusText("Группа для обновления не найдена");
                         }
                     }
                     response.setVersion("HTTP/1.1");
@@ -194,18 +194,18 @@ public class CategoryController implements Controller {
                 response.setHeader("Pragma", "no-cache");
             }
             case "DELETE" -> {
-                p = Pattern.compile("^/category/(?<id>(\\d+))/$");
+                p = Pattern.compile("^/group/(?<id>(\\d+))/$");
                 m = p.matcher(url);
                 if (m.find()) {
                     int id = Integer.parseInt(m.group("id"));
                     int statusDelete;
-                    statusDelete = categoryService.delete(id);
+                    statusDelete = groupService.delete(id);
                     if (statusDelete != 0) {
                         response.setStatusCode(204);
                         response.setStatusText("Нет данных");
                     } else {
                         response.setStatusCode(404);
-                        response.setStatusText("Категория для удаления не найдена");
+                        response.setStatusText("Группа для удаления не найдена");
                     }
                 } else {
                     response.setStatusCode(400);
