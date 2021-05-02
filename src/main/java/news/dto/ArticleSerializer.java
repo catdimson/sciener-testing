@@ -146,7 +146,6 @@ public class ArticleSerializer implements Serializer<Article> {
 
         // если прикрепленных изображений нет
         if (Pattern.compile("]").matcher(lines[indexLine + 2]).find()) {
-            System.out.println("Прикреплений нет");
             // если не указаны теги
             if (Pattern.compile("]").matcher(lines[indexLine + 4]).find()) {
                 System.out.println("Тегов нет");

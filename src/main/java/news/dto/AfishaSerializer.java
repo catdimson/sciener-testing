@@ -144,7 +144,6 @@ public class AfishaSerializer implements Serializer<Afisha> {
         // sourceId
         m = Pattern.compile(":(\\d+)").matcher(lines[indexLine]);
         m.find();
-        System.out.println(indexLine);
         sourceId = Integer.parseInt(m.group(1));
 
         // создаем по распарсеным данным объект афиши

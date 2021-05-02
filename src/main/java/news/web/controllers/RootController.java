@@ -18,7 +18,7 @@ public class RootController {
     // afisha
     AfishaRepository afishaRepository;
     AfishaService afishaService;
-    //AfishaController afishaController;
+    AfishaController afishaController;
     // article
     ArticleRepository articleRepository;
     ArticleService articleService;
@@ -120,6 +120,13 @@ public class RootController {
                     userController = new UserController(userService, request);
                     userController.buildResponse();
                     response = userController.getResponse();
+                }
+                case ("afisha") -> {
+                    afishaRepository = new AfishaRepository(dbPool);
+                    afishaService = new AfishaService(afishaRepository);
+                    afishaController = new AfishaController(afishaService, request);
+                    afishaController.buildResponse();
+                    response = afishaController.getResponse();
                 }
                 default -> {
                     response.setStatusCode(400);
