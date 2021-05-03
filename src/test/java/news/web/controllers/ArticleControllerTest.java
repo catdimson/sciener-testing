@@ -442,7 +442,90 @@ class ArticleControllerTest {
     }
 
     @Test
-    void buildResponseGETMethodFindById() {
+    void buildResponseGETMethodFindById() throws SQLException, IOException {
+        // Добавляем статьи
+        Connection connection = this.poolConnection.getConnection();
+        Statement statement = connection.createStatement();
+        String sqlInsertArticle1 = String.format("INSERT INTO article (title, lead, create_date, edit_date, text, is_published, " +
+                        "category_id, user_id, source_id) VALUES ('%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);",
+                "Заголовок1", "Лид 1", Timestamp.valueOf(createDateArticle.atStartOfDay()),
+                Timestamp.valueOf(editDateArticle.atStartOfDay()), "Текст 1", true, 1, 1, 1);
+        statement.executeUpdate(sqlInsertArticle1);
+        String sqlInsertArticle2 = String.format("INSERT INTO article (title, lead, create_date, edit_date, text, is_published, " +
+                        "category_id, user_id, source_id) VALUES ('%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);",
+                "Заголовок1", "Лид 2", Timestamp.valueOf(createDateArticle.atStartOfDay()),
+                Timestamp.valueOf(editDateArticle.atStartOfDay()), "Текст 2", true, 2, 2, 2);
+        statement.executeUpdate(sqlInsertArticle2);
+        String sqlInsertImages = String.format("INSERT INTO image (title, path, article_id) " +
+                        "VALUES ('%s', '%s', %d), ('%s', '%s', %d), ('%s', '%s', %d), ('%s', '%s', %d);",
+                "Изображение 1", "/static/images/image1.png", 1,
+                "Изображение 2", "/static/images/image2.png", 1,
+                "Изображение 3", "/static/images/image3.png", 2,
+                "Изображение 4", "/static/images/image4.png", 2);
+        statement.executeUpdate(sqlInsertImages);
+        String sqlInsertTagsId = "INSERT INTO article_tag (article_id, tag_id) VALUES " +
+                "(1, 1), (1, 2), (2, 3), (2, 4);";
+        statement.executeUpdate(sqlInsertTagsId);
+        // ожидаемый результат
+        String expectedResult = "" +
+                "HTTP/1.1 200 OK\n" +
+                "Cache-Control: no-store, no-cache, must-revalidate\n" +
+                "Pragma: no-cache\n" +
+                "Content-Type: application/json; charset=UTF-8\n" +
+                "\n" +
+                "{\n" +
+                "\t\"id\":2,\n" +
+                "\t\"title\":\"Заголовок1\",\n" +
+                "\t\"lead\":\"Лид 2\",\n" +
+                "\t\"createDate\":1561410000,\n" +
+                "\t\"editDate\":1561410000,\n" +
+                "\t\"text\":\"Текст 2\",\n" +
+                "\t\"isPublished\":true,\n" +
+                "\t\"categoryId\":2,\n" +
+                "\t\"userId\":2,\n" +
+                "\t\"sourceId\":2,\n" +
+                "\t\"images\":[\n" +
+                "\t\t{\n" +
+                "\t\t\t\"id\":4,\n" +
+                "\t\t\t\"title\":\"Изображение 4\",\n" +
+                "\t\t\t\"path\":\"/static/images/image4.png\",\n" +
+                "\t\t\t\"articleId\":2\n" +
+                "\t\t},\n" +
+                "\t\t{\n" +
+                "\t\t\t\"id\":3,\n" +
+                "\t\t\t\"title\":\"Изображение 3\",\n" +
+                "\t\t\t\"path\":\"/static/images/image3.png\",\n" +
+                "\t\t\t\"articleId\":2\n" +
+                "\t\t}\n" +
+                "\t],\n" +
+                "\t\"tagsId\":[\n" +
+                "\t\t3,\n" +
+                "\t\t4\n" +
+                "\t]\n" +
+                "}";
+        clientSocket = new Socket("127.0.0.1", 5000);
+        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
+
+        String request = "" +
+                "GET /article/2/ HTTP/1.1\n" +
+                "Accept: application/json, */*; q=0.01\n" +
+                "Content-Type: application/json\n" +
+                "Host: 127.0.0.1:5000\n" +
+                "UnitTest: true\n" +
+                "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
+                "UserPostgres: " + this.container.getUsername() + "\n" +
+                "PasswordPostgres: " + this.container.getPassword() + "\n";
+        out.println(request);
+        out.flush();
+
+        StringBuilder actualResult = new StringBuilder();
+        actualResult.append(in.readLine()).append("\n");
+        while (in.ready()) {
+            actualResult.append(in.readLine()).append("\n");
+        }
+        actualResult.setLength(actualResult.length() - 1);
+        assertThat(actualResult.toString()).isEqualTo(expectedResult);
     }
 
     @Test
