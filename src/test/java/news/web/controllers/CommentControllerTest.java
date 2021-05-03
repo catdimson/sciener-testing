@@ -1,7 +1,6 @@
 package news.web.controllers;
 
 import news.dao.connection.DBPool;
-import news.model.Article;
 import news.model.Comment;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -541,29 +540,33 @@ class CommentControllerTest {
     void buildResponsePUTMethod() throws IOException, SQLException {
         SoftAssertions soft = new SoftAssertions();
         Connection connection = this.poolConnection.getConnection();
+        Comment comment = new Comment("Текст комментария 10", createDateComment, editDateComment, 2, 1);
+        Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment("Прикрепление 10", "/static/attachments/image10.png", 1);
+        Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 11", "/static/attachments/image11.png", 1);
+        comment.addNewAttachment(commentAttachment1);
+        comment.addNewAttachment(commentAttachment2);
+
         Statement statement = connection.createStatement();
-        String sqlInsertArticle = String.format("INSERT INTO article (title, lead, create_date, edit_date, text, is_published, " +
-                        "category_id, user_id, source_id) VALUES ('%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);",
-                "Заголовок1", "Лид 1", Timestamp.valueOf(createDateArticle.atStartOfDay()),
-                Timestamp.valueOf(editDateArticle.atStartOfDay()), "Текст 1", true, 1, 1, 1);
-        statement.executeUpdate(sqlInsertArticle);
-        String sqlInsertImages = String.format("INSERT INTO image (title, path, article_id) " +
-                        "VALUES ('%s', '%s', %d), ('%s', '%s', %d);",
-                "Изображение 1", "/static/images/image1.png", 1,
-                "Изображение 2", "/static/images/image2.png", 1);
-        statement.executeUpdate(sqlInsertImages);
-        String sqlInsertTagsId = "INSERT INTO article_tag (article_id, tag_id) VALUES " +
-                "(1, 1), (1, 2);";
-        statement.executeUpdate(sqlInsertTagsId);
-        Article article = new Article("Заголовок 2", "Лид 2", createDateArticle, editDateArticle,
-                "Текст 2", false, 2, 2, 2);
-        // добавляем к ним по 2 изображения
-        Article.ArticleImage articleImage1 = new Article.ArticleImage("Изображение 3", "/static/images/image3.png", 1);
-        Article.ArticleImage articleImage2 = new Article.ArticleImage("Изображение 4", "/static/images/image4.png", 1);
-        article.addNewImage(articleImage1);
-        article.addNewImage(articleImage2);
-        article.addNewTagId(3);
-        article.addNewTagId(4);
+        // добавляем 1 комментарий
+        String sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
+                        "VALUES ('%s', '%s', '%s', %s, %s);", "Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()),
+                Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
+        statement.executeUpdate(sqlInsertComment);
+        String sqlInsertAttachments = String.format("INSERT INTO attachment (title, path, comment_id)" +
+                        "VALUES ('%s', '%s', %s), ('%s', '%s', %s);", "Прикрепление 1", "/static/attachments/image1.png", 1,
+                "Прикрепление 2", "/static/attachments/image2.png", 1);
+        statement.executeUpdate(sqlInsertAttachments);
+        // добавляем 2 комментарий
+        sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
+                        "VALUES ('%s', '%s', '%s', %s, %s);", "Текст комментария 2", Timestamp.valueOf(createDateComment.atStartOfDay()),
+                Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
+        statement.executeUpdate(sqlInsertComment);
+        sqlInsertAttachments = String.format("INSERT INTO attachment (title, path, comment_id)" +
+                        "VALUES ('%s', '%s', %s), ('%s', '%s', %s);", "Прикрепление 3", "/static/attachments/image3.png", 2,
+                "Прикрепление 4", "/static/attachments/image4.png", 2);
+        statement.executeUpdate(sqlInsertAttachments);
+
+
         clientSocket = new Socket("127.0.0.1", 5000);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
@@ -573,7 +576,7 @@ class CommentControllerTest {
                 "Pragma: no-cache\n";
 
         String request = "" +
-                "PUT /article/1/ HTTP/1.1\n" +
+                "PUT /comment/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
                 "Host: 127.0.0.1:5000\n" +
@@ -584,32 +587,24 @@ class CommentControllerTest {
                 "\n" +
                 "{\n" +
                 "\t\"id\":1,\n" +
-                "\t\"title\":\"Заголовок 2\",\n" +
-                "\t\"lead\":\"Лид 2\",\n" +
-                "\t\"createDate\":1561410000,\n" +
-                "\t\"editDate\":1561410000,\n" +
-                "\t\"text\":\"Текст 2\",\n" +
-                "\t\"isPublished\":false,\n" +
-                "\t\"categoryId\":2,\n" +
+                "\t\"text\":\"Текст комментария 10\",\n" +
+                "\t\"createDate\":1558299600,\n" +
+                "\t\"editDate\":1589922000,\n" +
                 "\t\"userId\":2,\n" +
-                "\t\"sourceId\":2,\n" +
-                "\t\"images\":[\n" +
+                "\t\"articleId\":1,\n" +
+                "\t\"attachments\":[\n" +
                 "\t\t{\n" +
                 "\t\t\t\"id\":0,\n" +
-                "\t\t\t\"title\":\"Изображение 3\",\n" +
-                "\t\t\t\"path\":\"/static/images/image3.png\",\n" +
+                "\t\t\t\"title\":\"Прикрепление 10\",\n" +
+                "\t\t\t\"path\":\"/static/attachments/image10.png\",\n" +
                 "\t\t\t\"articleId\":1\n" +
                 "\t\t},\n" +
                 "\t\t{\n" +
                 "\t\t\t\"id\":0,\n" +
-                "\t\t\t\"title\":\"Изображение 4\",\n" +
-                "\t\t\t\"path\":\"/static/images/image4.png\",\n" +
+                "\t\t\t\"title\":\"Прикрепление 11\",\n" +
+                "\t\t\t\"path\":\"/static/attachments/image11.png\",\n" +
                 "\t\t\t\"articleId\":1\n" +
                 "\t\t}\n" +
-                "\t],\n" +
-                "\t\"tagsId\":[\n" +
-                "\t\t3,\n" +
-                "\t\t4\n" +
                 "\t]\n" +
                 "}";
         out.println(request);
@@ -624,61 +619,47 @@ class CommentControllerTest {
         // сначала сравниваем ответы
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
         // сравниваем результаты
-        String sqlQueryArticle = "SELECT * FROM article WHERE id=1;";
+        String sqlQueryComment = "SELECT * FROM comment WHERE id=1;";
         connection = poolConnection.getConnection();
         statement = connection.createStatement();
-        ResultSet result = statement.executeQuery(sqlQueryArticle);
+        ResultSet result = statement.executeQuery(sqlQueryComment);
         result.next();
-        soft.assertThat(article)
-                .hasFieldOrPropertyWithValue("title", result.getString("title"))
-                .hasFieldOrPropertyWithValue("lead", result.getString("lead"))
+        soft.assertThat(comment)
+                .hasFieldOrPropertyWithValue("text", result.getString("text"))
                 .hasFieldOrPropertyWithValue("createDate", result.getTimestamp("create_date").toLocalDateTime().toLocalDate())
                 .hasFieldOrPropertyWithValue("editDate", result.getTimestamp("edit_date").toLocalDateTime().toLocalDate())
-                .hasFieldOrPropertyWithValue("text", result.getString("text"))
-                .hasFieldOrPropertyWithValue("isPublished", result.getBoolean("is_published"))
-                .hasFieldOrPropertyWithValue("categoryId", result.getInt("category_id"))
-                .hasFieldOrPropertyWithValue("userId", result.getInt("user_id"))
-                .hasFieldOrPropertyWithValue("sourceId", result.getInt("source_id"));
+                .hasFieldOrPropertyWithValue("articleId", result.getInt("article_id"))
+                .hasFieldOrPropertyWithValue("userId", result.getInt("user_id"));
         soft.assertAll();
-        String sqlQueryImages = "SELECT * FROM image WHERE article_id=1 ORDER BY title;";
-        result = statement.executeQuery(sqlQueryImages);
+        String sqlQueryAttachments = "SELECT * FROM attachment WHERE comment_id=1;";
+        result = statement.executeQuery(sqlQueryAttachments);
         result.next();
-        soft.assertThat(articleImage1)
+        soft.assertThat(commentAttachment1)
                 .hasFieldOrPropertyWithValue("title", result.getString("title"))
                 .hasFieldOrPropertyWithValue("path", result.getString("path"))
-                .hasFieldOrPropertyWithValue("articleId", result.getInt("article_id"));
+                .hasFieldOrPropertyWithValue("commentId", result.getInt("comment_id"));
         soft.assertAll();
         result.next();
-        soft.assertThat(articleImage2)
+        soft.assertThat(commentAttachment2)
                 .hasFieldOrPropertyWithValue("title", result.getString("title"))
                 .hasFieldOrPropertyWithValue("path", result.getString("path"))
-                .hasFieldOrPropertyWithValue("articleId", result.getInt("article_id"));
+                .hasFieldOrPropertyWithValue("commentId", result.getInt("comment_id"));
         soft.assertAll();
-        String sqlQueryTagsId = "SELECT * FROM article_tag WHERE article_id=1;";
-        result = statement.executeQuery(sqlQueryTagsId);
-        result.next();
-        assertThat(result.getInt("tag_id")).isEqualTo(3);
-        result.next();
-        assertThat(result.getInt("tag_id")).isEqualTo(4);
     }
 
     @Test
     void buildResponseDELETEMethod() throws SQLException, IOException {
         Connection connection = this.poolConnection.getConnection();
         Statement statement = connection.createStatement();
-        String sqlInsertArticle = String.format("INSERT INTO article (title, lead, create_date, edit_date, text, is_published, " +
-                        "category_id, user_id, source_id) VALUES ('%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);",
-                "Заголовок1", "Лид 1", Timestamp.valueOf(createDateArticle.atStartOfDay()),
-                Timestamp.valueOf(editDateArticle.atStartOfDay()), "Текст 1", true, 1, 1, 1);
-        statement.executeUpdate(sqlInsertArticle);
-        String sqlInsertImages = String.format("INSERT INTO image (title, path, article_id) " +
-                        "VALUES ('%s', '%s', %d), ('%s', '%s', %d);",
-                "Изображение 1", "/static/images/image1.png", 1,
-                "Изображение 2", "/static/images/image2.png", 1);
-        statement.executeUpdate(sqlInsertImages);
-        String sqlInsertTagsId = "INSERT INTO article_tag (article_id, tag_id) VALUES " +
-                "(1, 1), (1, 2);";
-        statement.executeUpdate(sqlInsertTagsId);
+        // добавляем 1 комментарий
+        String sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
+                        "VALUES ('%s', '%s', '%s', %s, %s);", "Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()),
+                Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
+        statement.executeUpdate(sqlInsertComment);
+        String sqlInsertAttachments = String.format("INSERT INTO attachment (title, path, comment_id)" +
+                        "VALUES ('%s', '%s', %s), ('%s', '%s', %s);", "Прикрепление 1", "/static/attachments/image1.png", 1,
+                "Прикрепление 2", "/static/attachments/image2.png", 1);
+        statement.executeUpdate(sqlInsertAttachments);
 
         clientSocket = new Socket("127.0.0.1", 5000);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -689,7 +670,7 @@ class CommentControllerTest {
                 "Pragma: no-cache\n";
 
         String request = "" +
-                "DELETE /article/1/ HTTP/1.1\n" +
+                "DELETE /comment/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
                 "Host: 127.0.0.1:5000\n" +
@@ -709,14 +690,11 @@ class CommentControllerTest {
         // сначала сравниваем ответы
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
         // сравниваем результаты из таблиц
-        String sqlQueryArticle = "SELECT * FROM article WHERE title='Заголовок1';";
-        ResultSet result = statement.executeQuery(sqlQueryArticle);
-        assertThat(result.next()).isFalse().as("Не удалена статья по запросу");
-        String sqlQueryImages = "SELECT * FROM image WHERE article_id=1;";
-        result = statement.executeQuery(sqlQueryImages);
-        assertThat(result.next()).isFalse().as("Не все записи изображений удалены по запросу");
-        String sqlQueryTagsId = "SELECT * FROM article_tag WHERE article_id=1;";
-        result = statement.executeQuery(sqlQueryTagsId);
-        assertThat(result.next()).isFalse().as("Не все записи тегов удалены по запросу");
+        String sqlQueryComment = "SELECT * FROM comment WHERE id=1;";
+        ResultSet result = statement.executeQuery(sqlQueryComment);
+        assertThat(result.next()).isFalse().as("Не удален комментарий по запросу");
+        String sqlQueryAttachments = "SELECT * FROM attachment WHERE comment_id=1;";
+        result = statement.executeQuery(sqlQueryAttachments);
+        assertThat(result.next()).isFalse().as("Не все записи прикреплений удалены по запросу");
     }
 }
