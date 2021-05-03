@@ -762,6 +762,60 @@ class ArticleControllerTest {
     }
 
     @Test
-    void buildResponseDELETEMethod() {
+    void buildResponseDELETEMethod() throws SQLException, IOException {
+        Connection connection = this.poolConnection.getConnection();
+        Statement statement = connection.createStatement();
+        String sqlInsertArticle = String.format("INSERT INTO article (title, lead, create_date, edit_date, text, is_published, " +
+                        "category_id, user_id, source_id) VALUES ('%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);",
+                "Заголовок1", "Лид 1", Timestamp.valueOf(createDateArticle.atStartOfDay()),
+                Timestamp.valueOf(editDateArticle.atStartOfDay()), "Текст 1", true, 1, 1, 1);
+        statement.executeUpdate(sqlInsertArticle);
+        String sqlInsertImages = String.format("INSERT INTO image (title, path, article_id) " +
+                        "VALUES ('%s', '%s', %d), ('%s', '%s', %d);",
+                "Изображение 1", "/static/images/image1.png", 1,
+                "Изображение 2", "/static/images/image2.png", 1);
+        statement.executeUpdate(sqlInsertImages);
+        String sqlInsertTagsId = "INSERT INTO article_tag (article_id, tag_id) VALUES " +
+                "(1, 1), (1, 2);";
+        statement.executeUpdate(sqlInsertTagsId);
+
+        clientSocket = new Socket("127.0.0.1", 5000);
+        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
+        String expectedResult = "" +
+                "HTTP/1.1 204 Нет данных\n" +
+                "Cache-Control: no-store, no-cache, must-revalidate\n" +
+                "Pragma: no-cache\n";
+
+        String request = "" +
+                "DELETE /article/1/ HTTP/1.1\n" +
+                "Accept: application/json, */*; q=0.01\n" +
+                "Content-Type: application/json\n" +
+                "Host: 127.0.0.1:5000\n" +
+                "UnitTest: true\n" +
+                "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
+                "UserPostgres: " + this.container.getUsername() + "\n" +
+                "PasswordPostgres: " + this.container.getPassword() + "\n";
+        out.println(request);
+        out.flush();
+
+        StringBuilder actualResult = new StringBuilder();
+        actualResult.append(in.readLine()).append("\n");
+        while (in.ready()) {
+            actualResult.append(in.readLine()).append("\n");
+        }
+        actualResult.setLength(actualResult.length() - 1);
+        // сначала сравниваем ответы
+        assertThat(actualResult.toString()).isEqualTo(expectedResult);
+        // сравниваем результаты из таблиц
+        String sqlQueryArticle = "SELECT * FROM article WHERE title='Заголовок1';";
+        ResultSet result = statement.executeQuery(sqlQueryArticle);
+        assertThat(result.next()).isFalse().as("Не удалена статья по запросу");
+        String sqlQueryImages = "SELECT * FROM image WHERE article_id=1;";
+        result = statement.executeQuery(sqlQueryImages);
+        assertThat(result.next()).isFalse().as("Не все записи изображений удалены по запросу");
+        String sqlQueryTagsId = "SELECT * FROM article_tag WHERE article_id=1;";
+        result = statement.executeQuery(sqlQueryTagsId);
+        assertThat(result.next()).isFalse().as("Не все записи тегов удалены по запросу");
     }
 }
