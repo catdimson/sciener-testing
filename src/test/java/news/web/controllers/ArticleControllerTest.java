@@ -1,7 +1,9 @@
 package news.web.controllers;
 
 import news.dao.connection.DBPool;
+import news.model.Article;
 import news.web.http.WebServer;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,10 +11,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.io.*;
 import java.net.Socket;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -529,7 +528,112 @@ class ArticleControllerTest {
     }
 
     @Test
-    void buildResponsePOSTMethod() {
+    void buildResponsePOSTMethod() throws SQLException, IOException {
+        SoftAssertions soft = new SoftAssertions();
+        // создаем две статьи с одиннаковым title
+        Article article = new Article("Заголовок 10", "Лид 10", createDateArticle, editDateArticle,
+                "Текст 10", true, 2, 2, 2);
+        // добавляем к ним по 2 изображения
+        Article.ArticleImage articleImage1 = new Article.ArticleImage("Изображение 10", "/static/images/image10.png", 1);
+        Article.ArticleImage articleImage2 = new Article.ArticleImage("Изображение 11", "/static/images/image11.png", 1);
+        article.addNewImage(articleImage1);
+        article.addNewImage(articleImage2);
+        article.addNewTagId(3);
+        article.addNewTagId(4);
+        clientSocket = new Socket("127.0.0.1", 5000);
+        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
+        String expectedResult = "" +
+            "HTTP/1.1 201 Статья создана\n" +
+            "Cache-Control: no-store, no-cache, must-revalidate\n" +
+            "Pragma: no-cache\n" +
+            "Location: /article/1/\n";
+
+        String request = "" +
+            "POST /article/ HTTP/1.1\n" +
+            "Accept: application/json, */*; q=0.01\n" +
+            "Content-Type: application/json\n" +
+            "Host: 127.0.0.1:5000\n" +
+            "UnitTest: true\n" +
+            "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
+            "UserPostgres: " + this.container.getUsername() + "\n" +
+            "PasswordPostgres: " + this.container.getPassword() + "\n" +
+            "\n" +
+            "{\n" +
+            "\t\"title\":\"Заголовок 10\",\n" +
+            "\t\"lead\":\"Лид 10\",\n" +
+            "\t\"createDate\":1561410000,\n" +
+            "\t\"editDate\":1561410000,\n" +
+            "\t\"text\":\"Текст 10\",\n" +
+            "\t\"isPublished\":true,\n" +
+            "\t\"categoryId\":2,\n" +
+            "\t\"userId\":2,\n" +
+            "\t\"sourceId\":2,\n" +
+            "\t\"images\":[\n" +
+            "\t\t{\n" +
+            "\t\t\t\"title\":\"Изображение 10\",\n" +
+            "\t\t\t\"path\":\"/static/images/image10.png\",\n" +
+            "\t\t\t\"articleId\":1\n" +
+            "\t\t},\n" +
+            "\t\t{\n" +
+            "\t\t\t\"title\":\"Изображение 11\",\n" +
+            "\t\t\t\"path\":\"/static/images/image11.png\",\n" +
+            "\t\t\t\"articleId\":1\n" +
+            "\t\t}\n" +
+            "\t],\n" +
+            "\t\"tagsId\":[\n" +
+            "\t\t3,\n" +
+            "\t\t4\n" +
+            "\t]\n" +
+            "}";
+        out.println(request);
+        out.flush();
+
+        StringBuilder actualResult = new StringBuilder();
+        actualResult.append(in.readLine()).append("\n");
+        while (in.ready()) {
+            actualResult.append(in.readLine()).append("\n");
+        }
+        actualResult.setLength(actualResult.length() - 1);
+        // сначала сравниваем ответы
+        assertThat(actualResult.toString()).isEqualTo(expectedResult);
+        // сравниваем результаты
+        String sqlQueryArticle = "SELECT * FROM article WHERE title='Заголовок 10';";
+        Connection connection = poolConnection.getConnection();
+        Statement statement = connection.createStatement();
+        ResultSet result = statement.executeQuery(sqlQueryArticle);
+        result.next();
+        soft.assertThat(article)
+                .hasFieldOrPropertyWithValue("title", result.getString("title"))
+                .hasFieldOrPropertyWithValue("lead", result.getString("lead"))
+                .hasFieldOrPropertyWithValue("createDate", result.getTimestamp("create_date").toLocalDateTime().toLocalDate())
+                .hasFieldOrPropertyWithValue("editDate", result.getTimestamp("edit_date").toLocalDateTime().toLocalDate())
+                .hasFieldOrPropertyWithValue("text", result.getString("text"))
+                .hasFieldOrPropertyWithValue("isPublished", result.getBoolean("is_published"))
+                .hasFieldOrPropertyWithValue("categoryId", result.getInt("category_id"))
+                .hasFieldOrPropertyWithValue("userId", result.getInt("user_id"))
+                .hasFieldOrPropertyWithValue("sourceId", result.getInt("source_id"));
+        soft.assertAll();
+        String sqlQueryImages = "SELECT * FROM image WHERE article_id=1;";
+        result = statement.executeQuery(sqlQueryImages);
+        result.next();
+        soft.assertThat(articleImage1)
+                .hasFieldOrPropertyWithValue("title", result.getString("title"))
+                .hasFieldOrPropertyWithValue("path", result.getString("path"))
+                .hasFieldOrPropertyWithValue("articleId", result.getInt("article_id"));
+        soft.assertAll();
+        result.next();
+        soft.assertThat(articleImage2)
+                .hasFieldOrPropertyWithValue("title", result.getString("title"))
+                .hasFieldOrPropertyWithValue("path", result.getString("path"))
+                .hasFieldOrPropertyWithValue("articleId", result.getInt("article_id"));
+        soft.assertAll();
+        String sqlQueryTagsId = "SELECT * FROM article_tag WHERE article_id=1;";
+        result = statement.executeQuery(sqlQueryTagsId);
+        result.next();
+        assertThat(result.getInt("tag_id")).isEqualTo(3);
+        result.next();
+        assertThat(result.getInt("tag_id")).isEqualTo(4);
     }
 
     @Test
