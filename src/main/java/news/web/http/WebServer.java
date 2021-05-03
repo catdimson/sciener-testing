@@ -29,9 +29,6 @@ public class WebServer extends Thread {
                 System.out.println("Server: СЕРВЕР ЗАПУЩЕН");
                 Socket server = serverSocket.accept();
 
-//                for (int i = 0; i < 100; i++) {
-//                    System.out.println("Server: " + i + " : " + Math.sqrt(Math.sqrt(Math.sqrt(Double.parseDouble(String.valueOf(i + 20))))));
-//                }
                 System.out.println("Server: ДОЖДАЛИСЬ ПОДКЛЮЧЕНИЯ");
                 BufferedReader in = new BufferedReader(new InputStreamReader(server.getInputStream()));
                 System.out.println("Server: ЧЕ-ТО ТАМ СЧИТАЛИ");
@@ -59,13 +56,6 @@ public class WebServer extends Thread {
                     System.out.println("Server: Выполняется ветвь без тестов");
                     app = new NewsApp(request);
                 }
-                /*if (dbPool != null) {
-                    System.out.println("Server: Выполняется ветвь для тестов");
-                    app = new NewsApp(request, this.dbPool);
-                } else {
-                    System.out.println("Server: Выполняется ветвь без тестов");
-                    app = new NewsApp(request);
-                }*/
                 String httpResponse = app.getResponse().getRawResponse();
                 System.out.println("httpResponse: \n" + httpResponse);
                 PrintWriter out = new PrintWriter(server.getOutputStream(), true);

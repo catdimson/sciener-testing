@@ -1,6 +1,7 @@
 package news.web.controllers;
 
 import news.dao.connection.DBPool;
+import news.dao.repositories.CommentRepository;
 import news.model.Article;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,13 +19,13 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ArticleControllerTest {
+class CommentControllerTest {
     private PostgreSQLContainer container;
     private DBPool poolConnection;
-    // для юзера
     private static LocalDate lastLogin;
     private static LocalDate dateJoined;
-    // для статьи
+    private static LocalDate createDateComment;
+    private static LocalDate editDateComment;
     private static LocalDate createDateArticle;
     private static LocalDate editDateArticle;
     private static LocalDate date;
@@ -45,6 +46,10 @@ class ArticleControllerTest {
         createDateArticle = LocalDate.of(2019, 6, 25);
         editDateArticle = LocalDate.of(2019, 6, 25);
         articleUserId = 1;
+        // comment (дата создания, дата редактировани)
+        createDateComment = LocalDate.of(2019, 5, 20);
+        editDateComment = LocalDate.of(2020, 5, 20);
+        commentUserId = 1;
     }
 
     @BeforeEach
@@ -57,7 +62,7 @@ class ArticleControllerTest {
         this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
         Statement statement = this.poolConnection.getConnection().createStatement();
 
-        // создание группы
+        // осздание группы
         String sqlCreateTableGroup = "CREATE TABLE IF NOT EXISTS \"group\" (" +
                 "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
                 "title character varying(40) NOT NULL," +
@@ -112,7 +117,7 @@ class ArticleControllerTest {
                 "CONSTRAINT source_pk PRIMARY KEY (id)" +
                 ");";
         statement.executeUpdate(sqlCreateTableSource);
-        String sqlCreateSource = "INSERT INTO source (title, url) VALUES ('Яндекс ДЗЕН', 'https://zen.yandex.ru/'), ('РИА', 'https://ria.ru/');";
+        String sqlCreateSource = "INSERT INTO source (title, url) VALUES('Яндекс ДЗЕН', 'https://zen.yandex.ru/');";
         statement.executeUpdate(sqlCreateSource);
 
         // создание категории
@@ -122,19 +127,8 @@ class ArticleControllerTest {
                 "CONSTRAINT category_pk PRIMARY KEY (id)," +
                 "CONSTRAINT title_unique_category UNIQUE (title));";
         statement.executeUpdate(sqlCreateTableCategory);
-        String sqlCreateCategory = "INSERT INTO category (title) VALUES ('Спорт'), ('Политика'), ('Шляпенция еще какая-то');";
+        String sqlCreateCategory = "INSERT INTO category (title) VALUES('Спорт');";
         statement.executeUpdate(sqlCreateCategory);
-
-        // создание тега
-        String sqlCreateTableTag = "CREATE TABLE IF NOT EXISTS tag (" +
-                "    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
-                "    title character varying(50) NOT NULL," +
-                "    CONSTRAINT tag_pk PRIMARY KEY (id)" +
-                ");";
-        statement.executeUpdate(sqlCreateTableTag);
-        String sqlCreateTag = "INSERT INTO tag (title) VALUES ('ufc'), ('смешанные единоборства'), ('макгрегор'), " +
-                "('балет'), ('картины');";
-        statement.executeUpdate(sqlCreateTag);
 
         // создание article
         String sqlCreateTableArticle = "CREATE TABLE IF NOT EXISTS article (" +
@@ -165,68 +159,61 @@ class ArticleControllerTest {
                 "CREATE INDEX IF NOT EXISTS fk_index_article_user_id ON article (user_id);" +
                 "CREATE INDEX IF NOT EXISTS fk_index_source_id ON article (source_id);";
         statement.executeUpdate(sqlCreateTableArticle);
+        String sqlCreateArticle = String.format("INSERT INTO article (title, lead, create_date, edit_date, text, is_published, category_id, user_id, source_id) " +
+                        "VALUES('title1', 'lead1', '%s', '%s', 'text1', true, 1, %s, 1);", Timestamp.valueOf(createDateArticle.atStartOfDay()),
+                Timestamp.valueOf(editDateArticle.atStartOfDay()), articleUserId);
+        statement.executeUpdate(sqlCreateArticle);
 
-        // создание изображения
-        String sqlCreateTableImage = "" +
-                "CREATE TABLE IF NOT EXISTS image (" +
-                "    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
-                "    title character varying(80) NOT NULL," +
-                "    path character varying(500) NOT NULL," +
-                "    article_id integer NOT NULL," +
-                "    CONSTRAINT image_pk PRIMARY KEY (id)," +
-                "    CONSTRAINT fk_article FOREIGN KEY (article_id)" +
-                "        REFERENCES article (id) MATCH SIMPLE" +
-                "        ON UPDATE CASCADE" +
-                "        ON DELETE CASCADE" +
-                ");" +
-                "CREATE INDEX IF NOT EXISTS fk_index_image_article_id ON image (article_id);";
-        statement.executeUpdate(sqlCreateTableImage);
+        // СОЗДАНИЕ ТАБЛИЦЫ КОММЕНТАРИЕВ
+        String sqlCreateTableComment = "CREATE TABLE IF NOT EXISTS comment (" +
+                "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),\n" +
+                "text character varying(3000)," +
+                "create_date timestamp NOT NULL," +
+                "edit_date timestamp NOT NULL," +
+                "article_id integer NOT NULL," +
+                "user_id integer NOT NULL," +
+                "CONSTRAINT comment_pk PRIMARY KEY (id)," +
+                "CONSTRAINT fk_new FOREIGN KEY (article_id)" +
+                "    REFERENCES article (id) MATCH SIMPLE" +
+                "    ON UPDATE CASCADE" +
+                "    ON DELETE CASCADE," +
+                "CONSTRAINT fk_user FOREIGN KEY (user_id)" +
+                "    REFERENCES \"user\" (id) MATCH SIMPLE" +
+                "    ON UPDATE CASCADE" +
+                "    ON DELETE CASCADE);" +
+                "CREATE INDEX IF NOT EXISTS fk_index_comment_new_id ON comment (article_id);" +
+                "CREATE INDEX IF NOT EXISTS fk_index_comment_user_id ON comment (user_id);";
+        statement.executeUpdate(sqlCreateTableComment);
 
-        // создание таблицы article_tag
-        String sqlCreateTableArticleTag = "CREATE TABLE IF NOT EXISTS article_tag (" +
-                "    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
-                "    article_id integer NOT NULL," +
-                "    tag_id integer NOT NULL," +
-                "    CONSTRAINT article_tag_pk PRIMARY KEY (id)," +
-                "    CONSTRAINT article_tag_unique UNIQUE (article_id, tag_id)," +
-                "    CONSTRAINT fk_new FOREIGN KEY (article_id)" +
-                "        REFERENCES article (id) MATCH SIMPLE" +
-                "        ON UPDATE CASCADE" +
-                "        ON DELETE CASCADE," +
-                "    CONSTRAINT fk_tag FOREIGN KEY (tag_id)" +
-                "        REFERENCES tag (id) MATCH SIMPLE" +
-                "        ON UPDATE CASCADE" +
-                "        ON DELETE CASCADE);" +
-                "CREATE INDEX IF NOT EXISTS fk_index_new_tag_article_id ON article_tag (article_id);" +
-                "CREATE INDEX IF NOT EXISTS fk_index_new_tag_tag_id ON article_tag (tag_id);";
-        statement.executeUpdate(sqlCreateTableArticleTag);
+        // СОЗДАНИЕ ТАБЛИЦЫ ПРИКРЕПЛЕНИЙ К КОММЕНТАРИЯМ
+        String sqlCreateTableAttachment = "CREATE TABLE IF NOT EXISTS attachment (" +
+                "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
+                "title character varying(80) NOT NULL," +
+                "path character varying(500) NOT NULL," +
+                "comment_id integer NOT NULL," +
+                "CONSTRAINT attachment_pk PRIMARY KEY (id)," +
+                "CONSTRAINT fk_comment FOREIGN KEY (comment_id)" +
+                "    REFERENCES comment (id) MATCH SIMPLE" +
+                "    ON UPDATE CASCADE" +
+                "    ON DELETE CASCADE);" +
+                "CREATE INDEX IF NOT EXISTS fk_index_attachment_comment_id ON attachment (comment_id);";
+        statement.executeUpdate(sqlCreateTableAttachment);
     }
 
     @Test
     void buildResponseGETMethodFindAll() throws IOException, SQLException {
-        // Добавляем статьи
+        CommentRepository commentRepository = new CommentRepository(this.poolConnection);
         Connection connection = this.poolConnection.getConnection();
         Statement statement = connection.createStatement();
-        String sqlInsertArticle1 = String.format("INSERT INTO article (title, lead, create_date, edit_date, text, is_published, " +
-                        "category_id, user_id, source_id) VALUES ('%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);",
-                "Заголовок 1", "Лид 1", Timestamp.valueOf(createDateArticle.atStartOfDay()),
-                Timestamp.valueOf(editDateArticle.atStartOfDay()), "Текст 1", true, 1, 1, 1);
-        statement.executeUpdate(sqlInsertArticle1);
-        String sqlInsertArticle2 = String.format("INSERT INTO article (title, lead, create_date, edit_date, text, is_published, " +
-                        "category_id, user_id, source_id) VALUES ('%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);",
-                "Заголовок 1", "Лид 2", Timestamp.valueOf(createDateArticle.atStartOfDay()),
-                Timestamp.valueOf(editDateArticle.atStartOfDay()), "Текст 2", true, 2, 2, 2);
-        statement.executeUpdate(sqlInsertArticle2);
-        String sqlInsertImages = String.format("INSERT INTO image (title, path, article_id) " +
-                        "VALUES ('%s', '%s', %d), ('%s', '%s', %d), ('%s', '%s', %d), ('%s', '%s', %d);",
-                "Изображение 1", "/static/images/image1.png", 1,
-                "Изображение 2", "/static/images/image2.png", 1,
-                "Изображение 3", "/static/images/image3.png", 2,
-                "Изображение 4", "/static/images/image4.png", 2);
-        statement.executeUpdate(sqlInsertImages);
-        String sqlInsertTagsId = "INSERT INTO article_tag (article_id, tag_id) VALUES " +
-                "(1, 1), (1, 2), (2, 3), (2, 4);";
-        statement.executeUpdate(sqlInsertTagsId);
+        String sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
+                        "VALUES ('%s', '%s', '%s', %s, %s);", "Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()),
+                Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
+        statement.executeUpdate(sqlInsertComment);
+        String sqlInsertAttachments = String.format("INSERT INTO attachment (title, path, comment_id)" +
+                        "VALUES ('%s', '%s', %s), ('%s', '%s', %s);", "Прикрепление 1", "/static/attachments/image1.png", 1,
+                "Прикрепление 2", "/static/attachments/image2.png", 1);
+        statement.executeUpdate(sqlInsertAttachments);
+
         // ожидаемый результат
         String expectedResult = "" +
             "HTTP/1.1 200 OK\n" +
@@ -237,62 +224,24 @@ class ArticleControllerTest {
             "[\n" +
             "{\n" +
             "\t\"id\":1,\n" +
-            "\t\"title\":\"Заголовок 1\",\n" +
-            "\t\"lead\":\"Лид 1\",\n" +
-            "\t\"createDate\":1561410000,\n" +
-            "\t\"editDate\":1561410000,\n" +
-            "\t\"text\":\"Текст 1\",\n" +
-            "\t\"isPublished\":true,\n" +
-            "\t\"categoryId\":1,\n" +
+            "\t\"text\":\"Текст комментария\",\n" +
+            "\t\"createDate\":1558299600,\n" +
+            "\t\"editDate\":1589922000,\n" +
             "\t\"userId\":1,\n" +
-            "\t\"sourceId\":1,\n" +
-            "\t\"images\":[\n" +
+            "\t\"articleId\":1,\n" +
+            "\t\"attachments\":[\n" +
             "\t\t{\n" +
             "\t\t\t\"id\":1,\n" +
-            "\t\t\t\"title\":\"Изображение 1\",\n" +
-            "\t\t\t\"path\":\"/static/images/image1.png\",\n" +
-            "\t\t\t\"articleId\":1\n" +
+            "\t\t\t\"title\":\"Прикрепление 1\",\n" +
+            "\t\t\t\"path\":\"/static/attachments/image1.png\",\n" +
+            "\t\t\t\"commentId\":1\n" +
             "\t\t},\n" +
             "\t\t{\n" +
             "\t\t\t\"id\":2,\n" +
-            "\t\t\t\"title\":\"Изображение 2\",\n" +
-            "\t\t\t\"path\":\"/static/images/image2.png\",\n" +
-            "\t\t\t\"articleId\":1\n" +
+            "\t\t\t\"title\":\"Прикрепление 2\",\n" +
+            "\t\t\t\"path\":\"/static/attachments/image2.png\",\n" +
+            "\t\t\t\"commentId\":1\n" +
             "\t\t}\n" +
-            "\t],\n" +
-            "\t\"tagsId\":[\n" +
-            "\t\t1,\n" +
-            "\t\t2\n" +
-            "\t]\n" +
-            "},\n" +
-            "{\n" +
-            "\t\"id\":2,\n" +
-            "\t\"title\":\"Заголовок 1\",\n" +
-            "\t\"lead\":\"Лид 2\",\n" +
-            "\t\"createDate\":1561410000,\n" +
-            "\t\"editDate\":1561410000,\n" +
-            "\t\"text\":\"Текст 2\",\n" +
-            "\t\"isPublished\":true,\n" +
-            "\t\"categoryId\":2,\n" +
-            "\t\"userId\":2,\n" +
-            "\t\"sourceId\":2,\n" +
-            "\t\"images\":[\n" +
-            "\t\t{\n" +
-            "\t\t\t\"id\":3,\n" +
-            "\t\t\t\"title\":\"Изображение 3\",\n" +
-            "\t\t\t\"path\":\"/static/images/image3.png\",\n" +
-            "\t\t\t\"articleId\":2\n" +
-            "\t\t},\n" +
-            "\t\t{\n" +
-            "\t\t\t\"id\":4,\n" +
-            "\t\t\t\"title\":\"Изображение 4\",\n" +
-            "\t\t\t\"path\":\"/static/images/image4.png\",\n" +
-            "\t\t\t\"articleId\":2\n" +
-            "\t\t}\n" +
-            "\t],\n" +
-            "\t\"tagsId\":[\n" +
-            "\t\t3,\n" +
-            "\t\t4\n" +
             "\t]\n" +
             "}\n" +
             "]\n";
@@ -301,7 +250,7 @@ class ArticleControllerTest {
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /article/ HTTP/1.1\n" +
+                "GET /comment/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
                 "Host: 127.0.0.1:5000\n" +
