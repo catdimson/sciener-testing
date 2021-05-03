@@ -26,31 +26,48 @@ public class WebServer extends Thread {
             ServerSocket serverSocket = new ServerSocket(PORT);
 
             while (true) {
-                System.out.println("СЕРВЕР ЗАПУЩЕН");
+                System.out.println("Server: СЕРВЕР ЗАПУЩЕН");
                 Socket server = serverSocket.accept();
-                System.out.println("ДОЖДАЛИСЬ ПОДКЛЮЧЕНИЯ");
+
+//                for (int i = 0; i < 100; i++) {
+//                    System.out.println("Server: " + i + " : " + Math.sqrt(Math.sqrt(Math.sqrt(Double.parseDouble(String.valueOf(i + 20))))));
+//                }
+                System.out.println("Server: ДОЖДАЛИСЬ ПОДКЛЮЧЕНИЯ");
                 BufferedReader in = new BufferedReader(new InputStreamReader(server.getInputStream()));
-                System.out.println("ЧЕ-ТО ТАМ СЧИТАЛИ");
+                System.out.println("Server: ЧЕ-ТО ТАМ СЧИТАЛИ");
                 System.out.println(in);
-                System.out.println("И ЧТО ТУТ У НАС?");
+                System.out.println("Server: И ЧТО ТУТ У НАС?");
                 HttpRequest request = new HttpRequest(in);
                 System.out.println(request.getHeaders());
-                System.out.println("И ПОПЫТАЛИСЬ СОЗДАТЬ РЕКВЕСТ");
-                System.out.println("REQUEST version: " + request.getVersion());
-                System.out.println("REQUEST path with params: " + request.getPath(true));
-                System.out.println("REQUEST path without params: " + request.getPath(false));
-                System.out.println("REQUEST method : " + request.getMethod());
+                System.out.println("Server: И ПОПЫТАЛИСЬ СОЗДАТЬ РЕКВЕСТ");
+                System.out.println("Server: REQUEST version: " + request.getVersion());
+                System.out.println("Server: REQUEST path with params: " + request.getPath(true));
+                System.out.println("Server: REQUEST path without params: " + request.getPath(false));
+                System.out.println("Server: REQUEST method : " + request.getMethod());
 
                 NewsApp app;
-                if (dbPool != null) {
-                    System.out.println("Выполняется ветвь для тестов");
+                if (request.getHeaders().containsKey("UnitTest")) {
+                    System.out.println("Server: Выполняется ветвь для тестов");
+                    this.dbPool = new DBPool(
+                            request.getHeaders().get("UrlPostgres").trim(),
+                            request.getHeaders().get("UserPostgres").trim(),
+                            request.getHeaders().get("PasswordPostgres").trim()
+                            );
                     app = new NewsApp(request, this.dbPool);
+                    System.out.println("Ветвь для тестов. Посде создания приложения");
                 } else {
-                    System.out.println("Выполняется ветвь без тестов");
+                    System.out.println("Server: Выполняется ветвь без тестов");
                     app = new NewsApp(request);
                 }
+                /*if (dbPool != null) {
+                    System.out.println("Server: Выполняется ветвь для тестов");
+                    app = new NewsApp(request, this.dbPool);
+                } else {
+                    System.out.println("Server: Выполняется ветвь без тестов");
+                    app = new NewsApp(request);
+                }*/
                 String httpResponse = app.getResponse().getRawResponse();
-
+                System.out.println("httpResponse: \n" + httpResponse);
                 PrintWriter out = new PrintWriter(server.getOutputStream(), true);
                 out.println(httpResponse);
                 in.close();
