@@ -425,32 +425,14 @@ class AfishaControllerTest {
     void buildResponsePUTMethod() throws IOException, SQLException {
         SoftAssertions soft = new SoftAssertions();
         Connection connection = this.poolConnection.getConnection();
-        Comment comment = new Comment("Текст комментария 10", createDateComment, editDateComment, 2, 1);
-        Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment("Прикрепление 10", "/static/attachments/image10.png", 1);
-        Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 11", "/static/attachments/image11.png", 1);
-        comment.addNewAttachment(commentAttachment1);
-        comment.addNewAttachment(commentAttachment2);
-
+        Afisha afisha = new Afisha("Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний",
+                "0", "180", "Центральная площадь, г.Белгород", "89202005544", date, false, 1, 1);
         Statement statement = connection.createStatement();
-        // добавляем 1 комментарий
-        String sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
-                        "VALUES ('%s', '%s', '%s', %s, %s);", "Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()),
-                Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
-        statement.executeUpdate(sqlInsertComment);
-        String sqlInsertAttachments = String.format("INSERT INTO attachment (title, path, comment_id)" +
-                        "VALUES ('%s', '%s', %s), ('%s', '%s', %s);", "Прикрепление 1", "/static/attachments/image1.png", 1,
-                "Прикрепление 2", "/static/attachments/image2.png", 1);
-        statement.executeUpdate(sqlInsertAttachments);
-        // добавляем 2 комментарий
-        sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
-                        "VALUES ('%s', '%s', '%s', %s, %s);", "Текст комментария 2", Timestamp.valueOf(createDateComment.atStartOfDay()),
-                Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
-        statement.executeUpdate(sqlInsertComment);
-        sqlInsertAttachments = String.format("INSERT INTO attachment (title, path, comment_id)" +
-                        "VALUES ('%s', '%s', %s), ('%s', '%s', %s);", "Прикрепление 3", "/static/attachments/image3.png", 2,
-                "Прикрепление 4", "/static/attachments/image4.png", 2);
-        statement.executeUpdate(sqlInsertAttachments);
-
+        String sqlInsertAfisha = String.format("INSERT INTO afisha (title, image_url, lead, description, age_limit, " +
+                        "timing, place, phone, date, is_commercial, user_id, source_id) VALUES ('%s', '%s', '%s', '%s', '%s', " +
+                        "'%s', '%s', '%s', '%s', %s, %s, %s);", "title1", "image_url1", "lead1", "description1", "age1",
+                "timing1", "place1", "phone1", Timestamp.valueOf(date.atStartOfDay()), true, 1, 1);
+        statement.executeUpdate(sqlInsertAfisha);
 
         clientSocket = new Socket("127.0.0.1", 5000);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -461,7 +443,7 @@ class AfishaControllerTest {
                 "Pragma: no-cache\n";
 
         String request = "" +
-                "PUT /comment/1/ HTTP/1.1\n" +
+                "PUT /afisha/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
                 "Host: 127.0.0.1:5000\n" +
@@ -472,25 +454,18 @@ class AfishaControllerTest {
                 "\n" +
                 "{\n" +
                 "\t\"id\":1,\n" +
-                "\t\"text\":\"Текст комментария 10\",\n" +
-                "\t\"createDate\":1558299600,\n" +
-                "\t\"editDate\":1589922000,\n" +
-                "\t\"userId\":2,\n" +
-                "\t\"articleId\":1,\n" +
-                "\t\"attachments\":[\n" +
-                "\t\t{\n" +
-                "\t\t\t\"id\":0,\n" +
-                "\t\t\t\"title\":\"Прикрепление 10\",\n" +
-                "\t\t\t\"path\":\"/static/attachments/image10.png\",\n" +
-                "\t\t\t\"articleId\":1\n" +
-                "\t\t},\n" +
-                "\t\t{\n" +
-                "\t\t\t\"id\":0,\n" +
-                "\t\t\t\"title\":\"Прикрепление 11\",\n" +
-                "\t\t\t\"path\":\"/static/attachments/image11.png\",\n" +
-                "\t\t\t\"articleId\":1\n" +
-                "\t\t}\n" +
-                "\t]\n" +
+                "\t\"title\":\"Масленица\",\n" +
+                "\t\"imageUrl\":\"/media/maslenica.jpg\",\n" +
+                "\t\"lead\":\"Празничные гуляния на площади\",\n" +
+                "\t\"description\":\"Описание масленичных гуляний\",\n" +
+                "\t\"ageLimit\":\"0\",\n" +
+                "\t\"timing\":\"180\",\n" +
+                "\t\"place\":\"Центральная площадь, г.Белгород\",\n" +
+                "\t\"phone\":\"89202005544\",\n" +
+                "\t\"date\":1592600400,\n" +
+                "\t\"isCommercial\":false,\n" +
+                "\t\"userId\":1,\n" +
+                "\t\"sourceId\":1\n" +
                 "}";
         out.println(request);
         out.flush();
@@ -504,31 +479,24 @@ class AfishaControllerTest {
         // сначала сравниваем ответы
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
         // сравниваем результаты
-        String sqlQueryComment = "SELECT * FROM comment WHERE id=1;";
+        String sqlQueryComment = "SELECT * FROM afisha WHERE id=1;";
         connection = poolConnection.getConnection();
         statement = connection.createStatement();
         ResultSet result = statement.executeQuery(sqlQueryComment);
         result.next();
-        soft.assertThat(comment)
-                .hasFieldOrPropertyWithValue("text", result.getString("text"))
-                .hasFieldOrPropertyWithValue("createDate", result.getTimestamp("create_date").toLocalDateTime().toLocalDate())
-                .hasFieldOrPropertyWithValue("editDate", result.getTimestamp("edit_date").toLocalDateTime().toLocalDate())
-                .hasFieldOrPropertyWithValue("articleId", result.getInt("article_id"))
-                .hasFieldOrPropertyWithValue("userId", result.getInt("user_id"));
-        soft.assertAll();
-        String sqlQueryAttachments = "SELECT * FROM attachment WHERE comment_id=1;";
-        result = statement.executeQuery(sqlQueryAttachments);
-        result.next();
-        soft.assertThat(commentAttachment1)
+        soft.assertThat(afisha)
                 .hasFieldOrPropertyWithValue("title", result.getString("title"))
-                .hasFieldOrPropertyWithValue("path", result.getString("path"))
-                .hasFieldOrPropertyWithValue("commentId", result.getInt("comment_id"));
-        soft.assertAll();
-        result.next();
-        soft.assertThat(commentAttachment2)
-                .hasFieldOrPropertyWithValue("title", result.getString("title"))
-                .hasFieldOrPropertyWithValue("path", result.getString("path"))
-                .hasFieldOrPropertyWithValue("commentId", result.getInt("comment_id"));
+                .hasFieldOrPropertyWithValue("imageUrl", result.getString("image_url"))
+                .hasFieldOrPropertyWithValue("lead", result.getString("lead"))
+                .hasFieldOrPropertyWithValue("description", result.getString("description"))
+                .hasFieldOrPropertyWithValue("ageLimit", result.getString("age_limit"))
+                .hasFieldOrPropertyWithValue("timing", result.getString("timing"))
+                .hasFieldOrPropertyWithValue("place", result.getString("place"))
+                .hasFieldOrPropertyWithValue("phone", result.getString("phone"))
+                .hasFieldOrPropertyWithValue("date", result.getTimestamp("date").toLocalDateTime().toLocalDate())
+                .hasFieldOrPropertyWithValue("isCommercial", result.getBoolean("is_commercial"))
+                .hasFieldOrPropertyWithValue("userId", result.getInt("user_id"))
+                .hasFieldOrPropertyWithValue("sourceId", result.getInt("source_id"));
         soft.assertAll();
     }
 
