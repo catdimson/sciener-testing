@@ -1,4 +1,4 @@
-import news.web.WebServer;
+import news.web.http.WebServer;
 
 public class Main {
     public static void main(String[] args) {

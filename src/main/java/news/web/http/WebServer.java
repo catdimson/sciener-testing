@@ -1,8 +1,7 @@
-package news.web;
+package news.web.http;
 
 import news.NewsApp;
 import news.dao.connection.DBPool;
-import news.web.http.HttpRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,16 +10,15 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class WebServer extends Thread {
-    List<NewsApp> newsAppsList = new ArrayList<>();
-    DBPool dbPool;
+    DBPool dbPool = null;
 
-    public void setConnections(DBPool dbPool) {
-        this.dbPool = dbPool;
+    public WebServer(DBPool connectionPool) throws IOException {
+        this.dbPool = connectionPool;
     }
+
+    public WebServer() {};
 
     public void run() {
         try {
@@ -33,6 +31,8 @@ public class WebServer extends Thread {
                 System.out.println("ДОЖДАЛИСЬ ПОДКЛЮЧЕНИЯ");
                 BufferedReader in = new BufferedReader(new InputStreamReader(server.getInputStream()));
                 System.out.println("ЧЕ-ТО ТАМ СЧИТАЛИ");
+                System.out.println(in);
+                System.out.println("И ЧТО ТУТ У НАС?");
                 HttpRequest request = new HttpRequest(in);
                 System.out.println(request.getHeaders());
                 System.out.println("И ПОПЫТАЛИСЬ СОЗДАТЬ РЕКВЕСТ");
@@ -40,15 +40,16 @@ public class WebServer extends Thread {
                 System.out.println("REQUEST path with params: " + request.getPath(true));
                 System.out.println("REQUEST path without params: " + request.getPath(false));
                 System.out.println("REQUEST method : " + request.getMethod());
+
                 NewsApp app;
-                if (request.getHeaders().containsKey("UnitTest")) {
-                    app = new NewsApp(request, dbPool);
+                if (dbPool != null) {
+                    System.out.println("Выполняется ветвь для тестов");
+                    app = new NewsApp(request, this.dbPool);
                 } else {
+                    System.out.println("Выполняется ветвь без тестов");
                     app = new NewsApp(request);
                 }
-                newsAppsList.add(app);
                 String httpResponse = app.getResponse().getRawResponse();
-                //System.out.println(httpResponse);
 
                 PrintWriter out = new PrintWriter(server.getOutputStream(), true);
                 out.println(httpResponse);

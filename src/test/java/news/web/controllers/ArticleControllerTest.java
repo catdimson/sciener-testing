@@ -1,7 +1,7 @@
 package news.web.controllers;
 
 import news.dao.connection.DBPool;
-import news.web.WebServer;
+import news.web.http.WebServer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ class ArticleControllerTest {
     private static Socket clientSocket;
     private static BufferedReader reader;
     private static BufferedReader in;
-    private static BufferedWriter out;
+    private static PrintWriter out;
     private static WebServer webServer;
 
     @BeforeAll
@@ -201,55 +201,36 @@ class ArticleControllerTest {
     }
 
     @Test
-    void buildResponseGETMethodFindAll() {
-        Runnable serverTask = () -> {
-            System.out.println("ВЫПОЛНИЛАСЬ СЕРВЕРНАЯ ТАСКА!");
-            WebServer webServer = new WebServer();
-            webServer.start();
-        };
-        Runnable clientTask = () -> {
-            System.out.println("ВЫПОЛНИЛАСЬ КЛИЕНТСКАЯ ТАСКА!");
-            try {
-                System.out.println("СЕРВЕР ЗАПУЩЕН, НО DDPool передан");
-                clientSocket = new Socket("127.0.0.1", 5000);
-                System.out.println("СОЗДАЛИ КЛИЕНТСКИЙ СОККЕТ");
-                reader = new BufferedReader(new InputStreamReader(System.in));
-                in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-                String request = "" +
-                        "GET /article/ HTTP/1.1\n" +
-                        "Accept: application/json, */*; q=0.01\n" +
-                        "Content-Type: application/json\n" +
-                        "Host: 127.0.0.1:5000\n" +
-                        "UnitTest: true\n";
-
-                /*byte[] requestBytes = request.getBytes();
-                ByteArrayOutputStream requestByteArray = new ByteArrayOutputStream();
-                requestByteArray.write(requestBytes);*/
-                System.out.println("ЗАПРОС СОЗДАН");
-                out.write(request);
-                System.out.println("ДОЛЖНО БЫЛО ЗАПИСАТЬСЯ");
-                out.flush();
-                String serverWord = in.readLine(); // ждём, что скажет сервер
-                System.out.println(serverWord);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                System.out.println("Клиент закрыт");
-                try {
-                    clientSocket.close();
-                    in.close();
-                    out.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        Thread thread1 = new Thread(serverTask);
-        Thread thread2 = new Thread(clientTask);
-        thread1.start();
-        thread2.start();
-
+    void buildResponseGETMethodFindAll() throws SQLException, IOException {
+        /*PostgreSQLContainer container2 = new PostgreSQLContainer("postgres")
+                .withUsername("admin")
+                .withPassword("qwerty")
+                .withDatabaseName("news");
+        container2.start();
+        DBPool poolConnection2 = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
+        Statement statement = poolConnection2.getConnection().createStatement();
+        ResultSet result = statement.executeQuery("SELECT * FROM category;");
+        System.out.println("HEllo");
+        while (result.next()) {
+            System.out.println(result.getInt(1) + ":" + result.getString(2));
+        }*/
+        WebServer webServer = new WebServer(this.poolConnection);
+        webServer.start();
+        System.out.println("Выполняем дальше");
+        clientSocket = new Socket("127.0.0.1", 5000);
+        System.out.println("СОЗДАЛИ КЛИЕНТСКИЙ СОККЕТ");
+        reader = new BufferedReader(new InputStreamReader(System.in));
+        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
+        String request = "" +
+                "GET /article/ HTTP/1.1\n" +
+                "Accept: application/json, */*; q=0.01\n" +
+                "Content-Type: application/json\n" +
+                "Host: 127.0.0.1:5000\n" +
+                "UnitTest: true\n";
+        out.println(request);
+        out.flush();
+        System.out.println("ДОЛЖНО БЫЛО ЗАПИСАТЬСЯ");
     }
 
     @Test
