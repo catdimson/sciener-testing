@@ -20,6 +20,17 @@ public class NewsApp extends Thread {
         response = rootController.getResponse();
     }
 
+    public NewsApp(HttpRequest request, DBPool dbPool) throws IOException, SQLException {
+        this.request = request;
+        this.dbPool = dbPool;
+        RootController rootController = new RootController(request, dbPool);
+        response = rootController.getResponse();
+    }
+
+    public DBPool getDBPool() {
+        return dbPool;
+    }
+
     public HttpResponse getResponse() {
         return response;
     }
