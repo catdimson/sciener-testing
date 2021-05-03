@@ -500,54 +500,47 @@ class AfishaControllerTest {
         soft.assertAll();
     }
 
-//    @Test
-//    void buildResponseDELETEMethod() throws SQLException, IOException {
-//        Connection connection = this.poolConnection.getConnection();
-//        Statement statement = connection.createStatement();
-//        // добавляем 1 комментарий
-//        String sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
-//                        "VALUES ('%s', '%s', '%s', %s, %s);", "Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()),
-//                Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
-//        statement.executeUpdate(sqlInsertComment);
-//        String sqlInsertAttachments = String.format("INSERT INTO attachment (title, path, comment_id)" +
-//                        "VALUES ('%s', '%s', %s), ('%s', '%s', %s);", "Прикрепление 1", "/static/attachments/image1.png", 1,
-//                "Прикрепление 2", "/static/attachments/image2.png", 1);
-//        statement.executeUpdate(sqlInsertAttachments);
-//
-//        clientSocket = new Socket("127.0.0.1", 5000);
-//        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-//        out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
-//        String expectedResult = "" +
-//                "HTTP/1.1 204 Нет данных\n" +
-//                "Cache-Control: no-store, no-cache, must-revalidate\n" +
-//                "Pragma: no-cache\n";
-//
-//        String request = "" +
-//                "DELETE /comment/1/ HTTP/1.1\n" +
-//                "Accept: application/json, */*; q=0.01\n" +
-//                "Content-Type: application/json\n" +
-//                "Host: 127.0.0.1:5000\n" +
-//                "UnitTest: true\n" +
-//                "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
-//                "UserPostgres: " + this.container.getUsername() + "\n" +
-//                "PasswordPostgres: " + this.container.getPassword() + "\n";
-//        out.println(request);
-//        out.flush();
-//
-//        StringBuilder actualResult = new StringBuilder();
-//        actualResult.append(in.readLine()).append("\n");
-//        while (in.ready()) {
-//            actualResult.append(in.readLine()).append("\n");
-//        }
-//        actualResult.setLength(actualResult.length() - 1);
-//        // сначала сравниваем ответы
-//        assertThat(actualResult.toString()).isEqualTo(expectedResult);
-//        // сравниваем результаты из таблиц
-//        String sqlQueryComment = "SELECT * FROM comment WHERE id=1;";
-//        ResultSet result = statement.executeQuery(sqlQueryComment);
-//        assertThat(result.next()).isFalse().as("Не удален комментарий по запросу");
-//        String sqlQueryAttachments = "SELECT * FROM attachment WHERE comment_id=1;";
-//        result = statement.executeQuery(sqlQueryAttachments);
-//        assertThat(result.next()).isFalse().as("Не все записи прикреплений удалены по запросу");
-//    }
+    @Test
+    void buildResponseDELETEMethod() throws SQLException, IOException {
+        Connection connection = this.poolConnection.getConnection();
+        Statement statement = connection.createStatement();
+        String sqlInsertAfisha = String.format("INSERT INTO afisha (title, image_url, lead, description, age_limit, " +
+                        "timing, place, phone, date, is_commercial, user_id, source_id) VALUES ('%s', '%s', '%s', '%s', '%s', " +
+                        "'%s', '%s', '%s', '%s', %s, %s, %s);", "title1", "image_url1", "lead1", "description1", "age1",
+                "timing1", "place1", "phone1", Timestamp.valueOf(date.atStartOfDay()), true, 1, 1);
+        statement.executeUpdate(sqlInsertAfisha);
+
+        clientSocket = new Socket("127.0.0.1", 5000);
+        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
+        String expectedResult = "" +
+                "HTTP/1.1 204 Нет данных\n" +
+                "Cache-Control: no-store, no-cache, must-revalidate\n" +
+                "Pragma: no-cache\n";
+
+        String request = "" +
+                "DELETE /afisha/1/ HTTP/1.1\n" +
+                "Accept: application/json, */*; q=0.01\n" +
+                "Content-Type: application/json\n" +
+                "Host: 127.0.0.1:5000\n" +
+                "UnitTest: true\n" +
+                "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
+                "UserPostgres: " + this.container.getUsername() + "\n" +
+                "PasswordPostgres: " + this.container.getPassword() + "\n";
+        out.println(request);
+        out.flush();
+
+        StringBuilder actualResult = new StringBuilder();
+        actualResult.append(in.readLine()).append("\n");
+        while (in.ready()) {
+            actualResult.append(in.readLine()).append("\n");
+        }
+        actualResult.setLength(actualResult.length() - 1);
+        // сначала сравниваем ответы
+        assertThat(actualResult.toString()).isEqualTo(expectedResult);
+        // сравниваем результаты из таблиц
+        String sqlQueryAfisha = "SELECT * FROM afisha WHERE id=1;";
+        ResultSet result = statement.executeQuery(sqlQueryAfisha);
+        assertThat(result.next()).isFalse().as("Не удалена афиша по запросу");
+    }
 }
