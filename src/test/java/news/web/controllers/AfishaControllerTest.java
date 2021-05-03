@@ -288,82 +288,67 @@ class AfishaControllerTest {
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
     }
 
-//    @Test
-//    void buildResponseGETMethodFindById() throws SQLException, IOException {
-//        Connection connection = this.poolConnection.getConnection();
-//        Statement statement = connection.createStatement();
-//        // добавляем 1 комментарий
-//        String sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
-//                        "VALUES ('%s', '%s', '%s', %s, %s);", "Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()),
-//                Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
-//        statement.executeUpdate(sqlInsertComment);
-//        String sqlInsertAttachments = String.format("INSERT INTO attachment (title, path, comment_id)" +
-//                        "VALUES ('%s', '%s', %s), ('%s', '%s', %s);", "Прикрепление 1", "/static/attachments/image1.png", 1,
-//                "Прикрепление 2", "/static/attachments/image2.png", 1);
-//        statement.executeUpdate(sqlInsertAttachments);
-//        // добавляем 2 комментарий
-//        sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
-//                        "VALUES ('%s', '%s', '%s', %s, %s);", "Текст комментария 2", Timestamp.valueOf(createDateComment.atStartOfDay()),
-//                Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
-//        statement.executeUpdate(sqlInsertComment);
-//        sqlInsertAttachments = String.format("INSERT INTO attachment (title, path, comment_id)" +
-//                        "VALUES ('%s', '%s', %s), ('%s', '%s', %s);", "Прикрепление 3", "/static/attachments/image3.png", 2,
-//                "Прикрепление 4", "/static/attachments/image4.png", 2);
-//        statement.executeUpdate(sqlInsertAttachments);
-//
-//        // ожидаемый результат
-//        String expectedResult = "" +
-//                "HTTP/1.1 200 OK\n" +
-//                "Cache-Control: no-store, no-cache, must-revalidate\n" +
-//                "Pragma: no-cache\n" +
-//                "Content-Type: application/json; charset=UTF-8\n" +
-//                "\n" +
-//                "{\n" +
-//                "\t\"id\":2,\n" +
-//                "\t\"text\":\"Текст комментария 2\",\n" +
-//                "\t\"createDate\":1558299600,\n" +
-//                "\t\"editDate\":1589922000,\n" +
-//                "\t\"userId\":1,\n" +
-//                "\t\"articleId\":1,\n" +
-//                "\t\"attachments\":[\n" +
-//                "\t\t{\n" +
-//                "\t\t\t\"id\":3,\n" +
-//                "\t\t\t\"title\":\"Прикрепление 3\",\n" +
-//                "\t\t\t\"path\":\"/static/attachments/image3.png\",\n" +
-//                "\t\t\t\"commentId\":2\n" +
-//                "\t\t},\n" +
-//                "\t\t{\n" +
-//                "\t\t\t\"id\":4,\n" +
-//                "\t\t\t\"title\":\"Прикрепление 4\",\n" +
-//                "\t\t\t\"path\":\"/static/attachments/image4.png\",\n" +
-//                "\t\t\t\"commentId\":2\n" +
-//                "\t\t}\n" +
-//                "\t]\n" +
-//                "}";
-//        clientSocket = new Socket("127.0.0.1", 5000);
-//        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-//        out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
-//
-//        String request = "" +
-//                "GET /comment/2/ HTTP/1.1\n" +
-//                "Accept: application/json, */*; q=0.01\n" +
-//                "Content-Type: application/json\n" +
-//                "Host: 127.0.0.1:5000\n" +
-//                "UnitTest: true\n" +
-//                "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
-//                "UserPostgres: " + this.container.getUsername() + "\n" +
-//                "PasswordPostgres: " + this.container.getPassword() + "\n";
-//        out.println(request);
-//        out.flush();
-//
-//        StringBuilder actualResult = new StringBuilder();
-//        actualResult.append(in.readLine()).append("\n");
-//        while (in.ready()) {
-//            actualResult.append(in.readLine()).append("\n");
-//        }
-//        actualResult.setLength(actualResult.length() - 1);
-//        assertThat(actualResult.toString()).isEqualTo(expectedResult);
-//    }
+    @Test
+    void buildResponseGETMethodFindById() throws SQLException, IOException {
+        Connection connection = this.poolConnection.getConnection();
+        Statement statement = connection.createStatement();
+        String sqlInsertAfisha = String.format("INSERT INTO afisha (title, image_url, lead, description, age_limit, " +
+                        "timing, place, phone, date, is_commercial, user_id, source_id) VALUES ('%s', '%s', '%s', '%s', '%s', " +
+                        "'%s', '%s', '%s', '%s', %s, %s, %s);", "title1", "image_url1", "lead1", "description1", "age1",
+                "timing1", "place1", "phone1", Timestamp.valueOf(date.atStartOfDay()), true, 1, 1);
+        statement.executeUpdate(sqlInsertAfisha);
+        sqlInsertAfisha = String.format("INSERT INTO afisha (title, image_url, lead, description, age_limit, " +
+                        "timing, place, phone, date, is_commercial, user_id, source_id) VALUES ('%s', '%s', '%s', '%s', '%s', " +
+                        "'%s', '%s', '%s', '%s', %s, %s, %s);", "title1", "image_url2", "lead2", "description2", "age2",
+                "timing2", "place2", "phone2", Timestamp.valueOf(date.atStartOfDay()), true, 1, 1);
+        statement.executeUpdate(sqlInsertAfisha);
+
+        // ожидаемый результат
+        String expectedResult = "" +
+                "HTTP/1.1 200 OK\n" +
+                "Cache-Control: no-store, no-cache, must-revalidate\n" +
+                "Pragma: no-cache\n" +
+                "Content-Type: application/json; charset=UTF-8\n" +
+                "\n" +
+                "{\n" +
+                "\t\"id\":2,\n" +
+                "\t\"title\":\"title1\",\n" +
+                "\t\"imageUrl\":\"image_url2\",\n" +
+                "\t\"lead\":\"lead2\",\n" +
+                "\t\"description\":\"description2\",\n" +
+                "\t\"ageLimit\":\"age2\",\n" +
+                "\t\"timing\":\"timing2\",\n" +
+                "\t\"place\":\"place2\",\n" +
+                "\t\"phone\":\"phone2\",\n" +
+                "\t\"date\":1589922000,\n" +
+                "\t\"isCommercial\":true,\n" +
+                "\t\"userId\":1,\n" +
+                "\t\"sourceId\":1\n" +
+                "}";
+        clientSocket = new Socket("127.0.0.1", 5000);
+        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
+
+        String request = "" +
+                "GET /afisha/2/ HTTP/1.1\n" +
+                "Accept: application/json, */*; q=0.01\n" +
+                "Content-Type: application/json\n" +
+                "Host: 127.0.0.1:5000\n" +
+                "UnitTest: true\n" +
+                "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
+                "UserPostgres: " + this.container.getUsername() + "\n" +
+                "PasswordPostgres: " + this.container.getPassword() + "\n";
+        out.println(request);
+        out.flush();
+
+        StringBuilder actualResult = new StringBuilder();
+        actualResult.append(in.readLine()).append("\n");
+        while (in.ready()) {
+            actualResult.append(in.readLine()).append("\n");
+        }
+        actualResult.setLength(actualResult.length() - 1);
+        assertThat(actualResult.toString()).isEqualTo(expectedResult);
+    }
 
 //    @Test
 //    void buildResponsePOSTMethod() throws SQLException, IOException {
