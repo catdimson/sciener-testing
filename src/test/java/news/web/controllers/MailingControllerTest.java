@@ -1,6 +1,7 @@
 package news.web.controllers;
 
 import news.dao.connection.DBPool;
+import news.model.Mailing;
 import news.model.Source;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -188,19 +189,19 @@ class MailingControllerTest {
     @Test
     void buildResponsePOSTMethod() throws SQLException, IOException {
         SoftAssertions soft = new SoftAssertions();
-        Source source = new Source("Яндекс ДЗЕН","https://zen.yandex.ru/");
+        Mailing mailing = new Mailing("test@mail.ru");
 
         clientSocket = new Socket("127.0.0.1", 5000);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
         String expectedResult = "" +
-            "HTTP/1.1 201 Источник создан\n" +
+            "HTTP/1.1 201 Рассылка создана\n" +
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
-            "Location: /source/1/\n";
+            "Location: /mailing/1/\n";
 
         String request = "" +
-            "POST /source/ HTTP/1.1\n" +
+            "POST /mailing/ HTTP/1.1\n" +
             "Accept: application/json, */*; q=0.01\n" +
             "Content-Type: application/json\n" +
             "Host: 127.0.0.1:5000\n" +
@@ -210,8 +211,7 @@ class MailingControllerTest {
             "PasswordPostgres: " + this.container.getPassword() + "\n" +
             "\n" +
             "{\n" +
-            "\t\"title\":\"Яндекс ДЗЕН\",\n" +
-            "\t\"url\":\"https://zen.yandex.ru/\",\n" +
+            "\t\"email\":\"test@mail.ru\",\n" +
             "}\n";
         out.println(request);
         out.flush();
@@ -225,15 +225,12 @@ class MailingControllerTest {
         // сначала сравниваем ответы
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
         // сравниваем результаты
-        String sqlQuerySource = "SELECT * FROM source WHERE id=1;";
+        String sqlQuerySource = "SELECT * FROM mailing WHERE id=1;";
         Connection connection = poolConnection.getConnection();
         Statement statement = connection.createStatement();
         ResultSet result = statement.executeQuery(sqlQuerySource);
         result.next();
-        soft.assertThat(source)
-                .hasFieldOrPropertyWithValue("title", result.getString("title"))
-                .hasFieldOrPropertyWithValue("url", result.getString("url"));
-        soft.assertAll();
+        assertThat(mailing).hasFieldOrPropertyWithValue("email", result.getString("email"));
     }
 
     @Test
