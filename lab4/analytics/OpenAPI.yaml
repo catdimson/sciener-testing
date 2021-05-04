@@ -794,15 +794,15 @@ paths:
         405:
           description: Передан некорректный параметр
           content: {}
-  /user/{username}/:
+  /user/{firstname}/:
     get:
       tags:
         - user
       summary: Поиск пользователя по логину
       parameters:
-      - name: username
+      - name: firstname
         in: path
-        description: Логин искомого пользователя
+        description: Имя искомого пользователя
         required: true
         schema:
           type: string
@@ -820,54 +820,7 @@ paths:
           content: {}
         405:
           description: Передан некорректный параметр
-          content: {}    
-  /user/login/:
-    post:
-      tags:
-      - user
-      summary: Вход в систему
-      operationId: loginUser
-      requestBody:
-        description: Логин, пароль для входа в систему
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                login:
-                  type: string
-                  example: admin
-                password:
-                  type: string
-                  format: password
-                  example: qwerty123
-      responses:
-        201:
-          description: Операция успешно выполнена
-          headers:
-            X-Expires-After:
-              description: Дата в формате UTC, когда истекает срок действия сессии
-              schema:
-                type: string
-                format: date-time
-          content:
-            aaplication/json:
-              schema:
-                type: string
-        400:
-          description: Неправильный логин/пароль
           content: {}
-  /user/logout/:
-    get:
-      tags:
-      - user
-      summary: Выйти из системы (закрыть текущую сессию)
-      operationId: logoutUser
-      responses:
-        default:
-          description: Операция успешно выполнена
-          content: {}
-            
   # Источник
   /afisha/:
     get:
@@ -1185,7 +1138,7 @@ paths:
           content: {}    
           
   # Комментарий
-  /article/comment/:
+  /comment/:
     get:
       tags:
       - comment
@@ -1223,7 +1176,7 @@ paths:
         405:
           description: Ошибка добавления
           content: {}
-  /article/comment/{commentId}/:
+  /comment/{commentId}/:
     get:
       tags:
       - comment
@@ -1314,7 +1267,7 @@ paths:
         405:
           description: Передан некорректный параметр
           content: {}
-  /article/comment/{userId}/:
+  /comment/{userId}/:
     get:
       tags:
         - comment
