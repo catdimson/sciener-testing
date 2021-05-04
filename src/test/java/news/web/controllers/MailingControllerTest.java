@@ -2,7 +2,6 @@ package news.web.controllers;
 
 import news.dao.connection.DBPool;
 import news.model.Mailing;
-import news.model.Source;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -188,7 +187,6 @@ class MailingControllerTest {
 
     @Test
     void buildResponsePOSTMethod() throws SQLException, IOException {
-        SoftAssertions soft = new SoftAssertions();
         Mailing mailing = new Mailing("test@mail.ru");
 
         clientSocket = new Socket("127.0.0.1", 5000);
@@ -238,10 +236,9 @@ class MailingControllerTest {
         SoftAssertions soft = new SoftAssertions();
         Connection connection = this.poolConnection.getConnection();
         Statement statement = connection.createStatement();
-        String sqlInsertSource = "INSERT INTO source (title, url) " +
-                "VALUES ('source1', 'url');";
-        statement.executeUpdate(sqlInsertSource);
-        Source source = new Source("Яндекс ДЗЕН","https://zen.yandex.ru/");
+        String sqlInsertMailing = "INSERT INTO mailing (email) VALUES ('test@mail.ru');";
+        statement.executeUpdate(sqlInsertMailing);
+        Mailing mailing = new Mailing("test2@mail.ru");
 
         clientSocket = new Socket("127.0.0.1", 5000);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -252,7 +249,7 @@ class MailingControllerTest {
                 "Pragma: no-cache\n";
 
         String request = "" +
-                "PUT /source/1/ HTTP/1.1\n" +
+                "PUT /mailing/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
                 "Host: 127.0.0.1:5000\n" +
@@ -263,8 +260,7 @@ class MailingControllerTest {
                 "\n" +
                 "{\n" +
                 "\t\"id\":1,\n" +
-                "\t\"title\":\"Яндекс ДЗЕН\",\n" +
-                "\t\"url\":\"https://zen.yandex.ru/\",\n" +
+                "\t\"email\":\"test2@mail.ru\"\n" +
                 "}";
         out.println(request);
         out.flush();
@@ -278,24 +274,20 @@ class MailingControllerTest {
         // сначала сравниваем ответы
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
         // сравниваем результаты
-        String sqlQuerySource = "SELECT * FROM source WHERE id=1;";
+        String sqlQueryMailing = "SELECT * FROM mailing WHERE id=1;";
         connection = poolConnection.getConnection();
         statement = connection.createStatement();
-        ResultSet result = statement.executeQuery(sqlQuerySource);
+        ResultSet result = statement.executeQuery(sqlQueryMailing);
         result.next();
-        soft.assertThat(source)
-                .hasFieldOrPropertyWithValue("title", result.getString("title"))
-                .hasFieldOrPropertyWithValue("url", result.getString("url"));
-        soft.assertAll();
+        soft.assertThat(mailing).hasFieldOrPropertyWithValue("email", result.getString("email"));;
     }
 
     @Test
     void buildResponseDELETEMethod() throws SQLException, IOException {
         Connection connection = this.poolConnection.getConnection();
         Statement statement = connection.createStatement();
-        String sqlInsertSource = "INSERT INTO source (title, url) " +
-                "VALUES ('source1', 'url');";
-        statement.executeUpdate(sqlInsertSource);
+        String sqlInsertMailing = "INSERT INTO mailing (email) VALUES ('test@mail.ru');";
+        statement.executeUpdate(sqlInsertMailing);
 
         clientSocket = new Socket("127.0.0.1", 5000);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -306,7 +298,7 @@ class MailingControllerTest {
                 "Pragma: no-cache\n";
 
         String request = "" +
-                "DELETE /source/1/ HTTP/1.1\n" +
+                "DELETE /mailing/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
                 "Host: 127.0.0.1:5000\n" +
@@ -326,8 +318,8 @@ class MailingControllerTest {
         // сначала сравниваем ответы
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
         // сравниваем результаты из таблиц
-        String sqlQuerySource = "SELECT * FROM source WHERE id=1;";
-        ResultSet result = statement.executeQuery(sqlQuerySource);
-        assertThat(result.next()).isFalse().as("Не удален источник по запросу");
+        String sqlQueryMailing = "SELECT * FROM mailing WHERE id=1;";
+        ResultSet result = statement.executeQuery(sqlQueryMailing);
+        assertThat(result.next()).isFalse().as("Не удалена рассылка по запросу");
     }
 }
