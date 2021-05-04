@@ -1,7 +1,7 @@
 package news.web.controllers;
 
 import news.dao.connection.DBPool;
-import news.model.Mailing;
+import news.model.Group;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import java.sql.Statement;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class MailingControllerTest {
+class GroupControllerTest {
     private PostgreSQLContainer container;
     private DBPool poolConnection;
     // для клиента
@@ -35,24 +35,24 @@ class MailingControllerTest {
                 .withDatabaseName("news");
         this.container.start();
 
-        String sqlCreateTableMailing = "CREATE TABLE IF NOT EXISTS mailing (" +
+        String sqlCreateTableGroup = "CREATE TABLE IF NOT EXISTS \"group\" (" +
                 "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
-                "email character varying(80) NOT NULL," +
-                "CONSTRAINT mailing_pk PRIMARY KEY (id)," +
-                "CONSTRAINT email_unique UNIQUE (email)" +
+                "title character varying(40) NOT NULL," +
+                "CONSTRAINT group_pk PRIMARY KEY (id)," +
+                "CONSTRAINT title_unique UNIQUE (title)" +
                 ");";
         this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
 
         Statement statement = this.poolConnection.getConnection().createStatement();
-        statement.executeUpdate(sqlCreateTableMailing);
+        statement.executeUpdate(sqlCreateTableGroup);
     }
 
     @Test
     void buildResponseGETMethodFindAll() throws IOException, SQLException {
         Connection connection = this.poolConnection.getConnection();
         Statement statement = connection.createStatement();
-        String sqlInsertMailing = "INSERT INTO mailing (email) VALUES ('test@mail.ru'), ('test2@mail.ru');";
-        statement.executeUpdate(sqlInsertMailing);
+        String sqlInsertInstance = "INSERT INTO \"group\" (title) VALUES ('Редактор'), ('Админушка');";
+        statement.executeUpdate(sqlInsertInstance);
 
         // ожидаемый результат
         String expectedResult = "" +
@@ -64,11 +64,11 @@ class MailingControllerTest {
             "[\n" +
             "{\n" +
             "\t\"id\":1,\n" +
-            "\t\"email\":\"test@mail.ru\"\n" +
+            "\t\"title\":\"Редактор\"\n" +
             "},\n" +
             "{\n" +
             "\t\"id\":2,\n" +
-            "\t\"email\":\"test2@mail.ru\"\n" +
+            "\t\"title\":\"Админушка\"\n" +
             "}\n" +
             "]\n";
         clientSocket = new Socket("127.0.0.1", 5000);
@@ -76,7 +76,7 @@ class MailingControllerTest {
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /mailing/ HTTP/1.1\n" +
+                "GET /group/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
                 "Host: 127.0.0.1:5000\n" +
@@ -97,11 +97,11 @@ class MailingControllerTest {
    }
 
     @Test
-    void buildResponseGETMethodFindByEmail() throws IOException, SQLException {
+    void buildResponseGETMethodFindByTitle() throws IOException, SQLException {
         Connection connection = this.poolConnection.getConnection();
         Statement statement = connection.createStatement();
-        String sqlInsertMailing = "INSERT INTO mailing (email) VALUES ('test@mail.ru'), ('test2@mail.ru');";
-        statement.executeUpdate(sqlInsertMailing);
+        String sqlInsertInstance = "INSERT INTO \"group\" (title) VALUES ('Редактор'), ('Админушка');";
+        statement.executeUpdate(sqlInsertInstance);
 
         // ожидаемый результат
         String expectedResult = "" +
@@ -113,7 +113,7 @@ class MailingControllerTest {
                 "[\n" +
                 "{\n" +
                 "\t\"id\":1,\n" +
-                "\t\"email\":\"test@mail.ru\"\n" +
+                "\t\"title\":\"Редактор\"\n" +
                 "}\n" +
                 "]\n";
         clientSocket = new Socket("127.0.0.1", 5000);
@@ -121,7 +121,7 @@ class MailingControllerTest {
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /mailing?email=test@mail.ru HTTP/1.1\n" +
+                "GET /group?title=Редактор HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
                 "Host: 127.0.0.1:5000\n" +
@@ -145,8 +145,8 @@ class MailingControllerTest {
     void buildResponseGETMethodFindById() throws SQLException, IOException {
         Connection connection = this.poolConnection.getConnection();
         Statement statement = connection.createStatement();
-        String sqlInsertMailing = "INSERT INTO mailing (email) VALUES ('test@mail.ru');";
-        statement.executeUpdate(sqlInsertMailing);
+        String sqlInsertInstance = "INSERT INTO \"group\" (title) VALUES ('Редактор'), ('Админушка');";
+        statement.executeUpdate(sqlInsertInstance);
 
         // ожидаемый результат
         String expectedResult = "" +
@@ -157,7 +157,7 @@ class MailingControllerTest {
                 "\n" +
                 "{\n" +
                 "\t\"id\":1,\n" +
-                "\t\"email\":\"test@mail.ru\"\n" +
+                "\t\"title\":\"Редактор\"\n" +
                 "}";
 
         clientSocket = new Socket("127.0.0.1", 5000);
@@ -165,7 +165,7 @@ class MailingControllerTest {
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /mailing/1/ HTTP/1.1\n" +
+                "GET /group/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
                 "Host: 127.0.0.1:5000\n" +
@@ -187,19 +187,19 @@ class MailingControllerTest {
 
     @Test
     void buildResponsePOSTMethod() throws SQLException, IOException {
-        Mailing mailing = new Mailing("test@mail.ru");
+        Group group = new Group("Пользователь");
 
         clientSocket = new Socket("127.0.0.1", 5000);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
         String expectedResult = "" +
-            "HTTP/1.1 201 Рассылка создана\n" +
+            "HTTP/1.1 201 Группа создана\n" +
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
-            "Location: /mailing/1/\n";
+            "Location: /group/1/\n";
 
         String request = "" +
-            "POST /mailing/ HTTP/1.1\n" +
+            "POST /group/ HTTP/1.1\n" +
             "Accept: application/json, */*; q=0.01\n" +
             "Content-Type: application/json\n" +
             "Host: 127.0.0.1:5000\n" +
@@ -209,7 +209,7 @@ class MailingControllerTest {
             "PasswordPostgres: " + this.container.getPassword() + "\n" +
             "\n" +
             "{\n" +
-            "\t\"email\":\"test@mail.ru\",\n" +
+            "\t\"title\":\"Пользователь\",\n" +
             "}\n";
         out.println(request);
         out.flush();
@@ -223,12 +223,12 @@ class MailingControllerTest {
         // сначала сравниваем ответы
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
         // сравниваем результаты
-        String sqlQueryMailing = "SELECT * FROM mailing WHERE id=1;";
+        String sqlQueryGroup = "SELECT * FROM \"group\" WHERE id=1;";
         Connection connection = poolConnection.getConnection();
         Statement statement = connection.createStatement();
-        ResultSet result = statement.executeQuery(sqlQueryMailing);
+        ResultSet result = statement.executeQuery(sqlQueryGroup);
         result.next();
-        assertThat(mailing).hasFieldOrPropertyWithValue("email", result.getString("email"));
+        assertThat(group).hasFieldOrPropertyWithValue("title", result.getString("title"));
     }
 
     @Test
@@ -236,9 +236,9 @@ class MailingControllerTest {
         SoftAssertions soft = new SoftAssertions();
         Connection connection = this.poolConnection.getConnection();
         Statement statement = connection.createStatement();
-        String sqlInsertMailing = "INSERT INTO mailing (email) VALUES ('test@mail.ru');";
-        statement.executeUpdate(sqlInsertMailing);
-        Mailing mailing = new Mailing("test2@mail.ru");
+        String sqlInsertGroup = "INSERT INTO \"group\" (title) VALUES ('Админ');";
+        statement.executeUpdate(sqlInsertGroup);
+        Group group = new Group("Редактор");
 
         clientSocket = new Socket("127.0.0.1", 5000);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -249,7 +249,7 @@ class MailingControllerTest {
                 "Pragma: no-cache\n";
 
         String request = "" +
-                "PUT /mailing/1/ HTTP/1.1\n" +
+                "PUT /group/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
                 "Host: 127.0.0.1:5000\n" +
@@ -260,7 +260,7 @@ class MailingControllerTest {
                 "\n" +
                 "{\n" +
                 "\t\"id\":1,\n" +
-                "\t\"email\":\"test2@mail.ru\"\n" +
+                "\t\"title\":\"Редактор\"\n" +
                 "}";
         out.println(request);
         out.flush();
@@ -274,20 +274,20 @@ class MailingControllerTest {
         // сначала сравниваем ответы
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
         // сравниваем результаты
-        String sqlQueryMailing = "SELECT * FROM mailing WHERE id=1;";
+        String sqlQueryGroup = "SELECT * FROM \"group\" WHERE id=1;";
         connection = poolConnection.getConnection();
         statement = connection.createStatement();
-        ResultSet result = statement.executeQuery(sqlQueryMailing);
+        ResultSet result = statement.executeQuery(sqlQueryGroup);
         result.next();
-        soft.assertThat(mailing).hasFieldOrPropertyWithValue("email", result.getString("email"));;
+        soft.assertThat(group).hasFieldOrPropertyWithValue("title", result.getString("title"));;
     }
 
     @Test
     void buildResponseDELETEMethod() throws SQLException, IOException {
         Connection connection = this.poolConnection.getConnection();
         Statement statement = connection.createStatement();
-        String sqlInsertMailing = "INSERT INTO mailing (email) VALUES ('test@mail.ru');";
-        statement.executeUpdate(sqlInsertMailing);
+        String sqlInsertGroup = "INSERT INTO \"group\" (title) VALUES ('Админ');";
+        statement.executeUpdate(sqlInsertGroup);
 
         clientSocket = new Socket("127.0.0.1", 5000);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -298,7 +298,7 @@ class MailingControllerTest {
                 "Pragma: no-cache\n";
 
         String request = "" +
-                "DELETE /mailing/1/ HTTP/1.1\n" +
+                "DELETE /group/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
                 "Host: 127.0.0.1:5000\n" +
@@ -318,8 +318,8 @@ class MailingControllerTest {
         // сначала сравниваем ответы
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
         // сравниваем результаты из таблиц
-        String sqlQueryMailing = "SELECT * FROM mailing WHERE id=1;";
-        ResultSet result = statement.executeQuery(sqlQueryMailing);
-        assertThat(result.next()).isFalse().as("Не удалена рассылка по запросу");
+        String sqlQueryGroup = "SELECT * FROM \"group\" WHERE id=1;";
+        ResultSet result = statement.executeQuery(sqlQueryGroup);
+        assertThat(result.next()).isFalse().as("Не удалена группа по запросу");
     }
 }
