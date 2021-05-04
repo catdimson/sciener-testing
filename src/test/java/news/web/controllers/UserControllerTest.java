@@ -369,84 +369,82 @@ class UserControllerTest {
         soft.assertAll();
     }
 
-//    @Test
-//    void buildResponsePUTMethod() throws IOException, SQLException {
-//        SoftAssertions soft = new SoftAssertions();
-//        Connection connection = this.poolConnection.getConnection();
-//        Afisha afisha = new Afisha("Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний",
-//                "0", "180", "Центральная площадь, г.Белгород", "89202005544", date, false, 1, 1);
-//        Statement statement = connection.createStatement();
-//        String sqlInsertAfisha = String.format("INSERT INTO afisha (title, image_url, lead, description, age_limit, " +
-//                        "timing, place, phone, date, is_commercial, user_id, source_id) VALUES ('%s', '%s', '%s', '%s', '%s', " +
-//                        "'%s', '%s', '%s', '%s', %s, %s, %s);", "title1", "image_url1", "lead1", "description1", "age1",
-//                "timing1", "place1", "phone1", Timestamp.valueOf(date.atStartOfDay()), true, 1, 1);
-//        statement.executeUpdate(sqlInsertAfisha);
-//
-//        clientSocket = new Socket("127.0.0.1", 5000);
-//        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-//        out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
-//        String expectedResult = "" +
-//                "HTTP/1.1 204 Нет данных\n" +
-//                "Cache-Control: no-store, no-cache, must-revalidate\n" +
-//                "Pragma: no-cache\n";
-//
-//        String request = "" +
-//                "PUT /afisha/1/ HTTP/1.1\n" +
-//                "Accept: application/json, */*; q=0.01\n" +
-//                "Content-Type: application/json\n" +
-//                "Host: 127.0.0.1:5000\n" +
-//                "UnitTest: true\n" +
-//                "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
-//                "UserPostgres: " + this.container.getUsername() + "\n" +
-//                "PasswordPostgres: " + this.container.getPassword() + "\n" +
-//                "\n" +
-//                "{\n" +
-//                "\t\"id\":1,\n" +
-//                "\t\"title\":\"Масленица\",\n" +
-//                "\t\"imageUrl\":\"/media/maslenica.jpg\",\n" +
-//                "\t\"lead\":\"Празничные гуляния на площади\",\n" +
-//                "\t\"description\":\"Описание масленичных гуляний\",\n" +
-//                "\t\"ageLimit\":\"0\",\n" +
-//                "\t\"timing\":\"180\",\n" +
-//                "\t\"place\":\"Центральная площадь, г.Белгород\",\n" +
-//                "\t\"phone\":\"89202005544\",\n" +
-//                "\t\"date\":1592600400,\n" +
-//                "\t\"isCommercial\":false,\n" +
-//                "\t\"userId\":1,\n" +
-//                "\t\"sourceId\":1\n" +
-//                "}";
-//        out.println(request);
-//        out.flush();
-//
-//        StringBuilder actualResult = new StringBuilder();
-//        actualResult.append(in.readLine()).append("\n");
-//        while (in.ready()) {
-//            actualResult.append(in.readLine()).append("\n");
-//        }
-//        actualResult.setLength(actualResult.length() - 1);
-//        // сначала сравниваем ответы
-//        assertThat(actualResult.toString()).isEqualTo(expectedResult);
-//        // сравниваем результаты
-//        String sqlQueryComment = "SELECT * FROM afisha WHERE id=1;";
-//        connection = poolConnection.getConnection();
-//        statement = connection.createStatement();
-//        ResultSet result = statement.executeQuery(sqlQueryComment);
-//        result.next();
-//        soft.assertThat(afisha)
-//                .hasFieldOrPropertyWithValue("title", result.getString("title"))
-//                .hasFieldOrPropertyWithValue("imageUrl", result.getString("image_url"))
-//                .hasFieldOrPropertyWithValue("lead", result.getString("lead"))
-//                .hasFieldOrPropertyWithValue("description", result.getString("description"))
-//                .hasFieldOrPropertyWithValue("ageLimit", result.getString("age_limit"))
-//                .hasFieldOrPropertyWithValue("timing", result.getString("timing"))
-//                .hasFieldOrPropertyWithValue("place", result.getString("place"))
-//                .hasFieldOrPropertyWithValue("phone", result.getString("phone"))
-//                .hasFieldOrPropertyWithValue("date", result.getTimestamp("date").toLocalDateTime().toLocalDate())
-//                .hasFieldOrPropertyWithValue("isCommercial", result.getBoolean("is_commercial"))
-//                .hasFieldOrPropertyWithValue("userId", result.getInt("user_id"))
-//                .hasFieldOrPropertyWithValue("sourceId", result.getInt("source_id"));
-//        soft.assertAll();
-//    }
+    @Test
+    void buildResponsePUTMethod() throws IOException, SQLException {
+        SoftAssertions soft = new SoftAssertions();
+        Connection connection = this.poolConnection.getConnection();
+        Statement statement = connection.createStatement();
+        String sqlInsertUser = String.format("INSERT INTO \"user\" (password, username, first_name, last_name, email, " +
+                        "last_login, date_joined, is_superuser, is_staff, is_active, group_id) VALUES ('%s', '%s', '%s', '%s', " +
+                        "'%s', '%s', '%s', %s, %s, %s, %s);", "password1", "username1", "firstname1", "lastname1", "email1@mail.ru",
+                Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()), true, true, true, 1);
+        statement.executeUpdate(sqlInsertUser);
+        User user = new User("qwerty123", "alex1992", "Александр", "Колесников",
+                "alex1993@mail.ru", lastLogin, dateJoined, true, true, true, 1);
+
+        clientSocket = new Socket("127.0.0.1", 5000);
+        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
+        String expectedResult = "" +
+                "HTTP/1.1 204 Нет данных\n" +
+                "Cache-Control: no-store, no-cache, must-revalidate\n" +
+                "Pragma: no-cache\n";
+
+        String request = "" +
+                "PUT /user/1/ HTTP/1.1\n" +
+                "Accept: application/json, */*; q=0.01\n" +
+                "Content-Type: application/json\n" +
+                "Host: 127.0.0.1:5000\n" +
+                "UnitTest: true\n" +
+                "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
+                "UserPostgres: " + this.container.getUsername() + "\n" +
+                "PasswordPostgres: " + this.container.getPassword() + "\n" +
+                "\n" +
+                "{\n" +
+                "\t\"id\":1,\n" +
+                "\t\"password\":\"qwerty123\",\n" +
+                "\t\"username\":\"alex1992\",\n" +
+                "\t\"firstName\":\"Александр\",\n" +
+                "\t\"lastName\":\"Колесников\",\n" +
+                "\t\"email\":\"alex1993@mail.ru\",\n" +
+                "\t\"lastLogin\":1589922000,\n" +
+                "\t\"dateJoined\":1558299600,\n" +
+                "\t\"isSuperuser\":true,\n" +
+                "\t\"isStaff\":true,\n" +
+                "\t\"isActive\":true,\n" +
+                "\t\"groupId\":1,\n" +
+                "}";
+        out.println(request);
+        out.flush();
+
+        StringBuilder actualResult = new StringBuilder();
+        actualResult.append(in.readLine()).append("\n");
+        while (in.ready()) {
+            actualResult.append(in.readLine()).append("\n");
+        }
+        actualResult.setLength(actualResult.length() - 1);
+        // сначала сравниваем ответы
+        assertThat(actualResult.toString()).isEqualTo(expectedResult);
+        // сравниваем результаты
+        String sqlQueryUser = "SELECT * FROM \"user\" WHERE id=1;";
+        connection = poolConnection.getConnection();
+        statement = connection.createStatement();
+        ResultSet result = statement.executeQuery(sqlQueryUser);
+        result.next();
+        soft.assertThat(user)
+                .hasFieldOrPropertyWithValue("password", result.getString("password"))
+                .hasFieldOrPropertyWithValue("username", result.getString("username"))
+                .hasFieldOrPropertyWithValue("firstName", result.getString("first_name"))
+                .hasFieldOrPropertyWithValue("lastName", result.getString("last_name"))
+                .hasFieldOrPropertyWithValue("email", result.getString("email"))
+                .hasFieldOrPropertyWithValue("lastLogin", result.getTimestamp("last_login").toLocalDateTime().toLocalDate())
+                .hasFieldOrPropertyWithValue("dateJoined", result.getTimestamp("date_joined").toLocalDateTime().toLocalDate())
+                .hasFieldOrPropertyWithValue("isSuperuser", result.getBoolean("is_superuser"))
+                .hasFieldOrPropertyWithValue("isStaff", result.getBoolean("is_staff"))
+                .hasFieldOrPropertyWithValue("isActive", result.getBoolean("is_active"))
+                .hasFieldOrPropertyWithValue("groupId", result.getInt("group_id"));
+        soft.assertAll();
+    }
 
 //    @Test
 //    void buildResponseDELETEMethod() throws SQLException, IOException {

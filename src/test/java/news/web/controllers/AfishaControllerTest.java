@@ -479,10 +479,10 @@ class AfishaControllerTest {
         // сначала сравниваем ответы
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
         // сравниваем результаты
-        String sqlQueryComment = "SELECT * FROM afisha WHERE id=1;";
+        String sqlQueryAfisha = "SELECT * FROM afisha WHERE id=1;";
         connection = poolConnection.getConnection();
         statement = connection.createStatement();
-        ResultSet result = statement.executeQuery(sqlQueryComment);
+        ResultSet result = statement.executeQuery(sqlQueryAfisha);
         result.next();
         soft.assertThat(afisha)
                 .hasFieldOrPropertyWithValue("title", result.getString("title"))
