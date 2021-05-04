@@ -352,8 +352,9 @@ class AfishaControllerTest {
     @Test
     void buildResponsePOSTMethod() throws SQLException, IOException {
         SoftAssertions soft = new SoftAssertions();
-        Afisha afisha = new Afisha("Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний",
-                "0", "180", "Центральная площадь, г.Белгород", "89202005544", date, false, 1, 1);
+        Afisha afisha = new Afisha("Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади",
+                "Описание масленичных гуляний", "0", "180", "Центральная площадь, г.Белгород",
+                "89202005544", date, false, 1, 1);
 
         clientSocket = new Socket("127.0.0.1", 5000);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
