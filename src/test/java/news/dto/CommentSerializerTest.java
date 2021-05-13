@@ -42,14 +42,14 @@ class CommentSerializerTest {
                 "\t\t\t\"id\":1,\n" +
                 "\t\t\t\"title\":\"Прикрепление 1\",\n" +
                 "\t\t\t\"path\":\"/static/files/file1.png\",\n" +
-                "\t\t\t\"commentId\":1,\n" +
+                "\t\t\t\"commentId\":1\n" +
                 "\t\t},\n" +
                 "\t\t{\n" +
                 "\t\t\t\"id\":2,\n" +
                 "\t\t\t\"title\":\"Прикрепление 2\",\n" +
                 "\t\t\t\"path\":\"/static/files/file2.png\",\n" +
-                "\t\t\t\"commentId\":1,\n" +
-                "\t\t},\n" +
+                "\t\t\t\"commentId\":1\n" +
+                "\t\t}\n" +
                 "\t]\n" +
                 "}";
 
@@ -75,14 +75,14 @@ class CommentSerializerTest {
                 "\t\t\t\"id\":1,\n" +
                 "\t\t\t\"title\":\"Прикрепление 1\",\n" +
                 "\t\t\t\"path\":\"/static/files/file1.png\",\n" +
-                "\t\t\t\"commentId\":1,\n" +
+                "\t\t\t\"commentId\":1\n" +
                 "\t\t},\n" +
                 "\t\t{\n" +
                 "\t\t\t\"id\":2,\n" +
                 "\t\t\t\"title\":\"Прикрепление 2\",\n" +
                 "\t\t\t\"path\":\"/static/files/file2.png\",\n" +
-                "\t\t\t\"commentId\":1,\n" +
-                "\t\t},\n" +
+                "\t\t\t\"commentId\":1\n" +
+                "\t\t}\n" +
                 "\t]\n" +
                 "}";
 

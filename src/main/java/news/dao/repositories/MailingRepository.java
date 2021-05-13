@@ -24,7 +24,9 @@ public class MailingRepository implements ExtendRepository<Mailing> {
         if (mailingSpecification.isById()) {
             preparedStatement.setInt(1, (int) mailingSpecification.getCriterial());
         } else {
-            preparedStatement.setString(1, (String) mailingSpecification.getCriterial());
+            if (mailingSpecification.getCriterial() != null) {
+                preparedStatement.setString(1, (String) mailingSpecification.getCriterial());
+            }
         }
         ResultSet result = preparedStatement.executeQuery();
         while (result.next()) {
@@ -35,32 +37,35 @@ public class MailingRepository implements ExtendRepository<Mailing> {
     }
 
     @Override
-    public void create(Mailing mailing) throws SQLException {
+    public int create(Mailing mailing) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlCreateInstance = "INSERT INTO mailing(email) VALUES(?);";
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateInstance);
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateInstance, Statement.RETURN_GENERATED_KEYS);
         Object[] instance = mailing.getObjects();
         preparedStatement.setString(1, (String) instance[1]);
         preparedStatement.executeUpdate();
+        ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+        generatedKeys.next();
+        return generatedKeys.getInt(1);
     }
 
     @Override
-    public void delete(int id) throws SQLException {
+    public int delete(int id) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlDeleteInstance = "DELETE FROM mailing WHERE id=?;";
         PreparedStatement preparedStatement = connection.prepareStatement(sqlDeleteInstance);
         preparedStatement.setInt(1, id);
-        preparedStatement.executeUpdate();
+        return preparedStatement.executeUpdate();
     }
 
     @Override
-    public void update(Mailing mailing) throws SQLException {
+    public int update(Mailing mailing) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlUpdateInstance = "UPDATE mailing SET email=? WHERE id=?;";
         PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdateInstance);
         Object[] instance = mailing.getObjects();
         preparedStatement.setString(1, (String) instance[1]);
         preparedStatement.setInt(2, (int) instance[0]);
-        preparedStatement.executeUpdate();
+        return preparedStatement.executeUpdate();
     }
 }

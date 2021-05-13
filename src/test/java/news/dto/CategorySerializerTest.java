@@ -14,7 +14,7 @@ class CategorySerializerTest {
         final String expectedJSON =
                 "{\n" +
                 "\t\"id\":1,\n" +
-                "\t\"title\":\"Политика\",\n" +
+                "\t\"title\":\"Политика\"\n" +
                 "}";
 
         CategorySerializer categorySerializer = new CategorySerializer(category);
@@ -29,7 +29,7 @@ class CategorySerializerTest {
         final String json =
                 "{\n" +
                 "\t\"id\":1,\n" +
-                "\t\"title\":\"Политика\",\n" +
+                "\t\"title\":\"Политика\"\n" +
                 "}";
 
         CategorySerializer categorySerializer = new CategorySerializer(json);

@@ -28,14 +28,16 @@ public class MailingSerializer implements Serializer<Mailing> {
         return "" +
             "{\n" +
             "\t" + "\"" + mailingFields[0] + "\"" + ":" + mailingInstance[0] + ",\n" +
-            "\t" + "\"" + mailingFields[1] + "\"" + ":" + "\"" + mailingInstance[1] + "\"" + ",\n" +
+            "\t" + "\"" + mailingFields[1] + "\"" + ":" + "\"" + mailingInstance[1] + "\"" + "\n" +
             "}";
     }
 
     @Override
     public Mailing toObject() {
-        int id;
+        int id = 0;
         String email;
+        int indexLine = 1;
+        boolean withId;
 
         String[] lines = json.split("\n");
         /*for (int i = 0; i < lines.length; i++) {
@@ -43,17 +45,28 @@ public class MailingSerializer implements Serializer<Mailing> {
         }*/
 
         // id
-        Pattern p = Pattern.compile(":(\\d+),");
-        Matcher m = p.matcher(lines[1]);
-        m.find();
-        id = Integer.parseInt(m.group(1));
+        Pattern p = Pattern.compile("\"id\":.+");
+        Matcher m = p.matcher(lines[indexLine]);
+        withId = m.find();
+        if (withId) {
+            p = Pattern.compile(":(\\d+),");
+            m = p.matcher(lines[indexLine]);
+            m.find();
+            id = Integer.parseInt(m.group(1));
+            indexLine++;
+        }
         // email
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[2]);
+        m = Pattern.compile(":\"(.+)\"").matcher(lines[indexLine]);
         m.find();
         email = m.group(1);
 
         // создаем по распарсеным данным объект рассылки
-        Mailing mailing = new Mailing(id, email);
+        Mailing mailing;
+        if (withId) {
+            mailing = new Mailing(id, email);
+        } else {
+            mailing = new Mailing(email);
+        }
 
         return mailing;
     }

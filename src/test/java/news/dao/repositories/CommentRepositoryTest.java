@@ -1,6 +1,7 @@
 package news.dao.repositories;
 
 import news.dao.connection.DBPool;
+import news.dao.specifications.FindAllCommentSpecification;
 import news.dao.specifications.FindByIdCommentSpecification;
 import news.dao.specifications.FindByUserIdCommentSpecification;
 import news.model.Comment;
@@ -302,6 +303,73 @@ class CommentRepositoryTest {
                     .hasFieldOrPropertyWithValue("title", "Прикрепление 2")
                     .hasFieldOrPropertyWithValue("path", "/static/attachments/image2.png")
                     .hasFieldOrPropertyWithValue("commentId", 1);
+            soft.assertAll();
+            this.poolConnection.pullConnection(connection);
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    @Test
+    void findAll() {
+        try {
+            SoftAssertions soft = new SoftAssertions();
+            CommentRepository commentRepository = new CommentRepository(this.poolConnection);
+            Connection connection = this.poolConnection.getConnection();
+            Statement statement = connection.createStatement();
+            // комментарий пользователя с id=1
+            Comment comment = new Comment("Текст комментария", createDateComment, editDateComment, 1, 1);
+            Comment comment2 = new Comment("Текст комментария 2", createDateComment, editDateComment, 1, 1);
+            // 2 прикрепления к комментарию выше
+            Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment("Прикрепление 1", "/static/attachments/image1.png", 1);
+            Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 2", "/static/attachments/image2.png", 2);
+            comment.addNewAttachment(commentAttachment1);
+            comment2.addNewAttachment(commentAttachment2);
+            // добавляем 2 комментария в БД
+            String sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
+                            "VALUES ('%s', '%s', '%s', %s, %s), ('%s', '%s', '%s', %s, %s);",
+                    "Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()), Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1,
+                    "Текст комментария 2", Timestamp.valueOf(createDateComment.atStartOfDay()), Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
+            statement.executeUpdate(sqlInsertComment);
+            // добавляем 2 прикрепления для комментариев в БД
+            String sqlInsertAttachmentsComment1 = String.format("INSERT INTO attachment (title, path, comment_id) " +
+                            "VALUES ('%s', '%s', %s), ('%s', '%s', %s);",
+                    "Прикрепление 1", "/static/attachments/image1.png", 1,
+                    "Прикрепление 2", "/static/attachments/image2.png", 2);
+            statement.executeUpdate(sqlInsertAttachmentsComment1);
+
+            FindAllCommentSpecification findAll = new FindAllCommentSpecification();
+            List<Comment> resultFindAllCommentList = commentRepository.query(findAll);
+            Object[] resultFindAllCommentInstance = resultFindAllCommentList.get(0).getObjects();
+            Object[] resultFindAllCommentInstance2 = resultFindAllCommentList.get(1).getObjects();
+            ArrayList attachments = (ArrayList) resultFindAllCommentInstance[6];
+            ArrayList attachments2 = (ArrayList) resultFindAllCommentInstance2[6];
+            Comment.CommentAttachment resultFindAllAttachment1 = (Comment.CommentAttachment) attachments.get(0);
+            Comment.CommentAttachment resultFindAllAttachment2 = (Comment.CommentAttachment) attachments2.get(0);
+
+            soft.assertThat(comment)
+                    .hasFieldOrPropertyWithValue("text", resultFindAllCommentInstance[1])
+                    .hasFieldOrPropertyWithValue("createDate", resultFindAllCommentInstance[2])
+                    .hasFieldOrPropertyWithValue("editDate", resultFindAllCommentInstance[3])
+                    .hasFieldOrPropertyWithValue("articleId", resultFindAllCommentInstance[4])
+                    .hasFieldOrPropertyWithValue("userId", resultFindAllCommentInstance[5]);
+            soft.assertAll();
+            soft.assertThat(comment2)
+                    .hasFieldOrPropertyWithValue("text", resultFindAllCommentInstance2[1])
+                    .hasFieldOrPropertyWithValue("createDate", resultFindAllCommentInstance2[2])
+                    .hasFieldOrPropertyWithValue("editDate", resultFindAllCommentInstance2[3])
+                    .hasFieldOrPropertyWithValue("articleId", resultFindAllCommentInstance2[4])
+                    .hasFieldOrPropertyWithValue("userId", resultFindAllCommentInstance2[5]);
+            soft.assertAll();
+            soft.assertThat(resultFindAllAttachment1)
+                    .hasFieldOrPropertyWithValue("title", "Прикрепление 1")
+                    .hasFieldOrPropertyWithValue("path", "/static/attachments/image1.png")
+                    .hasFieldOrPropertyWithValue("commentId", 1);
+            soft.assertAll();
+            soft.assertThat(resultFindAllAttachment2)
+                    .hasFieldOrPropertyWithValue("title", "Прикрепление 2")
+                    .hasFieldOrPropertyWithValue("path", "/static/attachments/image2.png")
+                    .hasFieldOrPropertyWithValue("commentId", 2);
             soft.assertAll();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {

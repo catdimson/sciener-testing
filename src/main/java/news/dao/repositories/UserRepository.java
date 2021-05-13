@@ -25,7 +25,9 @@ public class UserRepository implements ExtendRepository<User> {
         if (userSpecification.isById()) {
             preparedStatement.setInt(1, (int) userSpecification.getCriterial());
         } else {
-            preparedStatement.setString(1, (String) userSpecification.getCriterial());
+            if (userSpecification.getCriterial() != null) {
+                preparedStatement.setString(1, (String) userSpecification.getCriterial());
+            }
         }
         ResultSet result = preparedStatement.executeQuery();
         while (result.next()) {
@@ -48,12 +50,12 @@ public class UserRepository implements ExtendRepository<User> {
     }
 
     @Override
-    public void create(User user) throws SQLException {
+    public int create(User user) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlCreateInstance = "INSERT INTO \"user\"" +
                 "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-        PreparedStatement statement = connection.prepareStatement(sqlCreateInstance);
+        PreparedStatement statement = connection.prepareStatement(sqlCreateInstance, Statement.RETURN_GENERATED_KEYS);
         Object[] instance = user.getObjects();
         statement.setString(1, (String) instance[1]);
         statement.setString(2, (String) instance[2]);
@@ -69,19 +71,22 @@ public class UserRepository implements ExtendRepository<User> {
         statement.setBoolean(10, (Boolean) instance[10]);
         statement.setInt(11, (int) instance[11]);
         statement.executeUpdate();
+        ResultSet generatedKeys = statement.getGeneratedKeys();
+        generatedKeys.next();
+        return generatedKeys.getInt(1);
     }
 
     @Override
-    public void delete(int id) throws SQLException {
+    public int delete(int id) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlDeleteInstance = "DELETE FROM \"user\" WHERE id=?;";
         PreparedStatement preparedStatement = connection.prepareStatement(sqlDeleteInstance);
         preparedStatement.setInt(1, id);
-        preparedStatement.executeUpdate();
+        return preparedStatement.executeUpdate();
     }
 
     @Override
-    public void update(User user) throws SQLException {
+    public int update(User user) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlUpdateInstance = "UPDATE \"user\" SET " +
                 "password=?, username=?, first_name=?, last_name=?, email=?, last_login=?, date_joined=?, is_superuser=?, " +
@@ -102,6 +107,6 @@ public class UserRepository implements ExtendRepository<User> {
         preparedStatement.setBoolean(10, (Boolean) instance[10]);
         preparedStatement.setInt(11, (int) instance[11]);
         preparedStatement.setInt(12, (int) instance[0]);
-        preparedStatement.executeUpdate();
+        return preparedStatement.executeUpdate();
     }
 }

@@ -37,7 +37,7 @@ class UserSerializerTest {
                 "\t\"isSuperuser\":true,\n" +
                 "\t\"isStaff\":true,\n" +
                 "\t\"isActive\":true,\n" +
-                "\t\"groupId\":1,\n" +
+                "\t\"groupId\":1\n" +
                 "}";
 
         UserSerializer userSerializer = new UserSerializer(user);
@@ -62,7 +62,7 @@ class UserSerializerTest {
                 "\t\"isSuperuser\":true,\n" +
                 "\t\"isStaff\":true,\n" +
                 "\t\"isActive\":true,\n" +
-                "\t\"groupId\":1,\n" +
+                "\t\"groupId\":1\n" +
                 "}";
 
         UserSerializer userSerializer = new UserSerializer(json);

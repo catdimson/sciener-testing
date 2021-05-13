@@ -24,7 +24,9 @@ public class SourceRepository implements ExtendRepository<Source> {
         if (sourceSpecification.isById()) {
             preparedStatement.setInt(1, (int) sourceSpecification.getCriterial());
         } else {
-            preparedStatement.setString(1, (String) sourceSpecification.getCriterial());
+            if (sourceSpecification.getCriterial() != null) {
+                preparedStatement.setString(1, (String) sourceSpecification.getCriterial());
+            }
         }
         ResultSet result = preparedStatement.executeQuery();
         while (result.next()) {
@@ -35,27 +37,30 @@ public class SourceRepository implements ExtendRepository<Source> {
     }
 
     @Override
-    public void create(Source source) throws SQLException {
+    public int create(Source source) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlCreateInstance = "INSERT INTO source(title, url) VALUES(?, ?);";
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateInstance);
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateInstance, Statement.RETURN_GENERATED_KEYS);
         Object[] instance = source.getObjects();
         preparedStatement.setString(1, (String) instance[1]);
         preparedStatement.setString(2, (String) instance[2]);
         preparedStatement.executeUpdate();
+        ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+        generatedKeys.next();
+        return generatedKeys.getInt(1);
     }
 
     @Override
-    public void delete(int id) throws SQLException {
+    public int delete(int id) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlDeleteInstance = "DELETE FROM source WHERE id=?;";
         PreparedStatement preparedStatement = connection.prepareStatement(sqlDeleteInstance);
         preparedStatement.setInt(1, id);
-        preparedStatement.executeUpdate();
+        return preparedStatement.executeUpdate();
     }
 
     @Override
-    public void update(Source source) throws SQLException {
+    public int update(Source source) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlUpdateInstance = "UPDATE source SET title=?, url=? WHERE id=?;";
         PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdateInstance);
@@ -63,6 +68,6 @@ public class SourceRepository implements ExtendRepository<Source> {
         preparedStatement.setString(1, (String) instance[1]);
         preparedStatement.setString(2, (String) instance[2]);
         preparedStatement.setInt(3, (int) instance[0]);
-        preparedStatement.executeUpdate();
+        return preparedStatement.executeUpdate();
     }
 }

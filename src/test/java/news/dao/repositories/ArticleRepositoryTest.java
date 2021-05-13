@@ -1,6 +1,7 @@
 package news.dao.repositories;
 
 import news.dao.connection.DBPool;
+import news.dao.specifications.FindAllArticleSpecification;
 import news.dao.specifications.FindByIdArticleSpecification;
 import news.dao.specifications.FindByTitleArticleSpecification;
 import news.model.Article;
@@ -13,6 +14,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -375,6 +377,158 @@ class ArticleRepositoryTest {
             assertThat(tagId2).isEqualTo(2);
             assertThat(tagId3).isEqualTo(3);
             assertThat(tagId4).isEqualTo(4);
+            this.poolConnection.pullConnection(connection);
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    @Test
+    void findAll() {
+        try {
+            SoftAssertions soft = new SoftAssertions();
+            ArticleRepository articleRepository = new ArticleRepository(this.poolConnection);
+            Connection connection = this.poolConnection.getConnection();
+            Statement statement = connection.createStatement();
+            // создаем две статьи с одиннаковым title
+            Article article1 = new Article("Заголовок 1", "Лид 1", createDateArticle, editDateArticle,
+                    "Текст 1", true, 1, 1, 1);
+            Article article2 = new Article("Заголовок 2", "Лид 2", createDateArticle, editDateArticle,
+                    "Текст 2", true, 2, 2, 2);
+            Article article3 = new Article("Заголовок 3", "Лид 3", createDateArticle, editDateArticle,
+                    "Текст 3", true, 2, 2, 2);
+            // добавляем к ним по 2 изображения
+            Article.ArticleImage articleImage1 = new Article.ArticleImage("Изображение 1", "/static/images/image1.png", 1);
+            Article.ArticleImage articleImage2 = new Article.ArticleImage("Изображение 2", "/static/images/image2.png", 1);
+            Article.ArticleImage articleImage3 = new Article.ArticleImage("Изображение 3", "/static/images/image3.png", 2);
+            Article.ArticleImage articleImage4 = new Article.ArticleImage("Изображение 4", "/static/images/image4.png", 2);
+            Article.ArticleImage articleImage5 = new Article.ArticleImage("Изображение 5", "/static/images/image5.png", 3);
+            article1.addNewImage(articleImage1);
+            article1.addNewImage(articleImage2);
+            article2.addNewImage(articleImage3);
+            article2.addNewImage(articleImage4);
+            article3.addNewImage(articleImage5);
+            // добавили 2 статьи в БД
+            String sqlInsertArticle1 = String.format("INSERT INTO article (title, lead, create_date, edit_date, text, is_published, " +
+                            "category_id, user_id, source_id) VALUES ('%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);",
+                    "Заголовок 1", "Лид 1", Timestamp.valueOf(createDateArticle.atStartOfDay()),
+                    Timestamp.valueOf(editDateArticle.atStartOfDay()), "Текст 1", true, 1, 1, 1);
+            statement.executeUpdate(sqlInsertArticle1);
+            String sqlInsertArticle2 = String.format("INSERT INTO article (title, lead, create_date, edit_date, text, is_published, " +
+                            "category_id, user_id, source_id) VALUES ('%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);",
+                    "Заголовок 2", "Лид 2", Timestamp.valueOf(createDateArticle.atStartOfDay()),
+                    Timestamp.valueOf(editDateArticle.atStartOfDay()), "Текст 2", true, 2, 2, 2);
+            statement.executeUpdate(sqlInsertArticle2);
+            String sqlInsertArticle3 = String.format("INSERT INTO article (title, lead, create_date, edit_date, text, is_published, " +
+                            "category_id, user_id, source_id) VALUES ('%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);",
+                    "Заголовок 3", "Лид 3", Timestamp.valueOf(createDateArticle.atStartOfDay()),
+                    Timestamp.valueOf(editDateArticle.atStartOfDay()), "Текст 3", true, 2, 2, 2);
+            statement.executeUpdate(sqlInsertArticle3);
+            // добавляем по 2 картинки к статьям в БД
+            String sqlInsertImages = String.format("INSERT INTO image (title, path, article_id) " +
+                            "VALUES ('%s', '%s', %d), ('%s', '%s', %d), ('%s', '%s', %d), ('%s', '%s', %d), ('%s', '%s', %d);",
+                    "Изображение 1", "/static/images/image1.png", 1,
+                    "Изображение 2", "/static/images/image2.png", 1,
+                    "Изображение 3", "/static/images/image3.png", 2,
+                    "Изображение 4", "/static/images/image4.png", 2,
+                    "Изображение 5", "/static/images/image5.png", 3);
+            // добавляем по 2 тега к статьям в БД
+            statement.executeUpdate(sqlInsertImages);
+            String sqlInsertTagsId = "INSERT INTO article_tag (article_id, tag_id) VALUES " +
+                    "(1, 1), (1, 2), (2, 3), (2, 4), (3, 4), (3, 2);";
+            statement.executeUpdate(sqlInsertTagsId);
+
+            // выполняем поиск
+            FindAllArticleSpecification findAll = new FindAllArticleSpecification();
+            List<Article> resultFindAllArticleList = articleRepository.query(findAll);
+            Object[] resultFindAllArticleInstance1 = resultFindAllArticleList.get(0).getObjects();
+            Object[] resultFindAllArticleInstance2 = resultFindAllArticleList.get(1).getObjects();
+            Object[] resultFindAllArticleInstance3 = resultFindAllArticleList.get(2).getObjects();
+            List images1 = (ArrayList) resultFindAllArticleInstance1[10];
+            List tagsId1 = new ArrayList((HashSet) resultFindAllArticleInstance1[11]);
+            Collections.sort(tagsId1);
+            List images2 = (ArrayList) resultFindAllArticleInstance2[10];
+            List tagsId2 = new ArrayList((HashSet) resultFindAllArticleInstance2[11]);
+            Collections.sort(tagsId1);
+            List images3 = (ArrayList) resultFindAllArticleInstance3[10];
+            List tagsId3 = new ArrayList((HashSet) resultFindAllArticleInstance3[11]);
+            Collections.sort(tagsId1);
+            Article.ArticleImage resultFindByIdImage1 = (Article.ArticleImage) images1.get(0);
+            Article.ArticleImage resultFindByIdImage2 = (Article.ArticleImage) images1.get(1);
+            Article.ArticleImage resultFindByIdImage3 = (Article.ArticleImage) images2.get(0);
+            Article.ArticleImage resultFindByIdImage4 = (Article.ArticleImage) images2.get(1);
+            Article.ArticleImage resultFindByIdImage5 = (Article.ArticleImage) images3.get(0);
+            int tagId1 = (int) tagsId1.get(0);
+            int tagId2 = (int) tagsId1.get(1);
+            int tagId3 = (int) tagsId2.get(0);
+            int tagId4 = (int) tagsId2.get(1);
+            int tagId5 = (int) tagsId3.get(0);
+            int tagId6 = (int) tagsId3.get(1);
+
+            soft.assertThat(article1)
+                    .hasFieldOrPropertyWithValue("title", resultFindAllArticleInstance1[1])
+                    .hasFieldOrPropertyWithValue("lead", resultFindAllArticleInstance1[2])
+                    .hasFieldOrPropertyWithValue("createDate", resultFindAllArticleInstance1[3])
+                    .hasFieldOrPropertyWithValue("editDate", resultFindAllArticleInstance1[4])
+                    .hasFieldOrPropertyWithValue("text", resultFindAllArticleInstance1[5])
+                    .hasFieldOrPropertyWithValue("isPublished", resultFindAllArticleInstance1[6])
+                    .hasFieldOrPropertyWithValue("categoryId", resultFindAllArticleInstance1[7])
+                    .hasFieldOrPropertyWithValue("userId", resultFindAllArticleInstance1[8])
+                    .hasFieldOrPropertyWithValue("sourceId", resultFindAllArticleInstance1[9]);
+            soft.assertAll();
+            soft.assertThat(article2)
+                    .hasFieldOrPropertyWithValue("title", resultFindAllArticleInstance2[1])
+                    .hasFieldOrPropertyWithValue("lead", resultFindAllArticleInstance2[2])
+                    .hasFieldOrPropertyWithValue("createDate", resultFindAllArticleInstance2[3])
+                    .hasFieldOrPropertyWithValue("editDate", resultFindAllArticleInstance2[4])
+                    .hasFieldOrPropertyWithValue("text", resultFindAllArticleInstance2[5])
+                    .hasFieldOrPropertyWithValue("isPublished", resultFindAllArticleInstance2[6])
+                    .hasFieldOrPropertyWithValue("categoryId", resultFindAllArticleInstance2[7])
+                    .hasFieldOrPropertyWithValue("userId", resultFindAllArticleInstance2[8])
+                    .hasFieldOrPropertyWithValue("sourceId", resultFindAllArticleInstance2[9]);
+            soft.assertAll();
+            soft.assertThat(article3)
+                    .hasFieldOrPropertyWithValue("title", resultFindAllArticleInstance3[1])
+                    .hasFieldOrPropertyWithValue("lead", resultFindAllArticleInstance3[2])
+                    .hasFieldOrPropertyWithValue("createDate", resultFindAllArticleInstance3[3])
+                    .hasFieldOrPropertyWithValue("editDate", resultFindAllArticleInstance3[4])
+                    .hasFieldOrPropertyWithValue("text", resultFindAllArticleInstance3[5])
+                    .hasFieldOrPropertyWithValue("isPublished", resultFindAllArticleInstance3[6])
+                    .hasFieldOrPropertyWithValue("categoryId", resultFindAllArticleInstance3[7])
+                    .hasFieldOrPropertyWithValue("userId", resultFindAllArticleInstance3[8])
+                    .hasFieldOrPropertyWithValue("sourceId", resultFindAllArticleInstance3[9]);
+            soft.assertAll();
+            soft.assertThat(resultFindByIdImage1)
+                    .hasFieldOrPropertyWithValue("title", "Изображение 1")
+                    .hasFieldOrPropertyWithValue("path", "/static/images/image1.png")
+                    .hasFieldOrPropertyWithValue("articleId", 1);
+            soft.assertAll();
+            soft.assertThat(resultFindByIdImage2)
+                    .hasFieldOrPropertyWithValue("title", "Изображение 2")
+                    .hasFieldOrPropertyWithValue("path", "/static/images/image2.png")
+                    .hasFieldOrPropertyWithValue("articleId", 1);
+            soft.assertAll();
+            soft.assertThat(resultFindByIdImage3)
+                    .hasFieldOrPropertyWithValue("title", "Изображение 3")
+                    .hasFieldOrPropertyWithValue("path", "/static/images/image3.png")
+                    .hasFieldOrPropertyWithValue("articleId", 2);
+            soft.assertAll();
+            soft.assertThat(resultFindByIdImage4)
+                    .hasFieldOrPropertyWithValue("title", "Изображение 4")
+                    .hasFieldOrPropertyWithValue("path", "/static/images/image4.png")
+                    .hasFieldOrPropertyWithValue("articleId", 2);
+            soft.assertAll();
+            soft.assertThat(resultFindByIdImage5)
+                    .hasFieldOrPropertyWithValue("title", "Изображение 5")
+                    .hasFieldOrPropertyWithValue("path", "/static/images/image5.png")
+                    .hasFieldOrPropertyWithValue("articleId", 3);
+            soft.assertAll();
+            assertThat(tagId1).isEqualTo(1);
+            assertThat(tagId2).isEqualTo(2);
+            assertThat(tagId3).isEqualTo(3);
+            assertThat(tagId4).isEqualTo(4);
+            assertThat(tagId5).isEqualTo(2);
+            assertThat(tagId6).isEqualTo(4);
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
             exception.printStackTrace();

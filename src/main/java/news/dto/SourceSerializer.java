@@ -29,15 +29,17 @@ public class SourceSerializer implements Serializer<Source> {
             "{\n" +
             "\t" + "\"" + sourceFields[0] + "\"" + ":" + sourceInstance[0] + ",\n" +
             "\t" + "\"" + sourceFields[1] + "\"" + ":" + "\"" + sourceInstance[1] + "\"" + ",\n" +
-            "\t" + "\"" + sourceFields[2] + "\"" + ":" + "\"" + sourceInstance[2] + "\"" + ",\n" +
+            "\t" + "\"" + sourceFields[2] + "\"" + ":" + "\"" + sourceInstance[2] + "\"" + "\n" +
             "}";
     }
 
     @Override
     public Source toObject() {
-        int id;
+        int id = 0;
         String title;
         String url;
+        int indexLine = 1;
+        boolean withId;
 
         String[] lines = json.split("\n");
         /*for (int i = 0; i < lines.length; i++) {
@@ -45,21 +47,33 @@ public class SourceSerializer implements Serializer<Source> {
         }*/
 
         // id
-        Pattern p = Pattern.compile(":(\\d+),");
-        Matcher m = p.matcher(lines[1]);
-        m.find();
-        id = Integer.parseInt(m.group(1));
+        Pattern p = Pattern.compile("\"id\":.+");
+        Matcher m = p.matcher(lines[indexLine]);
+        withId = m.find();
+        if (withId) {
+            p = Pattern.compile(":(\\d+),");
+            m = p.matcher(lines[indexLine]);
+            m.find();
+            id = Integer.parseInt(m.group(1));
+            indexLine++;
+        }
         // title
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[2]);
+        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         title = m.group(1);
+        indexLine++;
         // url
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[3]);
+        m = Pattern.compile(":\"(.+)\"").matcher(lines[indexLine]);
         m.find();
         url = m.group(1);
 
         // создаем по распарсеным данным объект источника
-        Source source = new Source(id, title, url);
+        Source source;
+        if (withId) {
+            source = new Source(id, title, url);
+        } else {
+            source = new Source(title, url);
+        }
 
         return source;
     }

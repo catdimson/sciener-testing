@@ -37,7 +37,7 @@ class AfishaSerializerTest {
                 "\t\"date\":" + Timestamp.valueOf(date.atStartOfDay()).getTime() / 1000 + ",\n" +
                 "\t\"isCommercial\":false,\n" +
                 "\t\"userId\":1,\n" +
-                "\t\"sourceId\":1,\n" +
+                "\t\"sourceId\":1\n" +
                 "}";
 
         AfishaSerializer afishaSerializer = new AfishaSerializer(afisha);
@@ -63,7 +63,7 @@ class AfishaSerializerTest {
                 "\t\"date\":" + Timestamp.valueOf(date.atStartOfDay()).getTime() / 1000 + ",\n" +
                 "\t\"isCommercial\":false,\n" +
                 "\t\"userId\":1,\n" +
-                "\t\"sourceId\":1,\n" +
+                "\t\"sourceId\":1\n" +
                 "}";
 
         AfishaSerializer afishaSerializer = new AfishaSerializer(json);

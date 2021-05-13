@@ -28,32 +28,38 @@ public class CategorySerializer implements Serializer<Category> {
         return "" +
             "{\n" +
             "\t" + "\"" + categoryFields[0] + "\"" + ":" + categoryInstance[0] + ",\n" +
-            "\t" + "\"" + categoryFields[1] + "\"" + ":" + "\"" + categoryInstance[1] + "\"" + ",\n" +
+            "\t" + "\"" + categoryFields[1] + "\"" + ":" + "\"" + categoryInstance[1] + "\"" + "\n" +
             "}";
     }
 
     @Override
     public Category toObject() {
-        int id;
+        int id = 0;
         String title;
+        int indexLine = 1;
+        boolean withId;
 
         String[] lines = json.split("\n");
-        /*for (int i = 0; i < lines.length; i++) {
-            System.out.println(i + ":" + lines[i]);
-        }*/
-
-        // id
-        Pattern p = Pattern.compile(":(\\d+),");
-        Matcher m = p.matcher(lines[1]);
-        m.find();
-        id = Integer.parseInt(m.group(1));
+        Pattern p = Pattern.compile("\"id\":.+");
+        Matcher m = p.matcher(lines[indexLine]);
+        withId = m.find();
+        if (withId) {
+            p = Pattern.compile(":(\\d+),");
+            m = p.matcher(lines[indexLine]);
+            m.find();
+            id = Integer.parseInt(m.group(1));
+            indexLine++;
+        }
         // title
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[2]);
+        m = Pattern.compile(":\"(.+)\"").matcher(lines[indexLine]);
         m.find();
         title = m.group(1);
-
-        // создаем по распарсеным данным объект категории
-        Category category = new Category(id, title);
+        Category category;
+        if (withId) {
+            category = new Category(id, title);
+        } else {
+            category = new Category(title);
+        }
 
         return category;
     }

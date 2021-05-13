@@ -25,7 +25,9 @@ public class AfishaRepository implements ExtendRepository<Afisha> {
         if (afishaSpecification.isById()) {
             preparedStatement.setInt(1, (int) afishaSpecification.getCriterial());
         } else {
-            preparedStatement.setString(1, (String) afishaSpecification.getCriterial());
+            if (afishaSpecification.getCriterial() != null) {
+                preparedStatement.setString(1, (String) afishaSpecification.getCriterial());
+            }
         }
         ResultSet result = preparedStatement.executeQuery();
         while (result.next()) {
@@ -49,12 +51,12 @@ public class AfishaRepository implements ExtendRepository<Afisha> {
     }
 
     @Override
-    public void create(Afisha afisha) throws SQLException {
+    public int create(Afisha afisha) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlCreateInstance = "INSERT INTO afisha" +
                 "(title, image_url, lead, description, age_limit, timing, place, phone, date, is_commercial, user_id, source_id) " +
                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-        PreparedStatement statement = connection.prepareStatement(sqlCreateInstance);
+        PreparedStatement statement = connection.prepareStatement(sqlCreateInstance, PreparedStatement.RETURN_GENERATED_KEYS);
         Object[] instance = afisha.getObjects();
         statement.setString(1, (String) instance[1]);
         statement.setString(2, (String) instance[2]);
@@ -70,19 +72,22 @@ public class AfishaRepository implements ExtendRepository<Afisha> {
         statement.setInt(11, (int) instance[11]);
         statement.setInt(12, (int) instance[12]);
         statement.executeUpdate();
+        ResultSet generatedKeys = statement.getGeneratedKeys();
+        generatedKeys.next();
+        return generatedKeys.getInt(1);
     }
 
     @Override
-    public void delete(int id) throws SQLException {
+    public int delete(int id) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlDeleteInstance = "DELETE FROM afisha WHERE id=?;";
         PreparedStatement preparedStatement = connection.prepareStatement(sqlDeleteInstance);
         preparedStatement.setInt(1, id);
-        preparedStatement.executeUpdate();
+        return preparedStatement.executeUpdate();
     }
 
     @Override
-    public void update(Afisha afisha) throws SQLException {
+    public int update(Afisha afisha) throws SQLException {
         Connection connection = this.connectionPool.getConnection();
         String sqlUpdateInstance = "UPDATE afisha SET " +
                 "title=?, image_url=?, lead=?, description=?, age_limit=?, timing=?, place=?, phone=?, " +
@@ -103,6 +108,6 @@ public class AfishaRepository implements ExtendRepository<Afisha> {
         statement.setInt(11, (int) instance[11]);
         statement.setInt(12, (int) instance[12]);
         statement.setInt(13, (int) instance[0]);
-        statement.executeUpdate();
+        return statement.executeUpdate();
     }
 }

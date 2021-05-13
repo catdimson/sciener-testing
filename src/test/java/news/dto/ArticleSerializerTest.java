@@ -51,19 +51,19 @@ class ArticleSerializerTest {
                 "\t\t\t\"id\":1,\n" +
                 "\t\t\t\"title\":\"Изображение 1\",\n" +
                 "\t\t\t\"path\":\"/static/images/image1.png\",\n" +
-                "\t\t\t\"articleId\":1,\n" +
+                "\t\t\t\"articleId\":1\n" +
                 "\t\t},\n" +
                 "\t\t{\n" +
                 "\t\t\t\"id\":2,\n" +
                 "\t\t\t\"title\":\"Изображение 2\",\n" +
                 "\t\t\t\"path\":\"/static/images/image2.png\",\n" +
-                "\t\t\t\"articleId\":1,\n" +
-                "\t\t},\n" +
+                "\t\t\t\"articleId\":1\n" +
+                "\t\t}\n" +
                 "\t],\n" +
                 "\t\"tagsId\":[\n" +
                 "\t\t1,\n" +
                 "\t\t2,\n" +
-                "\t\t3,\n" +
+                "\t\t3\n" +
                 "\t]\n" +
                 "}";
 
@@ -93,19 +93,19 @@ class ArticleSerializerTest {
                 "\t\t\t\"id\":1,\n" +
                 "\t\t\t\"title\":\"Изображение 1\",\n" +
                 "\t\t\t\"path\":\"/static/images/image1.png\",\n" +
-                "\t\t\t\"articleId\":1,\n" +
+                "\t\t\t\"articleId\":1\n" +
                 "\t\t},\n" +
                 "\t\t{\n" +
                 "\t\t\t\"id\":2,\n" +
                 "\t\t\t\"title\":\"Изображение 2\",\n" +
                 "\t\t\t\"path\":\"/static/images/image2.png\",\n" +
-                "\t\t\t\"articleId\":1,\n" +
+                "\t\t\t\"articleId\":1\n" +
                 "\t\t},\n" +
                 "\t],\n" +
                 "\t\"tagsId\":[\n" +
                 "\t\t1,\n" +
                 "\t\t2,\n" +
-                "\t\t3,\n" +
+                "\t\t3\n" +
                 "\t]\n" +
                 "}";
 

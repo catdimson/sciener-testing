@@ -1,6 +1,7 @@
 package news.dao.repositories;
 
 import news.dao.connection.DBPool;
+import news.dao.specifications.FindAllCategorySpecification;
 import news.dao.specifications.FindByIdCategorySpecification;
 import news.dao.specifications.FindByTitleCategorySpecification;
 import news.model.Category;
@@ -81,6 +82,35 @@ class CategoryRepositoryTest {
             soft.assertThat(category)
                     .hasFieldOrPropertyWithValue("id", resultFindByIdCategory.get(0).getObjects()[0])
                     .hasFieldOrPropertyWithValue("title", resultFindByIdCategory.get(0).getObjects()[1]);
+            soft.assertAll();
+            this.poolConnection.pullConnection(connection);
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    @Test
+    void findAll() {
+        try {
+            SoftAssertions soft = new SoftAssertions();
+            CategoryRepository categoryRepository = new CategoryRepository(this.poolConnection);
+            Connection connection = this.poolConnection.getConnection();
+            Statement statement = connection.createStatement();
+            String sqlInsertInstance = "INSERT INTO category (title) VALUES ('Новости'),('Политика');";
+            statement.executeUpdate(sqlInsertInstance);
+            Category category1 = new Category(1,"Новости");
+            Category category2 = new Category(2,"Политика");
+
+            FindAllCategorySpecification findAll = new FindAllCategorySpecification();
+            List<Category> resultFindAllCategory = categoryRepository.query(findAll);
+
+            soft.assertThat(category1)
+                    .hasFieldOrPropertyWithValue("id", resultFindAllCategory.get(0).getObjects()[0])
+                    .hasFieldOrPropertyWithValue("title", resultFindAllCategory.get(0).getObjects()[1]);
+            soft.assertAll();
+            soft.assertThat(category2)
+                    .hasFieldOrPropertyWithValue("id", resultFindAllCategory.get(1).getObjects()[0])
+                    .hasFieldOrPropertyWithValue("title", resultFindAllCategory.get(1).getObjects()[1]);
             soft.assertAll();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {

@@ -43,13 +43,13 @@ public class AfishaSerializer implements Serializer<Afisha> {
             "\t" + "\"" + afishaFields[9] + "\"" + ":" + Timestamp.valueOf(date.atStartOfDay()).getTime() / 1000 + ",\n" +
             "\t" + "\"" + afishaFields[10] + "\"" + ":" + afishaInstance[10] + ",\n" +
             "\t" + "\"" + afishaFields[11] + "\"" + ":" + afishaInstance[11] + ",\n" +
-            "\t" + "\"" + afishaFields[12] + "\"" + ":" + afishaInstance[12] + ",\n" +
+            "\t" + "\"" + afishaFields[12] + "\"" + ":" + afishaInstance[12] + "\n" +
             "}";
     }
 
     @Override
     public Afisha toObject() {
-        int id;
+        int id = 0;
         String title;
         String imageUrl;
         String lead;
@@ -62,56 +62,71 @@ public class AfishaSerializer implements Serializer<Afisha> {
         boolean isCommercial = false;
         int userId;
         int sourceId;
+        int indexLine = 1;
+        boolean withId;
 
         String[] lines = json.split("\n");
         /*for (int i = 0; i < lines.length; i++) {
             System.out.println(i + ":" + lines[i]);
         }*/
-
-        // id
-        Pattern p = Pattern.compile(":(\\d+),");
-        Matcher m = p.matcher(lines[1]);
-        m.find();
-        id = Integer.parseInt(m.group(1));
+        Pattern p = Pattern.compile("\"id\":.+");
+        Matcher m = p.matcher(lines[indexLine]);
+        withId = m.find();
+        if (withId) {
+            p = Pattern.compile(":(\\d+),");
+            m = p.matcher(lines[indexLine]);
+            m.find();
+            id = Integer.parseInt(m.group(1));
+            indexLine++;
+        }
         // title
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[2]);
+        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         title = m.group(1);
+        indexLine++;
         // imageUrl
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[3]);
+        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         imageUrl = m.group(1);
+        indexLine++;
         // lead
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[4]);
+        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         lead = m.group(1);
+        indexLine++;
         // description
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[5]);
+        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         description = m.group(1);
+        indexLine++;
         // ageLimit
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[6]);
+        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         ageLimit = m.group(1);
+        indexLine++;
         // timing
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[7]);
+        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         timing = m.group(1);
+        indexLine++;
         // place
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[8]);
+        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         place = m.group(1);
+        indexLine++;
         // phone
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[9]);
+        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         phone = m.group(1);
+        indexLine++;
         // date
-        m = Pattern.compile(":(\\d+),").matcher(lines[10]);
+        m = Pattern.compile(":(\\d+),").matcher(lines[indexLine]);
         m.find();
         int timestampCreateDate = Integer.parseInt(m.group(1));
         date = Timestamp.from(Instant.ofEpochSecond(timestampCreateDate)).toLocalDateTime().toLocalDate();
+        indexLine++;
         // isCommercial
-        m = Pattern.compile(":(\\w{4,5}),").matcher(lines[11]);
+        m = Pattern.compile(":(\\w{4,5}),").matcher(lines[indexLine]);
         if (m.find()) {
             if (m.group(1).equals("true")) {
                 isCommercial = true;
@@ -120,18 +135,26 @@ public class AfishaSerializer implements Serializer<Afisha> {
                 isCommercial = false;
             }
         }
+        indexLine++;
         // userId
-        m = Pattern.compile(":(\\d+),").matcher(lines[12]);
+        m = Pattern.compile(":(\\d+),").matcher(lines[indexLine]);
         m.find();
         userId = Integer.parseInt(m.group(1));
+        indexLine++;
         // sourceId
-        m = Pattern.compile(":(\\d+),").matcher(lines[13]);
+        m = Pattern.compile(":(\\d+)").matcher(lines[indexLine]);
         m.find();
         sourceId = Integer.parseInt(m.group(1));
 
         // создаем по распарсеным данным объект афиши
-        Afisha afisha = new Afisha(id, title, imageUrl, lead, description, ageLimit, timing, place, phone, date, isCommercial,
-                userId, sourceId);
+        Afisha afisha;
+        if (withId) {
+            afisha = new Afisha(id, title, imageUrl, lead, description, ageLimit, timing, place, phone, date, isCommercial,
+                    userId, sourceId);
+        } else {
+            afisha = new Afisha(title, imageUrl, lead, description, ageLimit, timing, place, phone, date, isCommercial,
+                    userId, sourceId);
+        }
 
         return afisha;
     }
