@@ -33,7 +33,7 @@ public class SourceController implements Controller {
         Matcher m;
 
         switch (request.getMethod()) {
-            case "GET" -> {
+            case ("GET"): {
                 p = Pattern.compile("^/source/$");
                 m = p.matcher(fullUrl);
                 // получение списка всех источников
@@ -122,6 +122,7 @@ public class SourceController implements Controller {
                         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                         response.setHeader("Pragma", "no-cache");
                         response.setBody("[]");
+                        break;
                     } else {
                         Source source = findByIdSourceList.get(0);
                         sourceSerializer = new SourceSerializer(source);
@@ -132,6 +133,7 @@ public class SourceController implements Controller {
                         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                         response.setHeader("Pragma", "no-cache");
                         response.setBody(sourceSerializer.toJSON());
+                        break;
                     }
                 } else {
                     response.setStatusCode(400);
@@ -139,9 +141,10 @@ public class SourceController implements Controller {
                     response.setStatusText("Некорректный запрос");
                     response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                     response.setHeader("Pragma", "no-cache");
+                    break;
                 }
             }
-            case "POST" -> {
+            case ("POST"): {
                 // создание записи
                 p = Pattern.compile("^/source/$");
                 m = p.matcher(url);
@@ -159,8 +162,9 @@ public class SourceController implements Controller {
                 }
                 response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                 response.setHeader("Pragma", "no-cache");
+                break;
             }
-            case "PUT" -> {
+            case ("PUT"): {
                 p = Pattern.compile("^/source/(?<id>(\\d+))/$");
                 m = p.matcher(url);
                 // если status=0 - не было выполнено обновление, если не 0 - выполнено
@@ -192,8 +196,9 @@ public class SourceController implements Controller {
                 }
                 response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                 response.setHeader("Pragma", "no-cache");
+                break;
             }
-            case "DELETE" -> {
+            case ("DELETE"): {
                 p = Pattern.compile("^/source/(?<id>(\\d+))/$");
                 m = p.matcher(url);
                 if (m.find()) {
@@ -214,8 +219,9 @@ public class SourceController implements Controller {
                 response.setVersion("HTTP/1.1");
                 response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                 response.setHeader("Pragma", "no-cache");
+                break;
             }
-            default -> {
+            default: {
                 response.setStatusCode(400);
                 response.setVersion("HTTP/1.1");
                 response.setStatusText("Некорректный запрос");

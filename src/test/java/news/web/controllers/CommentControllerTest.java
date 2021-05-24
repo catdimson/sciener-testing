@@ -520,7 +520,7 @@ class CommentControllerTest {
                 .hasFieldOrPropertyWithValue("articleId", result.getInt("article_id"))
                 .hasFieldOrPropertyWithValue("userId", result.getInt("user_id"));
         soft.assertAll();
-        String sqlQueryAttachments = "SELECT * FROM attachment WHERE comment_id=1;";
+        String sqlQueryAttachments = "SELECT * FROM attachment WHERE comment_id=1 ORDER BY title;";
         result = statement.executeQuery(sqlQueryAttachments);
         result.next();
         soft.assertThat(commentAttachment1)

@@ -100,7 +100,7 @@ class SourceControllerTest {
    }
 
     @Test
-    void buildResponseGETMethodFindByFirstname() throws IOException, SQLException {
+    void buildResponseGETMethodFindByTitle() throws IOException, SQLException {
         Connection connection = this.poolConnection.getConnection();
         Statement statement = connection.createStatement();
         String sqlInsertSource = "INSERT INTO source (title, url) " +
@@ -223,7 +223,7 @@ class SourceControllerTest {
             "\n" +
             "{\n" +
             "\t\"title\":\"Яндекс ДЗЕН\",\n" +
-            "\t\"url\":\"https://zen.yandex.ru/\",\n" +
+            "\t\"url\":\"https://zen.yandex.ru/\"\n" +
             "}\n";
         out.println(request);
         out.flush();
