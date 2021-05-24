@@ -711,7 +711,7 @@ class ArticleRepositoryTest {
                     .hasFieldOrPropertyWithValue("sourceId", resultArticle.getInt("source_id"));
             soft.assertAll();
             // сверяем изображения
-            String sqlQueryImages = "SELECT * FROM image WHERE article_id=1 ORDER BY id DESC;";
+            String sqlQueryImages = "SELECT * FROM image WHERE article_id=1 ORDER BY title;";
             ResultSet resultImages = statement.executeQuery(sqlQueryImages);
             resultImages.next();
             soft.assertThat(articleImage1)

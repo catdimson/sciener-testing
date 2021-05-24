@@ -162,7 +162,7 @@ class AfishaControllerTest {
             "\t\"timing\":\"timing1\",\n" +
             "\t\"place\":\"place1\",\n" +
             "\t\"phone\":\"phone1\",\n" +
-            "\t\"date\":1589922000,\n" +
+            "\t\"date\":1592600400,\n" +
             "\t\"isCommercial\":true,\n" +
             "\t\"userId\":1,\n" +
             "\t\"sourceId\":1\n" +
@@ -177,7 +177,7 @@ class AfishaControllerTest {
             "\t\"timing\":\"timing2\",\n" +
             "\t\"place\":\"place2\",\n" +
             "\t\"phone\":\"phone2\",\n" +
-            "\t\"date\":1589922000,\n" +
+            "\t\"date\":1592600400,\n" +
             "\t\"isCommercial\":true,\n" +
             "\t\"userId\":1,\n" +
             "\t\"sourceId\":1\n" +
@@ -241,7 +241,7 @@ class AfishaControllerTest {
                 "\t\"timing\":\"timing1\",\n" +
                 "\t\"place\":\"place1\",\n" +
                 "\t\"phone\":\"phone1\",\n" +
-                "\t\"date\":1589922000,\n" +
+                "\t\"date\":1592600400,\n" +
                 "\t\"isCommercial\":true,\n" +
                 "\t\"userId\":1,\n" +
                 "\t\"sourceId\":1\n" +
@@ -256,7 +256,7 @@ class AfishaControllerTest {
                 "\t\"timing\":\"timing2\",\n" +
                 "\t\"place\":\"place2\",\n" +
                 "\t\"phone\":\"phone2\",\n" +
-                "\t\"date\":1589922000,\n" +
+                "\t\"date\":1592600400,\n" +
                 "\t\"isCommercial\":true,\n" +
                 "\t\"userId\":1,\n" +
                 "\t\"sourceId\":1\n" +
@@ -319,7 +319,7 @@ class AfishaControllerTest {
                 "\t\"timing\":\"timing2\",\n" +
                 "\t\"place\":\"place2\",\n" +
                 "\t\"phone\":\"phone2\",\n" +
-                "\t\"date\":1589922000,\n" +
+                "\t\"date\":1592600400,\n" +
                 "\t\"isCommercial\":true,\n" +
                 "\t\"userId\":1,\n" +
                 "\t\"sourceId\":1\n" +

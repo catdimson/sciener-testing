@@ -65,7 +65,7 @@ public class RootController {
         Matcher m = p.matcher(url);
         if (m.find()) {
             switch (m.group(1)) {
-                case ("article") -> {
+                case ("article"): {
                     articleRepository = new ArticleRepository(dbPool);
                     articleService = new ArticleService(articleRepository);
                     articleController = new ArticleController(articleService, request);
@@ -73,7 +73,7 @@ public class RootController {
                     response = articleController.getResponse();
                     break;
                 }
-                case ("category") -> {
+                case ("category"): {
                     categoryRepository = new CategoryRepository(dbPool);
                     categoryService = new CategoryService(categoryRepository);
                     categoryController = new CategoryController(categoryService, request);
@@ -81,7 +81,7 @@ public class RootController {
                     response = categoryController.getResponse();
                     break;
                 }
-                case ("group") -> {
+                case ("group"): {
                     groupRepository = new GroupRepository(dbPool);
                     groupService = new GroupService(groupRepository);
                     groupController = new GroupController(groupService, request);
@@ -89,7 +89,7 @@ public class RootController {
                     response = groupController.getResponse();
                     break;
                 }
-                case ("source") -> {
+                case ("source"): {
                     sourceRepository = new SourceRepository(dbPool);
                     sourceService = new SourceService(sourceRepository);
                     sourceController = new SourceController(sourceService, request);
@@ -97,7 +97,7 @@ public class RootController {
                     response = sourceController.getResponse();
                     break;
                 }
-                case ("mailing") -> {
+                case ("mailing"): {
                     mailingRepository = new MailingRepository(dbPool);
                     mailingService = new MailingService(mailingRepository);
                     mailingController = new MailingController(mailingService, request);
@@ -105,7 +105,7 @@ public class RootController {
                     response = mailingController.getResponse();
                     break;
                 }
-                case ("tag") -> {
+                case ("tag"): {
                     tagRepository = new TagRepository(dbPool);
                     tagService = new TagService(tagRepository);
                     tagController = new TagController(tagService, request);
@@ -113,7 +113,7 @@ public class RootController {
                     response = tagController.getResponse();
                     break;
                 }
-                case ("user") -> {
+                case ("user"): {
                     userRepository = new UserRepository(dbPool);
                     userService = new UserService(userRepository);
                     userController = new UserController(userService, request);
@@ -121,7 +121,7 @@ public class RootController {
                     response = userController.getResponse();
                     break;
                 }
-                case ("afisha") -> {
+                case ("afisha"): {
                     afishaRepository = new AfishaRepository(dbPool);
                     afishaService = new AfishaService(afishaRepository);
                     afishaController = new AfishaController(afishaService, request);
@@ -129,7 +129,7 @@ public class RootController {
                     response = afishaController.getResponse();
                     break;
                 }
-                case ("comment") -> {
+                case ("comment"): {
                     commentRepository = new CommentRepository(dbPool);
                     commentService = new CommentService(commentRepository);
                     commentController = new CommentController(commentService, request);
@@ -137,7 +137,7 @@ public class RootController {
                     response = commentController.getResponse();
                     break;
                 }
-                default -> {
+                default: {
                     response.setStatusCode(400);
                     response.setVersion("HTTP/1.1");
                     response.setStatusText("Некорректный запрос");
