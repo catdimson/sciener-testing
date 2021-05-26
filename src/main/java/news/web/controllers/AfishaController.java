@@ -36,6 +36,7 @@ public class AfishaController implements Controller {
             case ("GET"): {
                 p = Pattern.compile("^/afisha/$");
                 m = p.matcher(fullUrl);
+                System.out.println(fullUrl);
                 // получение списка всех афиш
                 if (m.find()) {
                     FindAllAfishaSpecification findAll = new FindAllAfishaSpecification();
@@ -136,6 +137,7 @@ public class AfishaController implements Controller {
                         break;
                     }
                 } else {
+                    System.out.println("Некорректный запрос в Afisha");
                     response.setStatusCode(400);
                     response.setVersion("HTTP/1.1");
                     response.setStatusText("Некорректный запрос");
@@ -222,6 +224,7 @@ public class AfishaController implements Controller {
                 break;
             }
             default: {
+                System.out.println("Ошибка в афише");
                 response.setStatusCode(400);
                 response.setVersion("HTTP/1.1");
                 response.setStatusText("Некорректный запрос");
