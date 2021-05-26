@@ -1,6 +1,6 @@
 package news.web.controllers;
 
-import news.dao.connection.DBPool;
+import news.dao.connection.ConnectionPool;
 import news.dao.repositories.*;
 import news.service.*;
 import news.web.http.HttpRequest;
@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 public class RootController {
     HttpRequest request;
     HttpResponse response = new HttpResponse();
-    DBPool dbPool;
+    ConnectionPool dbPool;
 
     // afisha
     AfishaRepository afishaRepository;
@@ -52,7 +52,7 @@ public class RootController {
     UserService userService;
     UserController userController;
 
-    public RootController(HttpRequest request, DBPool dbPool) {
+    public RootController(HttpRequest request, ConnectionPool dbPool) {
         this.request = request;
         this.dbPool = dbPool;
     }

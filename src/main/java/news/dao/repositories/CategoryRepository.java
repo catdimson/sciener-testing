@@ -1,5 +1,6 @@
 package news.dao.repositories;
 
+import news.dao.connection.ConnectionPool;
 import news.dao.connection.DBPool;
 import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Category;
@@ -9,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CategoryRepository implements ExtendRepository<Category> {
-    final private DBPool connectionPool;
+    final private ConnectionPool connectionPool;
 
-    public CategoryRepository(DBPool connectionPool) {
+    public CategoryRepository(ConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
     }
 

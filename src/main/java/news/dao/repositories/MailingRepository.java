@@ -1,5 +1,6 @@
 package news.dao.repositories;
 
+import news.dao.connection.ConnectionPool;
 import news.dao.connection.DBPool;
 import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Mailing;
@@ -9,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MailingRepository implements ExtendRepository<Mailing> {
-    final private DBPool connectionPool;
+    final private ConnectionPool connectionPool;
 
-    public MailingRepository(DBPool connectionPool) {
+    public MailingRepository(ConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
     }
 
