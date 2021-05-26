@@ -37,7 +37,6 @@ public class RootController {
         BeanFactory beanFactory = BeanFactory.getInstance();
         Pattern p = Pattern.compile("/(.+?)/");
         Matcher m = p.matcher(url);
-        System.out.println("URL!!!! : " + url);
         if (m.find()) {
             switch (m.group(1)) {
                 case ("article"): {
@@ -95,7 +94,6 @@ public class RootController {
                     break;
                 }
                 default: {
-                    System.out.println("Ветвь ошибки");
                     response.setStatusCode(400);
                     response.setVersion("HTTP/1.1");
                     response.setStatusText("Некорректный запрос");
