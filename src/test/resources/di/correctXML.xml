@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+
+    <!--Afisha-->
+    <bean id="afishaRepository" class="news.dao.repositories.AfishaRepository">
+        <constructor-arg value="instanceDBPool"/>
+    </bean>
+
+    <bean id="afishaService" class="news.service.AfishaService">
+        <constructor-arg ref="afishaRepository" />
+    </bean>
+
+    <bean id="afishaController" class="news.web.controllers.AfishaController">
+        <constructor-arg ref="afishaService" value="instanceHTTPRequest" />
+    </bean>
+
+    <!--Article-->
+    <bean id="articleRepository" class="news.dao.repositories.ArticleRepository">
+        <constructor-arg value="instanceDBPool"/>
+    </bean>
+
+    <bean id="articleService" class="news.service.ArticleService">
+        <constructor-arg ref="articleRepository" />
+    </bean>
+
+    <bean id="articleController" class="news.web.controllers.ArticleController">
+        <constructor-arg ref="articleService" value="instanceHTTPRequest" />
+    </bean>
+
+    <!--Category-->
+    <bean id="categoryRepository" class="news.dao.repositories.CategoryRepository">
+        <constructor-arg value="instanceDBPool"/>
+    </bean>
+
+    <bean id="categoryService" class="news.service.CategoryService">
+        <constructor-arg ref="categoryRepository" />
+    </bean>
+
+    <bean id="categoryController" class="news.web.controllers.CategoryController">
+        <constructor-arg ref="categoryService" value="instanceHTTPRequest" />
+    </bean>
+
+</beans>

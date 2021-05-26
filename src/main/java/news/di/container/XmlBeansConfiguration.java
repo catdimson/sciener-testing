@@ -21,7 +21,7 @@ public class XmlBeansConfiguration {
             document = builder.parse(xmlFile);
             document.getDocumentElement().normalize();
         } catch (Exception e) {
-            e.printStackTrace();
+            document = null;
         }
     }
 
@@ -33,25 +33,29 @@ public class XmlBeansConfiguration {
     public String getRelationClassFromCurrent(String currentClass) {
         String ref = "";
         String result = "";
-        NodeList beanList = document.getElementsByTagName("bean");
 
-        for (int i = 0; i < beanList.getLength(); i++) {
-            Element bean = (Element) beanList.item(i);
-            if (bean.getAttribute("class").equals(currentClass)) {
-                Element constr = (Element) bean.getElementsByTagName("constructor-arg").item(0);
-                if (constr.hasAttribute("ref")) {
-                    ref = constr.getAttribute("ref");
+        if (document != null) {
+            NodeList beanList = document.getElementsByTagName("bean");
+
+            for (int i = 0; i < beanList.getLength(); i++) {
+                Element bean = (Element) beanList.item(i);
+                if (bean.getAttribute("class").equals(currentClass)) {
+                    Element constr = (Element) bean.getElementsByTagName("constructor-arg").item(0);
+                    if (constr.hasAttribute("ref")) {
+                        ref = constr.getAttribute("ref");
+                    }
+                    break;
                 }
-                break;
             }
-        }
-        for (int i = 0; i < beanList.getLength(); i++) {
-            Element bean = (Element) beanList.item(i);
-            if (bean.getAttribute("id").equals(ref)) {
-                result = bean.getAttribute("class");
+            for (int i = 0; i < beanList.getLength(); i++) {
+                Element bean = (Element) beanList.item(i);
+                if (bean.getAttribute("id").equals(ref)) {
+                    result = bean.getAttribute("class");
+                }
             }
+            return result;
+        } else {
+            return null;
         }
-
-        return result;
     }
 }

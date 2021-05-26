@@ -33,18 +33,22 @@ public class BeanFactory {
         Class<? extends T> currentClass = clazz;
         T bean;
         String injectClassName = configuration.getRelationClassFromCurrent(currentClass.getTypeName());
-        Constructor<?> currentConstructor = currentClass.getConstructors()[0];
-        if (injectClassName.equals("")) {
-            bean = (T) currentConstructor.newInstance(dbPool);
-        } else {
-            Class<?>[] constructorParameterTypesForCurrentClass = currentConstructor.getParameterTypes();
-            Class<?> injectClass = Class.forName(injectClassName);
-            if (constructorParameterTypesForCurrentClass.length == 2) {
-                bean = (T) currentConstructor.newInstance(getBean(injectClass), httpRequest);
+        if (injectClassName != null) {
+            Constructor<?> currentConstructor = currentClass.getConstructors()[0];
+            if (injectClassName.equals("")) {
+                bean = (T) currentConstructor.newInstance(dbPool);
             } else {
-                bean = (T) currentConstructor.newInstance((T) getBean(injectClass));
+                Class<?>[] constructorParameterTypesForCurrentClass = currentConstructor.getParameterTypes();
+                Class<?> injectClass = Class.forName(injectClassName);
+                if (constructorParameterTypesForCurrentClass.length == 2) {
+                    bean = (T) currentConstructor.newInstance(getBean(injectClass), httpRequest);
+                } else {
+                    bean = (T) currentConstructor.newInstance((T) getBean(injectClass));
+                }
             }
+            return bean;
+        } else {
+            return null;
         }
-        return bean;
     }
 }

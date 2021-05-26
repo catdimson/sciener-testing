@@ -41,56 +41,128 @@ public class RootController {
             switch (m.group(1)) {
                 case ("article"): {
                     articleController = beanFactory.getBean(ArticleController.class);
-                    articleController.buildResponse();
-                    response = articleController.getResponse();
+                    if (articleController != null) {
+                        articleController.buildResponse();
+                        response = articleController.getResponse();
+                    } else {
+                        response.setStatusCode(503);
+                        response.setVersion("HTTP/1.1");
+                        response.setStatusText("Сервис по работе с article недоступен");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                    }
                     break;
                 }
                 case ("category"): {
                     categoryController = beanFactory.getBean(CategoryController.class);
-                    categoryController.buildResponse();
-                    response = categoryController.getResponse();
+                    if (categoryController != null) {
+                        categoryController.buildResponse();
+                        response = categoryController.getResponse();
+                    } else {
+                        response.setStatusCode(503);
+                        response.setVersion("HTTP/1.1");
+                        response.setStatusText("Сервис по работе с category недоступен");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                    }
                     break;
                 }
                 case ("group"): {
                     groupController = beanFactory.getBean(GroupController.class);
-                    groupController.buildResponse();
-                    response = groupController.getResponse();
+                    if (groupController != null) {
+                        groupController.buildResponse();
+                        response = groupController.getResponse();
+                    } else {
+                        response.setStatusCode(503);
+                        response.setVersion("HTTP/1.1");
+                        response.setStatusText("Сервис по работе с group недоступен");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                    }
                     break;
                 }
                 case ("source"): {
                     sourceController = beanFactory.getBean(SourceController.class);
-                    sourceController.buildResponse();
-                    response = sourceController.getResponse();
+                    if (sourceController != null) {
+                        sourceController.buildResponse();
+                        response = sourceController.getResponse();
+                    } else {
+                        response.setStatusCode(503);
+                        response.setVersion("HTTP/1.1");
+                        response.setStatusText("Сервис по работе с source недоступен");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                    }
                     break;
                 }
                 case ("mailing"): {
                     mailingController = beanFactory.getBean(MailingController.class);
-                    mailingController.buildResponse();
-                    response = mailingController.getResponse();
+                    if (mailingController != null) {
+                        mailingController.buildResponse();
+                        response = mailingController.getResponse();
+                    } else {
+                        response.setStatusCode(503);
+                        response.setVersion("HTTP/1.1");
+                        response.setStatusText("Сервис по работе с mailing недоступен");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                    }
                     break;
                 }
                 case ("tag"): {
                     tagController = beanFactory.getBean(TagController.class);
-                    tagController.buildResponse();
-                    response = tagController.getResponse();
+                    if (tagController != null) {
+                        tagController.buildResponse();
+                        response = tagController.getResponse();
+                    } else {
+                        response.setStatusCode(503);
+                        response.setVersion("HTTP/1.1");
+                        response.setStatusText("Сервис по работе с tag недоступен");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                    }
                     break;
                 }
                 case ("user"): {
                     userController = beanFactory.getBean(UserController.class);
-                    userController.buildResponse();
-                    response = userController.getResponse();
+                    if (userController != null) {
+                        userController.buildResponse();
+                        response = userController.getResponse();
+                    } else {
+                        response.setStatusCode(503);
+                        response.setVersion("HTTP/1.1");
+                        response.setStatusText("Сервис по работе с user недоступен");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                    }
                     break;
                 }
                 case ("afisha"): {
                     afishaController = beanFactory.getBean(AfishaController.class);
-                    afishaController.buildResponse();
-                    response = afishaController.getResponse();
+                    if (afishaController != null) {
+                        afishaController.buildResponse();
+                        response = afishaController.getResponse();
+                    } else {
+                        response.setStatusCode(503);
+                        response.setVersion("HTTP/1.1");
+                        response.setStatusText("Сервис по работе с afisha недоступен");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                    }
                     break;
                 }
                 case ("comment"): {
                     commentController = beanFactory.getBean(CommentController.class);
-                    commentController.buildResponse();
-                    response = commentController.getResponse();
+                    if (commentController != null) {
+                        commentController.buildResponse();
+                        response = commentController.getResponse();
+                    } else {
+                        response.setStatusCode(503);
+                        response.setVersion("HTTP/1.1");
+                        response.setStatusText("Сервис по работе с comment недоступен");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                    }
                     break;
                 }
                 default: {
