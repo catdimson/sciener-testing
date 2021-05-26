@@ -2,10 +2,12 @@ package news.web.controllers;
 
 import news.dao.connection.ConnectionPool;
 import news.dao.repositories.*;
+import news.di.container.BeanFactory;
 import news.service.*;
 import news.web.http.HttpRequest;
 import news.web.http.HttpResponse;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,7 +15,6 @@ import java.util.regex.Pattern;
 public class RootController {
     final private HttpRequest request;
     final private ConnectionPool dbPool;
-    final private String pathToConfig;
     private HttpResponse response;
 
     // afisha
@@ -57,11 +58,11 @@ public class RootController {
         this.request = request;
         this.dbPool = dbPool;
         this.response = new HttpResponse();
-        this.pathToConfig = "src/main/resources/applicationContext.xml";
     }
 
-    public HttpResponse getResponse() throws SQLException {
+    public HttpResponse getResponse() throws SQLException, NoSuchFieldException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         String url = request.getPath(false);
+        BeanFactory.setSettings(dbPool, request, "src/main/resources/applicationContext.xml");
         Pattern p = Pattern.compile("/(.+?)/");
         Matcher m = p.matcher(url);
         if (m.find()) {
@@ -107,12 +108,11 @@ public class RootController {
                     break;
                 }
                 case ("tag"): {
-                    tagRepository = new TagRepository(dbPool);
-                    tagService = new TagService(tagRepository);
-                    tagController = new TagController(tagService, request);
+                    tagController = BeanFactory.getInstance().getBean(TagController.class);
                     tagController.buildResponse();
                     response = tagController.getResponse();
                     break;
+
                 }
                 case ("user"): {
                     userRepository = new UserRepository(dbPool);
