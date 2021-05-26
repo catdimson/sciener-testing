@@ -36,7 +36,9 @@ public class XmlBeansConfiguration {
 
         if (document != null) {
             NodeList beanList = document.getElementsByTagName("bean");
-
+            if (beanList.getLength() == 0) {
+                return null;
+            }
             for (int i = 0; i < beanList.getLength(); i++) {
                 Element bean = (Element) beanList.item(i);
                 if (bean.getAttribute("class").equals(currentClass)) {
@@ -52,6 +54,9 @@ public class XmlBeansConfiguration {
                 if (bean.getAttribute("id").equals(ref)) {
                     result = bean.getAttribute("class");
                 }
+            }
+            if (!ref.equals("") && result.equals("")) {
+                return null;
             }
             return result;
         } else {

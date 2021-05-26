@@ -59,19 +59,12 @@ class BeanFactoryTest {
 
     @DisplayName("Создание DI из файла с ошибкой")
     @Test
-    void createDIFromErrorXML() {
+    void createDIFromErrorXML() throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        BeanFactory.setSettings(connectionPool, httpRequest, "src/test/resources/di/errorXML.xml");
+        BeanFactory beanFactory = BeanFactory.getInstance();
 
+        ArticleController articleController = beanFactory.getBean(ArticleController.class);
+
+        assertThat(articleController).as("Файл с некорректными тегами. Объект класса ArticleController должен быть равен null").isNull();
     }
-
-    @DisplayName("Создание DI из файла с одним бином")
-    @Test
-    void createDIFromOneBeanXML() {
-
-    }
-    // создать вручную HttpRequest
-    // создать вручную DBPool
-    // создать вручную Пути до applicationContext.xml
-
-    // сравнивать буду получаемые объекты контроллера с вручную созданными. Что это объекты одно класса.
-
 }
