@@ -1,6 +1,7 @@
 package news.web.http;
 
 import news.NewsApp;
+import news.dao.connection.ConnectionPool;
 import news.dao.connection.DBPool;
 
 import java.io.BufferedReader;
@@ -12,11 +13,7 @@ import java.net.Socket;
 import java.sql.SQLException;
 
 public class WebServer extends Thread {
-    DBPool dbPool = null;
-
-    public WebServer(DBPool connectionPool) throws IOException {
-        this.dbPool = connectionPool;
-    }
+    ConnectionPool dbPool;
 
     public WebServer() {};
 

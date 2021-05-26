@@ -11,56 +11,57 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RootController {
-    HttpRequest request;
-    HttpResponse response = new HttpResponse();
-    ConnectionPool dbPool;
+    final private HttpRequest request;
+    final private ConnectionPool dbPool;
+    final private String pathToConfig;
+    private HttpResponse response;
 
     // afisha
-    AfishaRepository afishaRepository;
-    AfishaService afishaService;
-    AfishaController afishaController;
+    private AfishaRepository afishaRepository;
+    private AfishaService afishaService;
+    private AfishaController afishaController;
     // article
-    ArticleRepository articleRepository;
-    ArticleService articleService;
-    ArticleController articleController;
+    private ArticleRepository articleRepository;
+    private ArticleService articleService;
+    private ArticleController articleController;
     // category
-    CategoryRepository categoryRepository;
-    CategoryService categoryService;
-    CategoryController categoryController;
+    private CategoryRepository categoryRepository;
+    private CategoryService categoryService;
+    private CategoryController categoryController;
     // comment
-    CommentRepository commentRepository;
-    CommentService commentService;
-    CommentController commentController;
+    private CommentRepository commentRepository;
+    private CommentService commentService;
+    private CommentController commentController;
     // group
-    GroupRepository groupRepository;
-    GroupService groupService;
-    GroupController groupController;
+    private GroupRepository groupRepository;
+    private GroupService groupService;
+    private GroupController groupController;
     // mailing
-    MailingRepository mailingRepository;
-    MailingService mailingService;
-    MailingController mailingController;
+    private MailingRepository mailingRepository;
+    private MailingService mailingService;
+    private MailingController mailingController;
     // source
-    SourceRepository sourceRepository;
-    SourceService sourceService;
-    SourceController sourceController;
+    private SourceRepository sourceRepository;
+    private SourceService sourceService;
+    private SourceController sourceController;
     // tag
-    TagRepository tagRepository;
-    TagService tagService;
-    TagController tagController;
+    private TagRepository tagRepository;
+    private TagService tagService;
+    private TagController tagController;
     // user
-    UserRepository userRepository;
-    UserService userService;
-    UserController userController;
+    private UserRepository userRepository;
+    private UserService userService;
+    private UserController userController;
 
     public RootController(HttpRequest request, ConnectionPool dbPool) {
         this.request = request;
         this.dbPool = dbPool;
+        this.response = new HttpResponse();
+        this.pathToConfig = "src/main/resources/applicationContext.xml";
     }
 
     public HttpResponse getResponse() throws SQLException {
         String url = request.getPath(false);
-        System.out.println("RootController: fullUrl - " + request.getPath(true));
-        System.out.println("RootController: url - " + request.getPath(false));
         Pattern p = Pattern.compile("/(.+?)/");
         Matcher m = p.matcher(url);
         if (m.find()) {
