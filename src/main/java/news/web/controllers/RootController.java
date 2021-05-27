@@ -1,140 +1,168 @@
 package news.web.controllers;
 
-import news.dao.connection.DBPool;
-import news.dao.repositories.*;
-import news.service.*;
+import news.dao.connection.ConnectionPool;
+import news.di.container.BeanFactory;
 import news.web.http.HttpRequest;
 import news.web.http.HttpResponse;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RootController {
-    HttpRequest request;
-    HttpResponse response = new HttpResponse();
-    DBPool dbPool;
+    private HttpRequest request;
+    final private ConnectionPool dbPool;
+    private HttpResponse response;
 
-    // afisha
-    AfishaRepository afishaRepository;
-    AfishaService afishaService;
-    AfishaController afishaController;
-    // article
-    ArticleRepository articleRepository;
-    ArticleService articleService;
-    ArticleController articleController;
-    // category
-    CategoryRepository categoryRepository;
-    CategoryService categoryService;
-    CategoryController categoryController;
-    // comment
-    CommentRepository commentRepository;
-    CommentService commentService;
-    CommentController commentController;
-    // group
-    GroupRepository groupRepository;
-    GroupService groupService;
-    GroupController groupController;
-    // mailing
-    MailingRepository mailingRepository;
-    MailingService mailingService;
-    MailingController mailingController;
-    // source
-    SourceRepository sourceRepository;
-    SourceService sourceService;
-    SourceController sourceController;
-    // tag
-    TagRepository tagRepository;
-    TagService tagService;
-    TagController tagController;
-    // user
-    UserRepository userRepository;
-    UserService userService;
-    UserController userController;
+    private AfishaController afishaController;
+    private ArticleController articleController;
+    private CategoryController categoryController;
+    private CommentController commentController;
+    private GroupController groupController;
+    private MailingController mailingController;
+    private SourceController sourceController;
+    private TagController tagController;
+    private UserController userController;
 
-    public RootController(HttpRequest request, DBPool dbPool) {
+    public RootController(HttpRequest request, ConnectionPool dbPool) {
         this.request = request;
         this.dbPool = dbPool;
+        this.response = new HttpResponse();
     }
 
-    public HttpResponse getResponse() throws SQLException {
+    public HttpResponse getResponse() throws SQLException, NoSuchFieldException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         String url = request.getPath(false);
-        System.out.println("RootController: fullUrl - " + request.getPath(true));
-        System.out.println("RootController: url - " + request.getPath(false));
+        BeanFactory.setSettings(dbPool, request, "src/main/resources/applicationContext.xml");
+        BeanFactory beanFactory = BeanFactory.getInstance();
         Pattern p = Pattern.compile("/(.+?)/");
         Matcher m = p.matcher(url);
         if (m.find()) {
             switch (m.group(1)) {
                 case ("article"): {
-                    articleRepository = new ArticleRepository(dbPool);
-                    articleService = new ArticleService(articleRepository);
-                    articleController = new ArticleController(articleService, request);
-                    articleController.buildResponse();
-                    response = articleController.getResponse();
+                    articleController = beanFactory.getBean(ArticleController.class);
+                    if (articleController != null) {
+                        articleController.buildResponse();
+                        response = articleController.getResponse();
+                    } else {
+                        response.setStatusCode(503);
+                        response.setVersion("HTTP/1.1");
+                        response.setStatusText("Сервис по работе с article недоступен");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                    }
                     break;
                 }
                 case ("category"): {
-                    categoryRepository = new CategoryRepository(dbPool);
-                    categoryService = new CategoryService(categoryRepository);
-                    categoryController = new CategoryController(categoryService, request);
-                    categoryController.buildResponse();
-                    response = categoryController.getResponse();
+                    categoryController = beanFactory.getBean(CategoryController.class);
+                    if (categoryController != null) {
+                        categoryController.buildResponse();
+                        response = categoryController.getResponse();
+                    } else {
+                        response.setStatusCode(503);
+                        response.setVersion("HTTP/1.1");
+                        response.setStatusText("Сервис по работе с category недоступен");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                    }
                     break;
                 }
                 case ("group"): {
-                    groupRepository = new GroupRepository(dbPool);
-                    groupService = new GroupService(groupRepository);
-                    groupController = new GroupController(groupService, request);
-                    groupController.buildResponse();
-                    response = groupController.getResponse();
+                    groupController = beanFactory.getBean(GroupController.class);
+                    if (groupController != null) {
+                        groupController.buildResponse();
+                        response = groupController.getResponse();
+                    } else {
+                        response.setStatusCode(503);
+                        response.setVersion("HTTP/1.1");
+                        response.setStatusText("Сервис по работе с group недоступен");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                    }
                     break;
                 }
                 case ("source"): {
-                    sourceRepository = new SourceRepository(dbPool);
-                    sourceService = new SourceService(sourceRepository);
-                    sourceController = new SourceController(sourceService, request);
-                    sourceController.buildResponse();
-                    response = sourceController.getResponse();
+                    sourceController = beanFactory.getBean(SourceController.class);
+                    if (sourceController != null) {
+                        sourceController.buildResponse();
+                        response = sourceController.getResponse();
+                    } else {
+                        response.setStatusCode(503);
+                        response.setVersion("HTTP/1.1");
+                        response.setStatusText("Сервис по работе с source недоступен");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                    }
                     break;
                 }
                 case ("mailing"): {
-                    mailingRepository = new MailingRepository(dbPool);
-                    mailingService = new MailingService(mailingRepository);
-                    mailingController = new MailingController(mailingService, request);
-                    mailingController.buildResponse();
-                    response = mailingController.getResponse();
+                    mailingController = beanFactory.getBean(MailingController.class);
+                    if (mailingController != null) {
+                        mailingController.buildResponse();
+                        response = mailingController.getResponse();
+                    } else {
+                        response.setStatusCode(503);
+                        response.setVersion("HTTP/1.1");
+                        response.setStatusText("Сервис по работе с mailing недоступен");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                    }
                     break;
                 }
                 case ("tag"): {
-                    tagRepository = new TagRepository(dbPool);
-                    tagService = new TagService(tagRepository);
-                    tagController = new TagController(tagService, request);
-                    tagController.buildResponse();
-                    response = tagController.getResponse();
+                    tagController = beanFactory.getBean(TagController.class);
+                    if (tagController != null) {
+                        tagController.buildResponse();
+                        response = tagController.getResponse();
+                    } else {
+                        response.setStatusCode(503);
+                        response.setVersion("HTTP/1.1");
+                        response.setStatusText("Сервис по работе с tag недоступен");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                    }
                     break;
                 }
                 case ("user"): {
-                    userRepository = new UserRepository(dbPool);
-                    userService = new UserService(userRepository);
-                    userController = new UserController(userService, request);
-                    userController.buildResponse();
-                    response = userController.getResponse();
+                    userController = beanFactory.getBean(UserController.class);
+                    if (userController != null) {
+                        userController.buildResponse();
+                        response = userController.getResponse();
+                    } else {
+                        response.setStatusCode(503);
+                        response.setVersion("HTTP/1.1");
+                        response.setStatusText("Сервис по работе с user недоступен");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                    }
                     break;
                 }
                 case ("afisha"): {
-                    afishaRepository = new AfishaRepository(dbPool);
-                    afishaService = new AfishaService(afishaRepository);
-                    afishaController = new AfishaController(afishaService, request);
-                    afishaController.buildResponse();
-                    response = afishaController.getResponse();
+                    afishaController = beanFactory.getBean(AfishaController.class);
+                    if (afishaController != null) {
+                        afishaController.buildResponse();
+                        response = afishaController.getResponse();
+                    } else {
+                        response.setStatusCode(503);
+                        response.setVersion("HTTP/1.1");
+                        response.setStatusText("Сервис по работе с afisha недоступен");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                    }
                     break;
                 }
                 case ("comment"): {
-                    commentRepository = new CommentRepository(dbPool);
-                    commentService = new CommentService(commentRepository);
-                    commentController = new CommentController(commentService, request);
-                    commentController.buildResponse();
-                    response = commentController.getResponse();
+                    commentController = beanFactory.getBean(CommentController.class);
+                    if (commentController != null) {
+                        commentController.buildResponse();
+                        response = commentController.getResponse();
+                    } else {
+                        response.setStatusCode(503);
+                        response.setVersion("HTTP/1.1");
+                        response.setStatusText("Сервис по работе с comment недоступен");
+                        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                        response.setHeader("Pragma", "no-cache");
+                    }
                     break;
                 }
                 default: {

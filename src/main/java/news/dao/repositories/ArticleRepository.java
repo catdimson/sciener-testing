@@ -1,5 +1,6 @@
 package news.dao.repositories;
 
+import news.dao.connection.ConnectionPool;
 import news.dao.connection.DBPool;
 import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Article;
@@ -13,9 +14,9 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 public class ArticleRepository implements ExtendRepository<Article> {
-    final private DBPool connectionPool;
+    final private ConnectionPool connectionPool;
 
-    public ArticleRepository(DBPool connectionPool) {
+    public ArticleRepository(ConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
     }
 

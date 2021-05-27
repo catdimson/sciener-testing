@@ -1,6 +1,6 @@
 package news.dao.repositories;
 
-import news.dao.connection.DBPool;
+import news.dao.connection.ConnectionPool;
 import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Tag;
 
@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TagRepository implements ExtendRepository<Tag> {
-    final private DBPool connectionPool;
+    final private ConnectionPool connectionPool;
 
-    public TagRepository(DBPool connectionPool) {
+    public TagRepository(ConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
     }
 

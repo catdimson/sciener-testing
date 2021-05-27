@@ -1,6 +1,6 @@
 package news.dao.repositories;
 
-import news.dao.connection.DBPool;
+import news.dao.connection.ConnectionPool;
 import news.dao.specifications.ExtendSqlSpecification;
 import news.model.User;
 
@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserRepository implements ExtendRepository<User> {
-    final private DBPool connectionPool;
+    final private ConnectionPool connectionPool;
 
-    public UserRepository(DBPool connectionPool) {
+    public UserRepository(ConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
     }
 

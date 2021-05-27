@@ -1,6 +1,6 @@
 package news.dao.repositories;
 
-import news.dao.connection.DBPool;
+import news.dao.connection.ConnectionPool;
 import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Afisha;
 
@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AfishaRepository implements ExtendRepository<Afisha> {
-    final private DBPool connectionPool;
+    final private ConnectionPool connectionPool;
 
-    public AfishaRepository(DBPool connectionPool) {
+    public AfishaRepository(ConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
     }
 

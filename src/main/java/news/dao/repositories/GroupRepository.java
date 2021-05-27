@@ -1,6 +1,6 @@
 package news.dao.repositories;
 
-import news.dao.connection.DBPool;
+import news.dao.connection.ConnectionPool;
 import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Group;
 
@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GroupRepository implements ExtendRepository<Group> {
-    final private DBPool connectionPool;
+    final private ConnectionPool connectionPool;
 
-    public GroupRepository(DBPool connectionPool) {
+    public GroupRepository(ConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
     }
 

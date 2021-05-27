@@ -34,12 +34,10 @@ public class CategoryController implements Controller {
 
         switch (request.getMethod()) {
             case ("GET"): {
-                System.out.println("Category: GET method");
                 p = Pattern.compile("^/category/$");
                 m = p.matcher(fullUrl);
                 // получение списка всех категорий
                 if (m.find()) {
-                    System.out.println("Category: GET all");
                     FindAllCategorySpecification findAll = new FindAllCategorySpecification();
                     List<Category> findAllCategoryList = categoryService.query(findAll);
                     if (findAllCategoryList.isEmpty()) {

@@ -36,6 +36,7 @@ public class AfishaController implements Controller {
             case ("GET"): {
                 p = Pattern.compile("^/afisha/$");
                 m = p.matcher(fullUrl);
+                System.out.println(fullUrl);
                 // получение списка всех афиш
                 if (m.find()) {
                     FindAllAfishaSpecification findAll = new FindAllAfishaSpecification();

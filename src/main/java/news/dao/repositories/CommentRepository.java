@@ -1,6 +1,6 @@
 package news.dao.repositories;
 
-import news.dao.connection.DBPool;
+import news.dao.connection.ConnectionPool;
 import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Comment;
 
@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Set;
 
 public class CommentRepository implements ExtendRepository<Comment> {
-    final private DBPool connectionPool;
+    final private ConnectionPool connectionPool;
 
-    public CommentRepository(DBPool connectionPool) {
+    public CommentRepository(ConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
     }
 
