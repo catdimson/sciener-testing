@@ -35,7 +35,7 @@ public class TagServlet extends HttpServlet {
         Matcher m = p.matcher(requestURI);
         m.find();
         requestURI = m.group("path");
-        System.out.println("FROM PATTERN: " + requestURI);
+        System.out.println("-----FROM PATTERN STARTING LINE: \n" + requestURI);
         String startingLine = String.format("%s %s %s\n",
                 request.getMethod(),
                 requestURI + (request.getQueryString() == null ? "" : "?" + request.getQueryString()),
@@ -48,13 +48,27 @@ public class TagServlet extends HttpServlet {
             headers += key + ": " + request.getHeader(key) + "\n";
         }
         headers += "\n";
+        System.out.println("-----FROM PATTERN HEADERS: \n" + headers);
         // 3. Воссоздадим тело заголовка для кастомного HttpRequest из HttpServletRequest
         String body = "";
         Scanner scan = new Scanner(request.getInputStream(), StandardCharsets.UTF_8).useDelimiter("\\A");
-        body = (scan.hasNext() ? scan.next() + "\n" : "\n");
+        body = (scan.hasNext() ? scan.next() + "\n" : "");
+        /*System.out.println("scan.next(): " + scan.next());
+        System.out.println("scan.next(): " + scan.next());
+        System.out.println("scan.next(): " + scan.next());
+        System.out.println("scan.next(): " + scan.next());
+        System.out.println("scan.next(): " + scan.next());*/
+        System.out.println("-----FROM PATTERN BODY: \n" + body);
+
+        //String t = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+        //String t = IOUtils.toString(request.getReader());
+        //System.out.println("-----HZ CHTO: \n" + t);
+
+
+
         // 4. Воссоздаем BufferedReader для кастомного HttpRequest
         String requestString = startingLine + headers + body;
-        //System.out.println("REQUEST STRING: \n" + requestString);
+        System.out.println("-----REQUEST STRING: \n" + requestString);
         Reader inputString = new StringReader(requestString);
         BufferedReader rawRequest = new BufferedReader(inputString);
         // 5. ВОЛНИТЕЛЬНЫЙ МОМЕНТ
@@ -107,8 +121,8 @@ public class TagServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
 
+        URL path = getClass().getClassLoader().getResource("applicationContext.xml");
         if (request.getHeader("UnitTest") == null) {
-            URL path = getClass().getClassLoader().getResource("applicationContext.xml");
             BeanFactory.setSettings(new DBPool(), customHttpRequest, path.getPath());
         } else {
             BeanFactory.setSettings(
@@ -117,7 +131,7 @@ public class TagServlet extends HttpServlet {
                             request.getHeader("UserPostgres"),
                             request.getHeader("PasswordPostgres")
                     ),
-                    customHttpRequest, "src/main/resources/applicationContext.xml");
+                    customHttpRequest, path.getPath());
         }
         beanFactory = BeanFactory.getInstance();
 
@@ -133,7 +147,6 @@ public class TagServlet extends HttpServlet {
                 response.setHeader(pair.getKey(), pair.getValue());
             }
             // устанавливаем тело
-            PrintWriter pr = response.getWriter();
 
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
             e.printStackTrace();

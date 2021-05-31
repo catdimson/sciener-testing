@@ -207,23 +207,27 @@ class TagControllerTest {
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
         String expectedResult = "" +
-            "HTTP/1.1 201 Тег создан\n" +
+            "HTTP/1.1 201 \n" +
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
-            "Location: /tag/1/\n";
+            "Location: /tag/1/\n" +
+            "Content-Length: 0\n";
+
 
         String request = "" +
-            "POST /tag/ HTTP/1.1\n" +
+            "POST /blg_kotik_dmitry_war/tag/ HTTP/1.1\n" +
             "Accept: application/json, */*; q=0.01\n" +
             "Content-Type: application/json\n" +
             "Host: 127.0.0.1:8080\n" +
+            "Accept-encoding: gzip, deflate, br\n" +
+            "Content-length: 38\n" +
             "UnitTest: true\n" +
             "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
             "UserPostgres: " + this.container.getUsername() + "\n" +
             "PasswordPostgres: " + this.container.getPassword() + "\n" +
             "\n" +
             "{\n" +
-            "\t\"title\":\"ufc\",\n" +
+            "\t\"title\":\"ufc\"\n" +
             "}\n";
         out.println(request);
         out.flush();
@@ -231,7 +235,11 @@ class TagControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         // сначала сравниваем ответы
