@@ -146,10 +146,10 @@ class AfishaControllerTest {
 
         // ожидаемый результат
         String expectedResult = "" +
-            "HTTP/1.1 200 OK\n" +
+            "HTTP/1.1 200 \n" +
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
-            "Content-Type: application/json; charset=UTF-8\n" +
+            "Content-Type: application/json;charset=UTF-8\n" +
             "\n" +
             "[\n" +
             "{\n" +
@@ -183,15 +183,15 @@ class AfishaControllerTest {
             "\t\"sourceId\":1\n" +
             "}\n" +
             "]\n";
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /afisha/ HTTP/1.1\n" +
+                "GET /blg_kotik_dmitry_war/afisha/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -225,10 +225,10 @@ class AfishaControllerTest {
 
         // ожидаемый результат
         String expectedResult = "" +
-                "HTTP/1.1 200 OK\n" +
+                "HTTP/1.1 200 \n" +
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
-                "Content-Type: application/json; charset=UTF-8\n" +
+                "Content-Type: application/json;charset=UTF-8\n" +
                 "\n" +
                 "[\n" +
                 "{\n" +
@@ -262,15 +262,15 @@ class AfishaControllerTest {
                 "\t\"sourceId\":1\n" +
                 "}\n" +
                 "]\n";
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /afisha?title=title1 HTTP/1.1\n" +
+                "GET /blg_kotik_dmitry_war/afisha?title=title1 HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -304,10 +304,10 @@ class AfishaControllerTest {
 
         // ожидаемый результат
         String expectedResult = "" +
-                "HTTP/1.1 200 OK\n" +
+                "HTTP/1.1 200 \n" +
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
-                "Content-Type: application/json; charset=UTF-8\n" +
+                "Content-Type: application/json;charset=UTF-8\n" +
                 "\n" +
                 "{\n" +
                 "\t\"id\":2,\n" +
@@ -324,15 +324,15 @@ class AfishaControllerTest {
                 "\t\"userId\":1,\n" +
                 "\t\"sourceId\":1\n" +
                 "}";
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /afisha/2/ HTTP/1.1\n" +
+                "GET /blg_kotik_dmitry_war/afisha/2/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -356,20 +356,20 @@ class AfishaControllerTest {
                 "Описание масленичных гуляний", "0", "180", "Центральная площадь, г.Белгород",
                 "89202005544", date, false, 1, 1);
 
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
         String expectedResult = "" +
-            "HTTP/1.1 201 Афиша создана\n" +
+            "HTTP/1.1 201 \n" +
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
             "Location: /afisha/1/\n";
 
         String request = "" +
-            "POST /afisha/ HTTP/1.1\n" +
+            "POST /blg_kotik_dmitry_war/afisha/ HTTP/1.1\n" +
             "Accept: application/json, */*; q=0.01\n" +
             "Content-Type: application/json\n" +
-            "Host: 127.0.0.1:5000\n" +
+            "Host: 127.0.0.1:8080\n" +
             "UnitTest: true\n" +
             "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
             "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -435,19 +435,19 @@ class AfishaControllerTest {
                 "timing1", "place1", "phone1", Timestamp.valueOf(date.atStartOfDay()), true, 1, 1);
         statement.executeUpdate(sqlInsertAfisha);
 
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
         String expectedResult = "" +
-                "HTTP/1.1 204 Нет данных\n" +
+                "HTTP/1.1 204 \n" +
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n";
 
         String request = "" +
-                "PUT /afisha/1/ HTTP/1.1\n" +
+                "PUT /blg_kotik_dmitry_war/afisha/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -511,19 +511,19 @@ class AfishaControllerTest {
                 "timing1", "place1", "phone1", Timestamp.valueOf(date.atStartOfDay()), true, 1, 1);
         statement.executeUpdate(sqlInsertAfisha);
 
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
         String expectedResult = "" +
-                "HTTP/1.1 204 Нет данных\n" +
+                "HTTP/1.1 204 \n" +
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n";
 
         String request = "" +
-                "DELETE /afisha/1/ HTTP/1.1\n" +
+                "DELETE /blg_kotik_dmitry_war/afisha/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
