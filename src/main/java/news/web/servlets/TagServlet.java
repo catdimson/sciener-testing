@@ -159,8 +159,8 @@ public class TagServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
 
+        URL path = getClass().getClassLoader().getResource("applicationContext.xml");
         if (request.getHeader("UnitTest") == null) {
-            URL path = getClass().getClassLoader().getResource("applicationContext.xml");
             BeanFactory.setSettings(new DBPool(), customHttpRequest, path.getPath());
         } else {
             BeanFactory.setSettings(
@@ -169,7 +169,7 @@ public class TagServlet extends HttpServlet {
                             request.getHeader("UserPostgres"),
                             request.getHeader("PasswordPostgres")
                     ),
-                    customHttpRequest, "src/main/resources/applicationContext.xml");
+                    customHttpRequest, path.getPath());
         }
         beanFactory = BeanFactory.getInstance();
 
