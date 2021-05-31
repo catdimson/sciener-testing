@@ -43,6 +43,7 @@ public class TagSerializer implements Serializer<Tag> {
         /*for (int i = 0; i < lines.length; i++) {
             System.out.println(i + ":" + lines[i]);
         }*/
+        System.out.println("json: \n" + json);
 
         // id
         Pattern p = Pattern.compile("\"id\":.+");

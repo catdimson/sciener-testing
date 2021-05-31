@@ -55,10 +55,11 @@ class TagControllerTest {
 
         // ожидаемый результат
         String expectedResult = "" +
-            "HTTP/1.1 200 OK\n" +
+            "HTTP/1.1 200 \n" +
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
-            "Content-Type: application/json; charset=UTF-8\n" +
+            "Content-Type: application/json;charset=UTF-8\n" +
+            "Content-Length: 68\n" +
             "\n" +
             "[\n" +
             "{\n" +
@@ -69,16 +70,16 @@ class TagControllerTest {
             "\t\"id\":2,\n" +
             "\t\"title\":\"балет\"\n" +
             "}\n" +
-            "]\n";
-        clientSocket = new Socket("127.0.0.1", 5000);
+            "]";
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /tag/ HTTP/1.1\n" +
+                "GET /blg_kotik_dmitry_war/tag/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -89,7 +90,11 @@ class TagControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
@@ -104,26 +109,27 @@ class TagControllerTest {
 
         // ожидаемый результат
         String expectedResult = "" +
-                "HTTP/1.1 200 OK\n" +
+                "HTTP/1.1 200 \n" +
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
-                "Content-Type: application/json; charset=UTF-8\n" +
+                "Content-Type: application/json;charset=UTF-8\n" +
+                "Content-Length: 32\n" +
                 "\n" +
                 "[\n" +
                 "{\n" +
                 "\t\"id\":1,\n" +
                 "\t\"title\":\"ufc\"\n" +
                 "}\n" +
-                "]\n";
-        clientSocket = new Socket("127.0.0.1", 5000);
+                "]";
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /tag?title=ufc HTTP/1.1\n" +
+                "GET /blg_kotik_dmitry_war/tag?title=ufc HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -134,7 +140,11 @@ class TagControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
@@ -149,25 +159,26 @@ class TagControllerTest {
 
         // ожидаемый результат
         String expectedResult = "" +
-                "HTTP/1.1 200 OK\n" +
+                "HTTP/1.1 200 \n" +
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
-                "Content-Type: application/json; charset=UTF-8\n" +
+                "Content-Type: application/json;charset=UTF-8\n" +
+                "Content-Length: 27\n" +
                 "\n" +
                 "{\n" +
                 "\t\"id\":1,\n" +
                 "\t\"title\":\"ufc\"\n" +
                 "}";
 
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /tag/1/ HTTP/1.1\n" +
+                "GET /blg_kotik_dmitry_war/tag/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -178,7 +189,11 @@ class TagControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
@@ -188,7 +203,7 @@ class TagControllerTest {
     void buildResponsePOSTMethod() throws SQLException, IOException {
         Tag tag = new Tag("ufc");
 
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
         String expectedResult = "" +
@@ -201,7 +216,7 @@ class TagControllerTest {
             "POST /tag/ HTTP/1.1\n" +
             "Accept: application/json, */*; q=0.01\n" +
             "Content-Type: application/json\n" +
-            "Host: 127.0.0.1:5000\n" +
+            "Host: 127.0.0.1:8080\n" +
             "UnitTest: true\n" +
             "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
             "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -239,7 +254,7 @@ class TagControllerTest {
         statement.executeUpdate(sqlInsertTag);
         Tag tag = new Tag("балет");
 
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
         String expectedResult = "" +
@@ -251,7 +266,7 @@ class TagControllerTest {
                 "PUT /tag/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -288,7 +303,7 @@ class TagControllerTest {
         String sqlInsertTag= "INSERT INTO tag (title) VALUES ('ufc');";
         statement.executeUpdate(sqlInsertTag);
 
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
         String expectedResult = "" +
@@ -300,7 +315,7 @@ class TagControllerTest {
                 "DELETE /tag/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +

@@ -6,7 +6,6 @@ import news.web.controllers.TagController;
 import news.web.http.HttpRequest;
 import news.web.http.HttpResponse;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -27,10 +26,8 @@ public class TagServlet extends HttpServlet {
 
     protected BeanFactory beanFactory;
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private HttpRequest convertToCustomHttpRequest(HttpServletRequest request) throws IOException {
         // 1. Воссоздадим стартовую строку для кастомного HttpRequest из HttpServletRequest
-        response.setCharacterEncoding("UTF-8");
         request.setCharacterEncoding("UTF-8");
         String requestURI = request.getRequestURI();
         System.out.println("FROM requestURl: " + requestURI);
@@ -57,11 +54,58 @@ public class TagServlet extends HttpServlet {
         body = (scan.hasNext() ? scan.next() + "\n" : "\n");
         // 4. Воссоздаем BufferedReader для кастомного HttpRequest
         String requestString = startingLine + headers + body;
-        System.out.println("REQUEST STRING: \n" + requestString);
+        //System.out.println("REQUEST STRING: \n" + requestString);
         Reader inputString = new StringReader(requestString);
         BufferedReader rawRequest = new BufferedReader(inputString);
         // 5. ВОЛНИТЕЛЬНЫЙ МОМЕНТ
         HttpRequest customHttpRequest = new HttpRequest(rawRequest);
+        return  customHttpRequest;
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setCharacterEncoding("UTF-8");
+        HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
+
+        URL path = getClass().getClassLoader().getResource("applicationContext.xml");
+        if (request.getHeader("UnitTest") == null) {
+            BeanFactory.setSettings(new DBPool(), customHttpRequest, path.getPath());
+        } else {
+            BeanFactory.setSettings(
+                    new DBPool(
+                            request.getHeader("UrlPostgres"),
+                            request.getHeader("UserPostgres"),
+                            request.getHeader("PasswordPostgres")
+                    ),
+                    customHttpRequest, path.getPath());
+        }
+        beanFactory = BeanFactory.getInstance();
+
+        try {
+            TagController tagController = beanFactory.getBean(TagController.class);
+            tagController.buildResponse();
+            HttpResponse customHttpResponse = tagController.getResponse();
+            // устанавливает код статуса
+            response.setStatus(customHttpResponse.getStatusCode());
+            // устанавливаем заголовки
+            Map<String, String> customHeaders = customHttpResponse.getHeaders();
+            for (Map.Entry<String, String> pair: customHeaders.entrySet()) {
+                response.setHeader(pair.getKey(), pair.getValue());
+            }
+            // устанавливаем тело
+            PrintWriter pr = response.getWriter();
+            pr.write(customHttpResponse.getBody());
+
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setCharacterEncoding("UTF-8");
+        HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
 
         if (request.getHeader("UnitTest") == null) {
             URL path = getClass().getClassLoader().getResource("applicationContext.xml");
@@ -90,7 +134,6 @@ public class TagServlet extends HttpServlet {
             }
             // устанавливаем тело
             PrintWriter pr = response.getWriter();
-            pr.write(customHttpResponse.getBody());
 
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
             e.printStackTrace();
@@ -99,63 +142,13 @@ public class TagServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        //System.out.println("HELLO WORLD");
-        //BufferedReader rawRequest = new BufferedReader(new InputStreamReader(request.getInputStream()));
-        //Scanner sc = new Scanner()
-        /*System.out.println("1. Method: " + request.getMethod());
-        System.out.println("2. Uri: " + request.getRequestURI());
-        System.out.println("3. Scheme: " + request.getScheme());
-        System.out.println("4. ServletContext: " + request.getServletContext());
-        System.out.println("5. getQueryString: " + request.getQueryString());
-        System.out.println("6. : " + request.getPathInfo());
-        System.out.println("7. : " + request.getContextPath());
-        System.out.println("8. : " + request.getServletPath());
-        System.out.println("rawRequest всё таки получили");*/
-        /*Scanner s = new Scanner(request.getInputStream(), StandardCharsets.UTF_8).useDelimiter("\\A");
-        while (s.hasNext()) {
-            System.out.println("Read from scanner: " + s.next());
-        }*/
-        //HttpRequest customHttpRequest = new HttpRequest(rawRequest);
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setCharacterEncoding("UTF-8");
+        HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
 
-        // 1. Воссоздадим стартовую строку для кастомного HttpRequest из HttpServletRequest
-        String startingLine = String.format("%s %s %s\n",
-                request.getMethod(),
-                request.getRequestURI() + (request.getQueryString() == null ? "" : "?" + request.getQueryString()),
-                request.getScheme().toUpperCase());
-        //System.out.println("RESULT: " + startingLine);
-        // 2. Воссоздаем заголовки для кастомного HttpRequest из HttpServletRequest
-        String headers = "";
-        Enumeration<String> headersKeys = request.getHeaderNames();
-        while (headersKeys.hasMoreElements()) {
-            String key = headersKeys.nextElement();
-            headers += key + ": " + request.getHeader(key) + "\n";
-        }
-        headers += "\n";
-        // 3. Воссоздадим тело заголовка для кастомного HttpRequest из HttpServletRequest
-        String body = "";
-        Scanner scan = new Scanner(request.getInputStream(), StandardCharsets.UTF_8).useDelimiter("\\A");
-        body = (scan.hasNext() ? scan.next() + "\n" : "\n");
-        // 4. Воссоздаем BufferedReader для кастомного HttpRequest
-        String requestString = startingLine + headers + body;
-        System.out.println("REQUEST STRING: \n" + requestString);
-        Reader inputString = new StringReader(requestString);
-        BufferedReader rawRequest = new BufferedReader(inputString);
-        // 5. ВОЛНИТЕЛЬНЫЙ МОМЕНТ
-        HttpRequest httpRequest = new HttpRequest(rawRequest);
-        System.out.println("---------------------------- FROM CUSTOM REQUEST ----------------------------------");
-        System.out.println("version: " + httpRequest.getVersion());
-        System.out.println("method: " + httpRequest.getMethod());
-        System.out.println("body: " + httpRequest.getBody());
-        System.out.println("version: " + httpRequest.getVersion());
-
-
-
-
-
-
-        /*if (request.getHeader("UnitTest") == null) {
-            BeanFactory.setSettings(new DBPool(), request, "src/main/resources/applicationContext.xml");
+        if (request.getHeader("UnitTest") == null) {
+            URL path = getClass().getClassLoader().getResource("applicationContext.xml");
+            BeanFactory.setSettings(new DBPool(), customHttpRequest, path.getPath());
         } else {
             BeanFactory.setSettings(
                     new DBPool(
@@ -163,7 +156,7 @@ public class TagServlet extends HttpServlet {
                             request.getHeader("UserPostgres"),
                             request.getHeader("PasswordPostgres")
                     ),
-                    request, "src/main/resources/applicationContext.xml");
+                    customHttpRequest, "src/main/resources/applicationContext.xml");
         }
         beanFactory = BeanFactory.getInstance();
 
@@ -179,19 +172,48 @@ public class TagServlet extends HttpServlet {
                 response.setHeader(pair.getKey(), pair.getValue());
             }
             // устанавливаем тело
+            PrintWriter pr = response.getWriter();
 
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | SQLException e) {
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
             e.printStackTrace();
-        }*/
+        }
+    }
 
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setCharacterEncoding("UTF-8");
+        HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
 
-        /*PrintWriter pw = response.getWriter();
+        if (request.getHeader("UnitTest") == null) {
+            URL path = getClass().getClassLoader().getResource("applicationContext.xml");
+            BeanFactory.setSettings(new DBPool(), customHttpRequest, path.getPath());
+        } else {
+            BeanFactory.setSettings(
+                    new DBPool(
+                            request.getHeader("UrlPostgres"),
+                            request.getHeader("UserPostgres"),
+                            request.getHeader("PasswordPostgres")
+                    ),
+                    customHttpRequest, "src/main/resources/applicationContext.xml");
+        }
+        beanFactory = BeanFactory.getInstance();
 
-        pw.println("{\n");
-        pw.println("\t\"id\":2,\n");
-        pw.println("\t\"title\":\"hello world 2!\"\n");
-        pw.println("\t\"Переданный параметр\":\"\"" + request.getHeader("NotExistHeader") + "\n");
-        pw.println("\t\"Connection\":\"\"" + request.getHeader("Connection") + "\n");
-        pw.println("}\n");*/
+        try {
+            TagController tagController = beanFactory.getBean(TagController.class);
+            tagController.buildResponse();
+            HttpResponse customHttpResponse = tagController.getResponse();
+            // устанавливает код статуса
+            response.setStatus(customHttpResponse.getStatusCode());
+            // устанавливаем заголовки
+            Map<String, String> customHeaders = customHttpResponse.getHeaders();
+            for (Map.Entry<String, String> pair: customHeaders.entrySet()) {
+                response.setHeader(pair.getKey(), pair.getValue());
+            }
+            // устанавливаем тело
+            PrintWriter pr = response.getWriter();
+
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
     }
 }
