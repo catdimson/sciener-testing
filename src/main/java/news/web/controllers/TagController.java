@@ -29,9 +29,6 @@ public class TagController implements Controller {
     public void buildResponse() throws SQLException {
         String fullUrl = request.getPath(true);
         String url = request.getPath(false);
-        System.out.println("TagController(fullUrl): " + fullUrl);
-        System.out.println("TagController(url): " + url);
-        System.out.println("TagController(request.getMethod()): " + request.getMethod());
         Pattern p;
         Matcher m;
 

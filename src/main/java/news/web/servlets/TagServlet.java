@@ -26,54 +26,48 @@ public class TagServlet extends HttpServlet {
 
     protected BeanFactory beanFactory;
 
-    private HttpRequest convertToCustomHttpRequest(HttpServletRequest request) throws IOException {
-        // 1. Воссоздадим стартовую строку для кастомного HttpRequest из HttpServletRequest
-        request.setCharacterEncoding("UTF-8");
+    private String extractPath(HttpServletRequest request) {
         String requestURI = request.getRequestURI();
-        System.out.println("FROM requestURl: " + requestURI);
         Pattern p = Pattern.compile("^/blg_kotik_dmitry_war(?<path>(.+))");
         Matcher m = p.matcher(requestURI);
         m.find();
         requestURI = m.group("path");
-        System.out.println("-----FROM PATTERN STARTING LINE: \n" + requestURI);
-        String startingLine = String.format("%s %s %s\n",
-                request.getMethod(),
+        String startingLine = String.format("%s %s %s\n", request.getMethod(),
                 requestURI + (request.getQueryString() == null ? "" : "?" + request.getQueryString()),
                 request.getScheme().toUpperCase());
-        // 2. Воссоздаем заголовки для кастомного HttpRequest из HttpServletRequest
-        String headers = "";
+        return startingLine;
+    }
+
+    private String extractHeaders(HttpServletRequest request) {
+        StringBuilder headers = new StringBuilder();
         Enumeration<String> headersKeys = request.getHeaderNames();
         while (headersKeys.hasMoreElements()) {
             String key = headersKeys.nextElement();
-            headers += key + ": " + request.getHeader(key) + "\n";
+            headers.append(key).append(": ").append(request.getHeader(key)).append("\n");
         }
-        headers += "\n";
-        System.out.println("-----FROM PATTERN HEADERS: \n" + headers);
-        // 3. Воссоздадим тело заголовка для кастомного HttpRequest из HttpServletRequest
-        String body = "";
+        headers.append("\n");
+        return headers.toString();
+    }
+
+    private String extractBody(HttpServletRequest request) throws IOException {
         Scanner scan = new Scanner(request.getInputStream(), StandardCharsets.UTF_8).useDelimiter("\\A");
-        body = (scan.hasNext() ? scan.next() + "\n" : "");
-        /*System.out.println("scan.next(): " + scan.next());
-        System.out.println("scan.next(): " + scan.next());
-        System.out.println("scan.next(): " + scan.next());
-        System.out.println("scan.next(): " + scan.next());
-        System.out.println("scan.next(): " + scan.next());*/
-        System.out.println("-----FROM PATTERN BODY: \n" + body);
+        return (scan.hasNext() ? scan.next() + "\n" : "");
+    }
 
-        //String t = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-        //String t = IOUtils.toString(request.getReader());
-        //System.out.println("-----HZ CHTO: \n" + t);
-
-
-
+    private HttpRequest convertToCustomHttpRequest(HttpServletRequest request) throws IOException {
+        request.setCharacterEncoding("UTF-8");
+        // 1. Воссоздадим стартовую строку для кастомного HttpRequest из HttpServletRequest
+        String startingLine = extractPath(request);
+        // 2. Воссоздаем заголовки для кастомного HttpRequest из HttpServletRequest
+        String headers = extractHeaders(request);
+        // 3. Воссоздадим тело заголовка для кастомного HttpRequest из HttpServletRequest
+        String body = extractBody(request);
         // 4. Воссоздаем BufferedReader для кастомного HttpRequest
         String requestString = startingLine + headers + body;
-        System.out.println("-----REQUEST STRING: \n" + requestString);
         Reader inputString = new StringReader(requestString);
         BufferedReader rawRequest = new BufferedReader(inputString);
-        // 5. ВОЛНИТЕЛЬНЫЙ МОМЕНТ
-        HttpRequest customHttpRequest = new HttpRequest(rawRequest);
-        return  customHttpRequest;
+        // 5. Создаем кастомный HttpRequest
+        return new HttpRequest(rawRequest);
     }
 
     @Override
@@ -109,11 +103,9 @@ public class TagServlet extends HttpServlet {
             // устанавливаем тело
             PrintWriter pr = response.getWriter();
             pr.write(customHttpResponse.getBody());
-
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
@@ -146,12 +138,9 @@ public class TagServlet extends HttpServlet {
             for (Map.Entry<String, String> pair: customHeaders.entrySet()) {
                 response.setHeader(pair.getKey(), pair.getValue());
             }
-            // устанавливаем тело
-
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
@@ -184,9 +173,6 @@ public class TagServlet extends HttpServlet {
             for (Map.Entry<String, String> pair: customHeaders.entrySet()) {
                 response.setHeader(pair.getKey(), pair.getValue());
             }
-            // устанавливаем тело
-            PrintWriter pr = response.getWriter();
-
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
             e.printStackTrace();
         }
@@ -222,9 +208,6 @@ public class TagServlet extends HttpServlet {
             for (Map.Entry<String, String> pair: customHeaders.entrySet()) {
                 response.setHeader(pair.getKey(), pair.getValue());
             }
-            // устанавливаем тело
-            PrintWriter pr = response.getWriter();
-
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
             e.printStackTrace();
         }
