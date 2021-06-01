@@ -2,7 +2,7 @@ package news.web.servlets;
 
 import news.dao.connection.DBPool;
 import news.di.container.BeanFactory;
-import news.web.controllers.ArticleController;
+import news.web.controllers.AfishaController;
 import news.web.http.HttpRequest;
 import news.web.http.HttpResponse;
 
@@ -21,8 +21,8 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@WebServlet(name="ArticleServlet", urlPatterns={"/article/*", "/article/"})
-public class ArticleServlet extends HttpServlet {
+@WebServlet(name="AfishaServlet", urlPatterns={"/afisha/*", "/afisha/"})
+public class AfishaServlet extends HttpServlet {
 
     protected BeanFactory beanFactory;
 
@@ -46,7 +46,6 @@ public class ArticleServlet extends HttpServlet {
             headers.append(key).append(": ").append(request.getHeader(key)).append("\n");
         }
         headers.append("\n");
-        System.out.println(headers);
         return headers.toString();
     }
 
@@ -91,9 +90,9 @@ public class ArticleServlet extends HttpServlet {
         beanFactory = BeanFactory.getInstance();
 
         try {
-            ArticleController articleController = beanFactory.getBean(ArticleController.class);
-            articleController.buildResponse();
-            HttpResponse customHttpResponse = articleController.getResponse();
+            AfishaController afishaController = beanFactory.getBean(AfishaController.class);
+            afishaController.buildResponse();
+            HttpResponse customHttpResponse = afishaController.getResponse();
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -129,9 +128,9 @@ public class ArticleServlet extends HttpServlet {
         beanFactory = BeanFactory.getInstance();
 
         try {
-            ArticleController articleController = beanFactory.getBean(ArticleController.class);
-            articleController.buildResponse();
-            HttpResponse customHttpResponse = articleController.getResponse();
+            AfishaController afishaController = beanFactory.getBean(AfishaController.class);
+            afishaController.buildResponse();
+            HttpResponse customHttpResponse = afishaController.getResponse();
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -164,9 +163,9 @@ public class ArticleServlet extends HttpServlet {
         beanFactory = BeanFactory.getInstance();
 
         try {
-            ArticleController articleController = beanFactory.getBean(ArticleController.class);
-            articleController.buildResponse();
-            HttpResponse customHttpResponse = articleController.getResponse();
+            AfishaController afishaController = beanFactory.getBean(AfishaController.class);
+            afishaController.buildResponse();
+            HttpResponse customHttpResponse = afishaController.getResponse();
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -199,9 +198,9 @@ public class ArticleServlet extends HttpServlet {
         beanFactory = BeanFactory.getInstance();
 
         try {
-            ArticleController articleController = beanFactory.getBean(ArticleController.class);
-            articleController.buildResponse();
-            HttpResponse customHttpResponse = articleController.getResponse();
+            AfishaController afishaController = beanFactory.getBean(AfishaController.class);
+            afishaController.buildResponse();
+            HttpResponse customHttpResponse = afishaController.getResponse();
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки

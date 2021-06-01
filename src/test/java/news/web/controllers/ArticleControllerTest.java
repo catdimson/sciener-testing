@@ -8,11 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.time.LocalDate;
 
@@ -233,6 +231,7 @@ class ArticleControllerTest {
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
             "Content-Type: application/json;charset=UTF-8\n" +
+            "Content-Length: 955\n" +
             "\n" +
             "[\n" +
             "{\n" +
@@ -295,7 +294,7 @@ class ArticleControllerTest {
             "\t\t4\n" +
             "\t]\n" +
             "}\n" +
-            "]\n";
+            "]";
         clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
@@ -419,19 +418,23 @@ class ArticleControllerTest {
                 "\t]\n" +
                 "}\n" +
                 "]\n";
-        clientSocket = new Socket("127.0.0.1", 8080);
+        clientSocket = new Socket("localhost", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
+        //out = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream(), StandardCharsets.UTF_8), true);
+        DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
 
         String request = "" +
                 "GET /blg_kotik_dmitry_war/article?title=Заголовок1 HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
-                "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:8080\n" +
+                "Content-Type: application/json;charset=UTF-8\n" +
+                "Content-Length: 0\n" +
+                "Host: localhost:8080\n" +
+                "Accept-encoding: gzip, deflate, br\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
                 "PasswordPostgres: " + this.container.getPassword() + "\n";
+        dos.write(request.getBytes(StandardCharsets.UTF_8));
         out.println(request);
         out.flush();
 
