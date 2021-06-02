@@ -22,6 +22,7 @@ public class HttpRequest implements Request {
 
         // получаем данные строки запроса
         requestLine = rawRequest.readLine();
+        System.out.println(requestLine);
         String[] requestPaths = requestLine.split(" ");
         method = requestPaths[0];
         version = requestPaths[2];
@@ -55,11 +56,12 @@ public class HttpRequest implements Request {
         }
 
         // получаем тело запроса
-        if (!method.equals("GET") && !method.equals("DELETE")) {
-            while (rawRequest.ready()) {
-                String line = rawRequest.readLine();
-                body.append(line).append("\n");
+        while (rawRequest.ready()) {
+            String line = rawRequest.readLine();
+            if (line == null) {
+                break;
             }
+            body.append(line).append("\n");
         }
     }
 

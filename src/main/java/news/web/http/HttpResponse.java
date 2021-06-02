@@ -17,6 +17,10 @@ public class HttpResponse implements Response {
         this.statusCode = statusCode;
     }
 
+    public int getStatusCode() {
+        return this.statusCode;
+    }
+
     @Override
     public void setStatusText(String statusText) {
         this.statusText = statusText;
@@ -34,6 +38,14 @@ public class HttpResponse implements Response {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public String getBody() {
+        return this.body;
+    }
+
+    public Map<String, String> getHeaders() {
+        return this.headers;
     }
 
     @Override

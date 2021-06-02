@@ -56,10 +56,10 @@ class MailingControllerTest {
 
         // ожидаемый результат
         String expectedResult = "" +
-            "HTTP/1.1 200 OK\n" +
+            "HTTP/1.1 200 \n" +
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
-            "Content-Type: application/json; charset=UTF-8\n" +
+            "Content-Type: application/json;charset=UTF-8\n" +
             "\n" +
             "[\n" +
             "{\n" +
@@ -71,15 +71,15 @@ class MailingControllerTest {
             "\t\"email\":\"test2@mail.ru\"\n" +
             "}\n" +
             "]\n";
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /mailing/ HTTP/1.1\n" +
+                "GET /blg_kotik_dmitry_war/mailing/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -90,7 +90,11 @@ class MailingControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
@@ -105,10 +109,10 @@ class MailingControllerTest {
 
         // ожидаемый результат
         String expectedResult = "" +
-                "HTTP/1.1 200 OK\n" +
+                "HTTP/1.1 200 \n" +
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
-                "Content-Type: application/json; charset=UTF-8\n" +
+                "Content-Type: application/json;charset=UTF-8\n" +
                 "\n" +
                 "[\n" +
                 "{\n" +
@@ -116,15 +120,15 @@ class MailingControllerTest {
                 "\t\"email\":\"test@mail.ru\"\n" +
                 "}\n" +
                 "]\n";
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /mailing?email=test@mail.ru HTTP/1.1\n" +
+                "GET /blg_kotik_dmitry_war/mailing?email=test@mail.ru HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -135,7 +139,11 @@ class MailingControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
@@ -150,25 +158,25 @@ class MailingControllerTest {
 
         // ожидаемый результат
         String expectedResult = "" +
-                "HTTP/1.1 200 OK\n" +
+                "HTTP/1.1 200 \n" +
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
-                "Content-Type: application/json; charset=UTF-8\n" +
+                "Content-Type: application/json;charset=UTF-8\n" +
                 "\n" +
                 "{\n" +
                 "\t\"id\":1,\n" +
                 "\t\"email\":\"test@mail.ru\"\n" +
                 "}";
 
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /mailing/1/ HTTP/1.1\n" +
+                "GET /blg_kotik_dmitry_war/mailing/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -179,7 +187,11 @@ class MailingControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
@@ -189,20 +201,20 @@ class MailingControllerTest {
     void buildResponsePOSTMethod() throws SQLException, IOException {
         Mailing mailing = new Mailing("test@mail.ru");
 
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
         String expectedResult = "" +
-            "HTTP/1.1 201 Рассылка создана\n" +
+            "HTTP/1.1 201 \n" +
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
             "Location: /mailing/1/\n";
 
         String request = "" +
-            "POST /mailing/ HTTP/1.1\n" +
+            "POST /blg_kotik_dmitry_war/mailing/ HTTP/1.1\n" +
             "Accept: application/json, */*; q=0.01\n" +
             "Content-Type: application/json\n" +
-            "Host: 127.0.0.1:5000\n" +
+            "Host: 127.0.0.1:8080\n" +
             "UnitTest: true\n" +
             "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
             "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -217,7 +229,11 @@ class MailingControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         // сначала сравниваем ответы
@@ -240,19 +256,19 @@ class MailingControllerTest {
         statement.executeUpdate(sqlInsertMailing);
         Mailing mailing = new Mailing("test2@mail.ru");
 
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
         String expectedResult = "" +
-                "HTTP/1.1 204 Нет данных\n" +
+                "HTTP/1.1 204 \n" +
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n";
 
         String request = "" +
-                "PUT /mailing/1/ HTTP/1.1\n" +
+                "PUT /blg_kotik_dmitry_war/mailing/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -268,7 +284,11 @@ class MailingControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         // сначала сравниваем ответы
@@ -289,19 +309,19 @@ class MailingControllerTest {
         String sqlInsertMailing = "INSERT INTO mailing (email) VALUES ('test@mail.ru');";
         statement.executeUpdate(sqlInsertMailing);
 
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
         String expectedResult = "" +
-                "HTTP/1.1 204 Нет данных\n" +
+                "HTTP/1.1 204 \n" +
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n";
 
         String request = "" +
-                "DELETE /mailing/1/ HTTP/1.1\n" +
+                "DELETE /blg_kotik_dmitry_war/mailing/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -312,7 +332,11 @@ class MailingControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         // сначала сравниваем ответы

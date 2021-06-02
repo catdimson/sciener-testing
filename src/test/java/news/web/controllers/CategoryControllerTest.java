@@ -55,10 +55,10 @@ class CategoryControllerTest {
 
         // ожидаемый результат
         String expectedResult = "" +
-            "HTTP/1.1 200 OK\n" +
+            "HTTP/1.1 200 \n" +
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
-            "Content-Type: application/json; charset=UTF-8\n" +
+            "Content-Type: application/json;charset=UTF-8\n" +
             "\n" +
             "[\n" +
             "{\n" +
@@ -70,15 +70,15 @@ class CategoryControllerTest {
             "\t\"title\":\"Политика\"\n" +
             "}\n" +
             "]\n";
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /category/ HTTP/1.1\n" +
+                "GET /blg_kotik_dmitry_war/category/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -89,7 +89,11 @@ class CategoryControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
@@ -104,10 +108,10 @@ class CategoryControllerTest {
 
         // ожидаемый результат
         String expectedResult = "" +
-                "HTTP/1.1 200 OK\n" +
+                "HTTP/1.1 200 \n" +
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
-                "Content-Type: application/json; charset=UTF-8\n" +
+                "Content-Type: application/json;charset=UTF-8\n" +
                 "\n" +
                 "[\n" +
                 "{\n" +
@@ -115,15 +119,15 @@ class CategoryControllerTest {
                 "\t\"title\":\"Спорт\"\n" +
                 "}\n" +
                 "]\n";
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /category?title=Спорт HTTP/1.1\n" +
+                "GET /blg_kotik_dmitry_war/category?title=Спорт HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -134,7 +138,11 @@ class CategoryControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
@@ -149,25 +157,25 @@ class CategoryControllerTest {
 
         // ожидаемый результат
         String expectedResult = "" +
-                "HTTP/1.1 200 OK\n" +
+                "HTTP/1.1 200 \n" +
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
-                "Content-Type: application/json; charset=UTF-8\n" +
+                "Content-Type: application/json;charset=UTF-8\n" +
                 "\n" +
                 "{\n" +
                 "\t\"id\":1,\n" +
                 "\t\"title\":\"Спорт\"\n" +
                 "}";
 
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /category/1/ HTTP/1.1\n" +
+                "GET /blg_kotik_dmitry_war/category/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -178,7 +186,11 @@ class CategoryControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
@@ -188,20 +200,20 @@ class CategoryControllerTest {
     void buildResponsePOSTMethod() throws SQLException, IOException {
         Category category = new Category("Спорт");
 
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
         String expectedResult = "" +
-            "HTTP/1.1 201 Категория создана\n" +
+            "HTTP/1.1 201 \n" +
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
             "Location: /category/1/\n";
 
         String request = "" +
-            "POST /category/ HTTP/1.1\n" +
+            "POST /blg_kotik_dmitry_war/category/ HTTP/1.1\n" +
             "Accept: application/json, */*; q=0.01\n" +
             "Content-Type: application/json\n" +
-            "Host: 127.0.0.1:5000\n" +
+            "Host: 127.0.0.1:8080\n" +
             "UnitTest: true\n" +
             "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
             "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -216,7 +228,11 @@ class CategoryControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         // сначала сравниваем ответы
@@ -239,19 +255,19 @@ class CategoryControllerTest {
         statement.executeUpdate(sqlInsertGroup);
         Category category = new Category("Редактор");
 
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
         String expectedResult = "" +
-                "HTTP/1.1 204 Нет данных\n" +
+                "HTTP/1.1 204 \n" +
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n";
 
         String request = "" +
-                "PUT /category/1/ HTTP/1.1\n" +
+                "PUT /blg_kotik_dmitry_war/category/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -267,7 +283,11 @@ class CategoryControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         // сначала сравниваем ответы
@@ -288,19 +308,19 @@ class CategoryControllerTest {
         String sqlInsertCategory = "INSERT INTO category (title) VALUES ('Спорт');";
         statement.executeUpdate(sqlInsertCategory);
 
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
         String expectedResult = "" +
-                "HTTP/1.1 204 Нет данных\n" +
+                "HTTP/1.1 204 \n" +
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n";
 
         String request = "" +
-                "DELETE /category/1/ HTTP/1.1\n" +
+                "DELETE /blg_kotik_dmitry_war/blg_kotik_dmitry_war/category/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -311,7 +331,11 @@ class CategoryControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         // сначала сравниваем ответы

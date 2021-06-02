@@ -1,3 +1,5 @@
 .idea/
 target/
 out/
+src/main/java/libs/
+*.jar

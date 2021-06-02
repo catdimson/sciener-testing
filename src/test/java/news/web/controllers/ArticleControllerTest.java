@@ -8,11 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.time.LocalDate;
 
@@ -229,10 +227,11 @@ class ArticleControllerTest {
         statement.executeUpdate(sqlInsertTagsId);
         // ожидаемый результат
         String expectedResult = "" +
-            "HTTP/1.1 200 OK\n" +
+            "HTTP/1.1 200 \n" +
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
-            "Content-Type: application/json; charset=UTF-8\n" +
+            "Content-Type: application/json;charset=UTF-8\n" +
+            "Content-Length: 955\n" +
             "\n" +
             "[\n" +
             "{\n" +
@@ -295,16 +294,16 @@ class ArticleControllerTest {
             "\t\t4\n" +
             "\t]\n" +
             "}\n" +
-            "]\n";
-        clientSocket = new Socket("127.0.0.1", 5000);
+            "]";
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /article/ HTTP/1.1\n" +
+                "GET /blg_kotik_dmitry_war/article/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -315,7 +314,11 @@ class ArticleControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
@@ -348,10 +351,10 @@ class ArticleControllerTest {
         statement.executeUpdate(sqlInsertTagsId);
         // ожидаемый результат
         String expectedResult = "" +
-                "HTTP/1.1 200 OK\n" +
+                "HTTP/1.1 200 \n" +
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
-                "Content-Type: application/json; charset=UTF-8\n" +
+                "Content-Type: application/json;charset=UTF-8\n" +
                 "\n" +
                 "[\n" +
                 "{\n" +
@@ -415,26 +418,34 @@ class ArticleControllerTest {
                 "\t]\n" +
                 "}\n" +
                 "]\n";
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("localhost", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
+        //out = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream(), StandardCharsets.UTF_8), true);
+        DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
 
         String request = "" +
-                "GET /article?title=Заголовок1 HTTP/1.1\n" +
+                "GET /blg_kotik_dmitry_war/article?title=Заголовок1 HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
-                "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Content-Type: application/json;charset=UTF-8\n" +
+                "Content-Length: 0\n" +
+                "Host: localhost:8080\n" +
+                "Accept-encoding: gzip, deflate, br\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
                 "PasswordPostgres: " + this.container.getPassword() + "\n";
+        dos.write(request.getBytes(StandardCharsets.UTF_8));
         out.println(request);
         out.flush();
 
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
@@ -467,10 +478,10 @@ class ArticleControllerTest {
         statement.executeUpdate(sqlInsertTagsId);
         // ожидаемый результат
         String expectedResult = "" +
-                "HTTP/1.1 200 OK\n" +
+                "HTTP/1.1 200 \n" +
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
-                "Content-Type: application/json; charset=UTF-8\n" +
+                "Content-Type: application/json;charset=UTF-8\n" +
                 "\n" +
                 "{\n" +
                 "\t\"id\":2,\n" +
@@ -502,15 +513,15 @@ class ArticleControllerTest {
                 "\t\t4\n" +
                 "\t]\n" +
                 "}";
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /article/2/ HTTP/1.1\n" +
+                "GET /blg_kotik_dmitry_war/article/2/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -521,7 +532,11 @@ class ArticleControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         assertThat(actualResult.toString()).isEqualTo(expectedResult);
@@ -540,20 +555,20 @@ class ArticleControllerTest {
         article.addNewImage(articleImage2);
         article.addNewTagId(3);
         article.addNewTagId(4);
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
         String expectedResult = "" +
-            "HTTP/1.1 201 Статья создана\n" +
+            "HTTP/1.1 201 \n" +
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
             "Location: /article/1/\n";
 
         String request = "" +
-            "POST /article/ HTTP/1.1\n" +
+            "POST /blg_kotik_dmitry_war/article/ HTTP/1.1\n" +
             "Accept: application/json, */*; q=0.01\n" +
             "Content-Type: application/json\n" +
-            "Host: 127.0.0.1:5000\n" +
+            "Host: 127.0.0.1:8080\n" +
             "UnitTest: true\n" +
             "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
             "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -592,7 +607,11 @@ class ArticleControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         // сначала сравниваем ответы
@@ -663,19 +682,19 @@ class ArticleControllerTest {
         article.addNewImage(articleImage2);
         article.addNewTagId(3);
         article.addNewTagId(4);
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
         String expectedResult = "" +
-                "HTTP/1.1 204 Нет данных\n" +
+                "HTTP/1.1 204 \n" +
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n";
 
         String request = "" +
-                "PUT /article/1/ HTTP/1.1\n" +
+                "PUT /blg_kotik_dmitry_war/article/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -717,7 +736,11 @@ class ArticleControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         // сначала сравниваем ответы
@@ -779,19 +802,19 @@ class ArticleControllerTest {
                 "(1, 1), (1, 2);";
         statement.executeUpdate(sqlInsertTagsId);
 
-        clientSocket = new Socket("127.0.0.1", 5000);
+        clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
         String expectedResult = "" +
-                "HTTP/1.1 204 Нет данных\n" +
+                "HTTP/1.1 204 \n" +
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n";
 
         String request = "" +
-                "DELETE /article/1/ HTTP/1.1\n" +
+                "DELETE /blg_kotik_dmitry_war/article/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
-                "Host: 127.0.0.1:5000\n" +
+                "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
                 "UserPostgres: " + this.container.getUsername() + "\n" +
@@ -802,7 +825,11 @@ class ArticleControllerTest {
         StringBuilder actualResult = new StringBuilder();
         actualResult.append(in.readLine()).append("\n");
         while (in.ready()) {
-            actualResult.append(in.readLine()).append("\n");
+            String line = in.readLine();
+            if (line.contains("Date: ")) {
+                continue;
+            }
+            actualResult.append(line).append("\n");
         }
         actualResult.setLength(actualResult.length() - 1);
         // сначала сравниваем ответы
