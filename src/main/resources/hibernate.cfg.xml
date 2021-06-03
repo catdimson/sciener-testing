@@ -20,5 +20,6 @@
     <property name="hibernate.current_session_context_class">thread</property>
     <!--mapping-->
     <mapping class="news.model.Mailing" />
+    <mapping class="news.model.Group" />
   </session-factory>
 </hibernate-configuration>

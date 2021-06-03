@@ -12,12 +12,11 @@ import java.util.Objects;
 public class Group {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    //@GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @Basic
-    //@Column(name = "title", nullable = false, unique = true, length = 40)
     @Column(name = "title")
     private String title;
 
@@ -30,6 +29,14 @@ public class Group {
 
     public Group(String title) {
         this.title = title;
+    }
+
+    public int getGroupId() {
+        return this.id;
+    }
+
+    public void setGroupId(int id) {
+        this.id = id;
     }
 
     /**
