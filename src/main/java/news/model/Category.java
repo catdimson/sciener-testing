@@ -1,11 +1,25 @@
 package news.model;
 
+import javax.persistence.*;
+
 /**
  * Категория новости
  */
+@Entity
+@Table(name = "category", schema = "public", catalog = "news_db")
 public class Category {
+
+    @Id
+    @Column(name = "id")
+    //@GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
+
+    @Basic
+    //@Column(name = "title", nullable = false, unique = true, length = 50)
+    @Column(name = "title")
     private String title;
+
+    public Category() {};
 
     public Category(int id, String title) {
         this.id = id;

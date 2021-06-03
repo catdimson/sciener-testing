@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public class Article {
     private int id;
-    final private LocalDate createDate;
+    private LocalDate createDate;
     private String title;
     private String lead;
     private LocalDate editDate;

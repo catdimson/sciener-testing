@@ -1,29 +1,65 @@
 package news.model;
 
+import javax.persistence.*;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
+import java.util.Objects;
 
 /**
  * Пользователь
  */
+@Entity
+@Table(name = "user")
 public class User {
-    private int id;
-    private String password;
-    private String username;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private LocalDate lastLogin;
-    final private LocalDate dateJoined;
 
+    @Id
+    @Column(name = "id")
+    private int id;
+
+    //@Column(name = "password", nullable = false, length = 128)
+    @Basic
+    @Column(name = "password")
+    private String password;
+
+    @Basic
+    @Column(name = "username")
+    private String username;
+
+    @Basic
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Basic
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Basic
+    @Column(name = "email")
+    private String email;
+
+    @Basic
+    @Column
+    private LocalDate lastLogin;
+    private LocalDate dateJoined;
+
+    @Basic
+    @Column(name = "is_superuser")
     private boolean isSuperuser;
+
+    @Basic
+    @Column(name = "is_staff")
     private boolean isStaff;
+
+    @Basic
+    @Column(name = "is_active")
     private boolean isActive;
 
     private int groupId;
+
+    public User() {};
 
     public User(int id, String password, String username, String firstName, String lastName, String email, LocalDate lastLogin,
                 LocalDate dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive, int groupId) {
@@ -169,5 +205,19 @@ public class User {
                 "id", "password", "username", "firstName", "lastName", "email", "lastLogin", "dateJoined", "isSuperuser",
                 "isStaff", "isActive", "groupId"
         };
+    }
+
+    @Override
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User that = (User) o;
+        return id == that.id && isSuperuser == that.isSuperuser && isStaff == that.isStaff && isActive == that.isActive && Objects.equals(password, that.password) && Objects.equals(username, that.username) && Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(email, that.email) && Objects.equals(lastLogin, that.lastLogin) && Objects.equals(dateJoined, that.dateJoined);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, password, username, firstName, lastName, email, lastLogin, dateJoined, isSuperuser, isStaff, isActive);
     }
 }
