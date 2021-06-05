@@ -1,3 +1,4 @@
+/*
 package news.dao.repositories;
 
 import news.dao.connection.DBPool;
@@ -514,4 +515,4 @@ class CommentRepositoryTest {
             exception.printStackTrace();
         }
     }
-}
+}*/

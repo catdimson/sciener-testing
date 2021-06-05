@@ -18,7 +18,7 @@ class CommentTest {
     private static LocalDate editDate;
 
     @Mock
-    final private CommentAttachment commentAttachment = new CommentAttachment(1, "Документ", "/static/files/file1.txt", 1);
+    final private CommentAttachment commentAttachment = new CommentAttachment(1, "Документ", "/static/files/file1.txt");
 
     @BeforeAll
     static void beforeAll() {

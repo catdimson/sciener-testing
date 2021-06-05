@@ -27,17 +27,12 @@ public class CommentAttachment {
     @JoinColumn(name = "comment_id", referencedColumnName = "id")
     Comment comment;
 
-    public CommentAttachment(int id, String title, String path, int commentId) {
+    public CommentAttachment() {}
+
+    public CommentAttachment(int id, String title, String path) {
         this.id = id;
         this.title = title;
         this.path = path;
-        //this.commentId = commentId;
-    }
-    public CommentAttachment(String title, String path, int commentId) {
-        this.id = id;
-        this.title = title;
-        this.path = path;
-        //this.commentId = commentId;
     }
 
     public CommentAttachment(String title, String path) {
@@ -45,7 +40,9 @@ public class CommentAttachment {
         this.path = path;
     }
 
-    public CommentAttachment() {}
+    public void setComment(Comment comment) {
+        this.comment = comment;
+    }
 
     public Object[] getObjects() {
         return new Object[] {
@@ -73,9 +70,5 @@ public class CommentAttachment {
     @Override
     public int hashCode() {
         return Objects.hash(id, title, path);
-    }
-
-    public void setComment(Comment comment) {
-        this.comment = comment;
     }
 }

@@ -116,10 +116,13 @@ public class CommentSerializer implements Serializer<Comment> {
                 int idAttachment = 0;
                 String titleAttachment;
                 String pathAttachment;
-                int commentIdAttachment;
+                boolean withIdAttachment;
 
-                // id
-                if (withId) {
+                Pattern p0 = Pattern.compile("\"id\":.+");
+                Matcher m0 = p0.matcher(lines[indexEndAttachments]);
+                withIdAttachment = m0.find();
+                //id
+                if (withIdAttachment) {
                     Matcher m1 = Pattern.compile(":(\\d+),").matcher(lines[indexEndAttachments]);
                     m1.find();
                     idAttachment = Integer.parseInt(m1.group(1));
@@ -129,7 +132,6 @@ public class CommentSerializer implements Serializer<Comment> {
 
                 // title
                 Matcher m2 = Pattern.compile(":\"(.+)\",").matcher(lines[indexEndAttachments]);
-                System.out.println("ВОТ ЧТО: " + lines[indexEndAttachments]);
                 m2.find();
                 titleAttachment = m2.group(1);
                 System.out.println("titleAttachment: " + titleAttachment);
@@ -142,17 +144,10 @@ public class CommentSerializer implements Serializer<Comment> {
                 System.out.println("pathAttachment: " + pathAttachment);
                 indexEndAttachments += 2;
 
-                // commentId
-                /*Matcher m4 = Pattern.compile(":(\\d+)").matcher(lines[indexEndAttachments]);
-                m4.find();
-                commentIdAttachment = Integer.parseInt(m4.group(1));
-                indexEndAttachments += 2;*/
-
                 // создаем пркрепление и добавляем в комментарию
                 CommentAttachment commentAttachment;
-                if (withId) {
-                    //commentAttachment = new CommentAttachment(idAttachment, titleAttachment, pathAttachment, commentIdAttachment);
-                    commentAttachment = new CommentAttachment(titleAttachment, pathAttachment);
+                if (withIdAttachment) {
+                    commentAttachment = new CommentAttachment(idAttachment, titleAttachment, pathAttachment);
                 } else {
                     commentAttachment = new CommentAttachment(titleAttachment, pathAttachment);
                 }

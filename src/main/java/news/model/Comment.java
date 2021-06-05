@@ -60,6 +60,14 @@ public class Comment {
         this.articleId = articleId;
     }
 
+    public int getCommentId() {
+        return this.id;
+    }
+
+    public void setCommentId(int id) {
+        this.id = id;
+    }
+
     public Collection<CommentAttachment> getAttachments() {
         return this.attachments;
     }
@@ -78,10 +86,6 @@ public class Comment {
      */
     public void addNewAttachment(CommentAttachment attachment) {
         this.attachments.add(attachment);
-    }
-
-    public int getCommentId() {
-        return this.id;
     }
 
     /**
@@ -105,8 +109,8 @@ public class Comment {
                 text,
                 createDate,
                 editDate,
-                articleId,
                 userId,
+                articleId,
                 attachments
         };
     }

@@ -4,7 +4,6 @@ import news.HibernateUtil;
 import news.dao.connection.ConnectionPool;
 import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Comment;
-import news.model.CommentAttachment;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -13,12 +12,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
-import java.sql.*;
-import java.time.LocalDate;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class CommentRepository implements ExtendRepository<Comment> {
     final private ConnectionPool connectionPool;
@@ -72,81 +68,33 @@ public class CommentRepository implements ExtendRepository<Comment> {
 
     @Override
     public int delete(int id) throws SQLException {
-        int beChange = 0;
-        Connection connection = this.connectionPool.getConnection();
-        String sqlDeleteInstance = "DELETE FROM attachment WHERE comment_id=?;";
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlDeleteInstance);
-        preparedStatement.setInt(1, id);
-        beChange = preparedStatement.executeUpdate();
-        String sqlDeleteComment = "DELETE FROM comment WHERE id=?;";
-        preparedStatement = connection.prepareStatement(sqlDeleteComment);
-        preparedStatement.setInt(1, id);
-        beChange = preparedStatement.executeUpdate() | beChange;
-        return beChange;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        Comment comment = new Comment();
+        comment.setCommentId(id);
+        try {
+            session.delete(comment);
+            transaction.commit();
+            session.close();
+        } catch (Exception e) {
+            session.close();
+            return 0;
+        }
+        return id;
     }
 
     @Override
     public int update(Comment comment) throws SQLException {
-        Connection connection = this.connectionPool.getConnection();
-        String sqlQueryAttachments = "SELECT * FROM attachment WHERE comment_id=?;";
-        Object[] instanceComment = comment.getObjects();
-        int beChange = 0;
-
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlQueryAttachments, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-        preparedStatement.setInt(1, (int) instanceComment[0]);
-        ResultSet result = preparedStatement.executeQuery();
-        ArrayList<CommentAttachment> attachments = (ArrayList<CommentAttachment>) instanceComment[6];
-        Set<CommentAttachment> attachmentsSet = new HashSet<>(attachments);
-
-        outer:
-        while (!result.wasNull() && result.next()) {
-            for (CommentAttachment attachment : attachments) {
-                Object[] instanceAttachment = attachment.getObjects();
-                if (result.getInt("id") == (int) instanceAttachment[0]) {
-                    // обновляем записи в БД
-                    attachmentsSet.remove(attachment);
-                    result.updateString(2, (String) instanceAttachment[1]);
-                    result.updateString(3, (String) instanceAttachment[2]);
-                    result.updateRow();
-                    beChange = 1;
-                    //statement.executeUpdate(sqlUpdateAttachment);
-                    continue outer;
-                }
-            }
-            // удаляем записи из БД
-            result.deleteRow();
-            beChange = 1;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            session.update(comment);
+            transaction.commit();
+            session.close();
+        } catch (Exception e) {
+            session.close();
+            return 0;
         }
-
-        // добавляем записи в БД
-        Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-        ArrayList<CommentAttachment> addingInDBAttachments = new ArrayList<>(attachmentsSet);
-        StringBuilder sqlCreateAttachments = new StringBuilder("INSERT INTO attachment (title, path, comment_id) VALUES ");
-        for (int i = 0; i < addingInDBAttachments.size(); i++) {
-            CommentAttachment attachment = addingInDBAttachments.get(i);
-            Object[] attachmentInstance = attachment.getObjects();
-            String sqlPath;
-            if (i != addingInDBAttachments.size() - 1) {
-                sqlPath = String.format("('%s', '%s', %s), ", attachmentInstance[1], attachmentInstance[2], attachmentInstance[3]);
-            } else {
-                sqlPath = String.format("('%s', '%s', %s); ", attachmentInstance[1], attachmentInstance[2], attachmentInstance[3]);
-            }
-            sqlCreateAttachments.append(sqlPath);
-        }
-        beChange = statement.executeUpdate(String.valueOf(sqlCreateAttachments)) | beChange;
-
-        // обновляем запись комментария
-        LocalDate createDate = (LocalDate) instanceComment[2];
-        LocalDate editDate = (LocalDate) instanceComment[3];
-        String sqlUpdateComment = "UPDATE comment SET text=?, create_date=?, edit_date=?, article_id=?, user_id=? WHERE id=?;";
-        preparedStatement = connection.prepareStatement(sqlUpdateComment);
-        preparedStatement.setString(1, (String) instanceComment[1]);
-        preparedStatement.setTimestamp(2, Timestamp.valueOf(createDate.atStartOfDay()));
-        preparedStatement.setTimestamp(3, Timestamp.valueOf(editDate.atStartOfDay()));
-        preparedStatement.setInt(4, (int) instanceComment[4]);
-        preparedStatement.setInt(5, (int) instanceComment[5]);
-        preparedStatement.setInt(6, (int) instanceComment[0]);
-        beChange = preparedStatement.executeUpdate() | beChange;
-        return beChange;
+        return comment.getCommentId();
     }
 }
