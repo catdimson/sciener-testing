@@ -61,8 +61,7 @@ public class MailingRepository implements ExtendRepository<Mailing> {
     public int create(Mailing mailing) throws SQLException {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        session.saveOrUpdate(mailing);
-        session.flush();
+        session.save(mailing);
         transaction.commit();
         session.close();
         return mailing.getMailingId();
@@ -91,7 +90,6 @@ public class MailingRepository implements ExtendRepository<Mailing> {
         Transaction transaction = session.beginTransaction();
         try {
             session.update(mailing);
-            session.flush();
             transaction.commit();
             session.close();
         } catch (Exception e) {

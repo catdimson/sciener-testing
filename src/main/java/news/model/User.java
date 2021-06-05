@@ -5,21 +5,21 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
  * Пользователь
  */
 @Entity
-@Table(name = "user")
+@Table(name = "user", schema = "public", catalog = "news_db")
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
-    //@Column(name = "password", nullable = false, length = 128)
     @Basic
     @Column(name = "password")
     private String password;
@@ -41,9 +41,12 @@ public class User {
     private String email;
 
     @Basic
-    @Column
-    private LocalDate lastLogin;
-    private LocalDate dateJoined;
+    @Column(name = "last_login")
+    private Timestamp lastLogin;
+
+    @Basic
+    @Column(name = "date_joined")
+    private Timestamp dateJoined;
 
     @Basic
     @Column(name = "is_superuser")
@@ -57,12 +60,14 @@ public class User {
     @Column(name = "is_active")
     private boolean isActive;
 
+    @Basic
+    @Column(name = "group_id")
     private int groupId;
 
     public User() {};
 
-    public User(int id, String password, String username, String firstName, String lastName, String email, LocalDate lastLogin,
-                LocalDate dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive, int groupId) {
+    public User(int id, String password, String username, String firstName, String lastName, String email, Timestamp lastLogin,
+                Timestamp dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive, int groupId) {
         this.id = id;
         this.password = password;
         this.username = username;
@@ -77,8 +82,8 @@ public class User {
         this.groupId = groupId;
     }
 
-    public User(String password, String username, String firstName, String lastName, String email, LocalDate lastLogin,
-                LocalDate dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive, int groupId) {
+    public User(String password, String username, String firstName, String lastName, String email, Timestamp lastLogin,
+                Timestamp dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive, int groupId) {
         this.password = password;
         this.username = username;
         this.firstName = firstName;
@@ -90,6 +95,14 @@ public class User {
         this.isStaff = isStaff;
         this.isActive = isActive;
         this.groupId = groupId;
+    }
+
+    public int getUserId() {
+        return this.id;
+    }
+
+    public void setUserId(int id) {
+        this.id = id;
     }
 
     /**
@@ -208,7 +221,6 @@ public class User {
     }
 
     @Override
-
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

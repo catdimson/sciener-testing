@@ -10,12 +10,11 @@ import javax.persistence.*;
 public class Tag {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    //@GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @Basic
-    //@Column(name = "title", nullable = false, length = 50)
     @Column(name = "title")
     private String title;
 

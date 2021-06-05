@@ -21,5 +21,11 @@
     <!--mapping-->
     <mapping class="news.model.Mailing" />
     <mapping class="news.model.Group" />
+    <mapping class="news.model.Source" />
+    <mapping class="news.model.Afisha" />
+    <mapping class="news.model.Category" />
+    <mapping class="news.model.User" />
+    <mapping class="news.model.Comment" />
+    <mapping class="news.model.CommentAttachment" />
   </session-factory>
 </hibernate-configuration>

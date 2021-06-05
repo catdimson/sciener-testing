@@ -315,7 +315,8 @@ class UserControllerTest {
     void buildResponsePOSTMethod() throws SQLException, IOException {
         SoftAssertions soft = new SoftAssertions();
         User user = new User("qwerty123", "alex1992", "Александр", "Колесников",
-                "alex1993@mail.ru", lastLogin, dateJoined, true, true, true, 1);
+                "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
+                true, true, true, 1);
 
         clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -396,7 +397,8 @@ class UserControllerTest {
                 Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()), true, true, true, 1);
         statement.executeUpdate(sqlInsertUser);
         User user = new User("qwerty123", "alex1992", "Александр", "Колесников",
-                "alex1993@mail.ru", lastLogin, dateJoined, true, true, true, 1);
+                "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
+                true, true, true, 1);
 
         clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));

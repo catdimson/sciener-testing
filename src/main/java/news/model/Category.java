@@ -1,6 +1,7 @@
 package news.model;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * Категория новости
@@ -11,11 +12,10 @@ public class Category {
 
     @Id
     @Column(name = "id")
-    //@GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Basic
-    //@Column(name = "title", nullable = false, unique = true, length = 50)
     @Column(name = "title")
     private String title;
 
@@ -28,6 +28,14 @@ public class Category {
 
     public Category(String title) {
         this.title = title;
+    }
+
+    public int getCategoryId() {
+        return this.id;
+    }
+
+    public void setCategoryId(int id) {
+        this.id = id;
     }
 
     /**
@@ -60,5 +68,18 @@ public class Category {
         return new String[] {
                 "id", "title"
         };
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Category that = (Category) o;
+        return id == that.id && Objects.equals(title, that.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title);
     }
 }

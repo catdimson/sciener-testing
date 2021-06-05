@@ -2,6 +2,7 @@ package news.web.controllers;
 
 import news.dao.connection.DBPool;
 import news.model.Comment;
+import news.model.CommentAttachment;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -461,9 +462,10 @@ class CommentControllerTest {
     @Test
     void buildResponsePOSTMethod() throws SQLException, IOException {
         SoftAssertions soft = new SoftAssertions();
-        Comment comment = new Comment("Текст комментария", createDateComment, editDateComment, 1, 1);
-        Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment("Прикрепление 1", "/static/attachments/image1.png", 1);
-        Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 2", "/static/attachments/image2.png", 1);
+        Comment comment = new Comment("Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()),
+                Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
+        CommentAttachment commentAttachment1 = new CommentAttachment("Прикрепление 1", "/static/attachments/image1.png", 1);
+        CommentAttachment commentAttachment2 = new CommentAttachment("Прикрепление 2", "/static/attachments/image2.png", 1);
         comment.addNewAttachment(commentAttachment1);
         comment.addNewAttachment(commentAttachment2);
 
@@ -556,9 +558,10 @@ class CommentControllerTest {
     void buildResponsePUTMethod() throws IOException, SQLException {
         SoftAssertions soft = new SoftAssertions();
         Connection connection = this.poolConnection.getConnection();
-        Comment comment = new Comment("Текст комментария 10", createDateComment, editDateComment, 2, 1);
-        Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment("Прикрепление 10", "/static/attachments/image10.png", 1);
-        Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 11", "/static/attachments/image11.png", 1);
+        Comment comment = new Comment("Текст комментария 10", Timestamp.valueOf(createDateComment.atStartOfDay()),
+                Timestamp.valueOf(editDateComment.atStartOfDay()), 2, 1);
+        CommentAttachment commentAttachment1 = new CommentAttachment("Прикрепление 10", "/static/attachments/image10.png", 1);
+        CommentAttachment commentAttachment2 = new CommentAttachment("Прикрепление 11", "/static/attachments/image11.png", 1);
         comment.addNewAttachment(commentAttachment1);
         comment.addNewAttachment(commentAttachment2);
 

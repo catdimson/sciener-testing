@@ -60,8 +60,7 @@ public class GroupRepository implements ExtendRepository<Group> {
     public int create(Group group) throws SQLException {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        session.saveOrUpdate(group);
-        session.flush();
+        session.save(group);
         transaction.commit();
         session.close();
         return group.getGroupId();
@@ -90,7 +89,6 @@ public class GroupRepository implements ExtendRepository<Group> {
         Transaction transaction = session.beginTransaction();
         try {
             session.update(group);
-            session.flush();
             transaction.commit();
             session.close();
         } catch (Exception e) {

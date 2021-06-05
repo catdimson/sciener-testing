@@ -130,7 +130,7 @@ class AfishaRepositoryTest {
             Connection connection = this.poolConnection.getConnection();
 
             Afisha afisha = new Afisha(1, "Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний",
-                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", date, false, 1, 1);
+                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
             Object[] afishaInstance = afisha.getObjects();
 
             String sqlCreateInstance = "INSERT INTO afisha" +
@@ -182,9 +182,9 @@ class AfishaRepositoryTest {
             AfishaRepository afishaRepository = new AfishaRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
             Afisha afisha = new Afisha(1, "Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний",
-                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", date, false, 1, 1);
+                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
             Afisha afisha2 = new Afisha(2, "Масленица", "/media/konkursi.jpg", "Конкурсы", "Описание масленичных конкурсов",
-                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", date, false, 1, 1);
+                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
             Object[] afishaInstance = afisha.getObjects();
             Object[] afishaInstance2 = afisha2.getObjects();
 
@@ -266,9 +266,9 @@ class AfishaRepositoryTest {
             AfishaRepository afishaRepository = new AfishaRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
             Afisha afisha = new Afisha(1, "Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний",
-                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", date, false, 1, 1);
+                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
             Afisha afisha2 = new Afisha(2, "Масленица 2", "/media/konkursi.jpg", "Конкурсы", "Описание масленичных конкурсов",
-                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", date, false, 1, 1);
+                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
             Object[] afishaInstance = afisha.getObjects();
             Object[] afishaInstance2 = afisha2.getObjects();
 
@@ -351,7 +351,7 @@ class AfishaRepositoryTest {
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             Afisha afisha = new Afisha("Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний",
-                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", date, false, 1, 1);
+                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
 
             afishaRepository.create(afisha);
 
@@ -418,7 +418,7 @@ class AfishaRepositoryTest {
                     "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
             statement.executeUpdate(sqlCreateAfisha, Statement.RETURN_GENERATED_KEYS);
             Afisha afisha2 = new Afisha(1, "Масленица. Конкурсы.", "/media/maslenicaprazdnik.jpg", "Конкурсы на празник", "Красивое описание масленичных конкурсов",
-                    "3", "120", "Кинотеатр русич", "89208880022", date, false, 1, 1);
+                    "3", "120", "Кинотеатр русич", "89208880022", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
 
             afishaRepository.update(afisha2);
 

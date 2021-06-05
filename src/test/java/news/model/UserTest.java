@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,7 +32,8 @@ class UserTest {
     @Test
     void rewriteFullName() throws NoSuchAlgorithmException {
         User user = new User("qwerty12", "admin", "alexandr", "kanonenko",
-                "admin@gmail.com", lastLogin, dateJoined, true, true, true, groupId);
+                "admin@gmail.com", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
+                true, true, true, groupId);
 
         user.rewriteFullName("Олег", "Бочаров");
         String expected = "Олег Бочаров";
@@ -45,7 +47,8 @@ class UserTest {
     @Test
     void changePersonalData() {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
-                "admin@gmail.com", lastLogin, dateJoined, true, true, true, groupId);
+                "admin@gmail.com", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
+                true, true, true, groupId);
         SoftAssertions soft = new SoftAssertions();
 
         user.editAccountData("Иванов", "newpas12", "newemail@mail.ru");
@@ -63,7 +66,8 @@ class UserTest {
     @Test
     void allDeactivateUser() {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
-                "admin@gmail.com", lastLogin, dateJoined, true, true, true, groupId);
+                "admin@gmail.com", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
+                true, true, true, groupId);
         SoftAssertions soft = new SoftAssertions();
 
         user.offSuperuser();
@@ -83,7 +87,8 @@ class UserTest {
     @Test
     void allActivateUser() {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
-                "admin@gmail.com", lastLogin, dateJoined, false, false, false, groupId);
+                "admin@gmail.com", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
+                false, false, false, groupId);
         SoftAssertions soft = new SoftAssertions();
 
         user.onSuperuser();
@@ -103,7 +108,8 @@ class UserTest {
     @Test
     void isPermissionOfSuperuser() {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
-                "admin@gmail.com", lastLogin, dateJoined, true, false, true, groupId);
+                "admin@gmail.com", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
+                true, false, true, groupId);
 
         user.onSuperuser();
         user.activate();
@@ -118,7 +124,8 @@ class UserTest {
     @Test
     void isPermissionOfStaff() {
         User user = new User(1, "qwerty12", "admin", "alexandr", "kanonenko",
-                "admin@gmail.com", lastLogin, dateJoined, true, false, true, groupId);
+                "admin@gmail.com", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
+                true, false, true, groupId);
 
         user.onStaff();
         user.activate();

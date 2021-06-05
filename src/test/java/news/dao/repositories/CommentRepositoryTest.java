@@ -5,6 +5,7 @@ import news.dao.specifications.FindAllCommentSpecification;
 import news.dao.specifications.FindByIdCommentSpecification;
 import news.dao.specifications.FindByUserIdCommentSpecification;
 import news.model.Comment;
+import news.model.CommentAttachment;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -202,9 +203,10 @@ class CommentRepositoryTest {
             CommentRepository commentRepository = new CommentRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            Comment comment = new Comment("Текст комментария", createDateComment, editDateComment, 1, 1);
-            Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment("Прикрепление 1", "/static/attachments/image1.png", 1);
-            Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 2", "/static/attachments/image2.png", 1);
+            Comment comment = new Comment("Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()),
+                    Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
+            CommentAttachment commentAttachment1 = new CommentAttachment("Прикрепление 1", "/static/attachments/image1.png", 1);
+            CommentAttachment commentAttachment2 = new CommentAttachment("Прикрепление 2", "/static/attachments/image2.png", 1);
             comment.addNewAttachment(commentAttachment1);
             comment.addNewAttachment(commentAttachment2);
             String sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
@@ -220,8 +222,8 @@ class CommentRepositoryTest {
             List<Comment> resultFindByIdCommentList = commentRepository.query(findById);
             Object[] resultFindByIdCommentInstance = resultFindByIdCommentList.get(0).getObjects();
             ArrayList attachments = (ArrayList) resultFindByIdCommentInstance[6];
-            Comment.CommentAttachment resultFindByIdAttachment1 = (Comment.CommentAttachment) attachments.get(0);
-            Comment.CommentAttachment resultFindByIdAttachment2 = (Comment.CommentAttachment) attachments.get(1);
+            CommentAttachment resultFindByIdAttachment1 = (CommentAttachment) attachments.get(0);
+            CommentAttachment resultFindByIdAttachment2 = (CommentAttachment) attachments.get(1);
 
             soft.assertThat(comment)
                     .hasFieldOrPropertyWithValue("text", resultFindByIdCommentInstance[1])
@@ -254,10 +256,11 @@ class CommentRepositoryTest {
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             // комментарий пользователя с id=1
-            Comment comment = new Comment("Текст комментария", createDateComment, editDateComment, 1, 1);
+            Comment comment = new Comment("Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()),
+                    Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
             // 2 прикрепления к комментарию выше
-            Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment("Прикрепление 1", "/static/attachments/image1.png", 1);
-            Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 2", "/static/attachments/image2.png", 1);
+            CommentAttachment commentAttachment1 = new CommentAttachment("Прикрепление 1", "/static/attachments/image1.png", 1);
+            CommentAttachment commentAttachment2 = new CommentAttachment("Прикрепление 2", "/static/attachments/image2.png", 1);
             comment.addNewAttachment(commentAttachment1);
             comment.addNewAttachment(commentAttachment2);
             // добавляем 2 комментария в БД
@@ -284,8 +287,8 @@ class CommentRepositoryTest {
             Comment testComment = resultFindByUserIdCommentList.get(0);
             Object[] resultFindByUserIdCommentInstance = resultFindByUserIdCommentList.get(0).getObjects();
             ArrayList attachments = (ArrayList) resultFindByUserIdCommentInstance[6];
-            Comment.CommentAttachment resultFindByUserIdAttachment1 = (Comment.CommentAttachment) attachments.get(0);
-            Comment.CommentAttachment resultFindByUserIdAttachment2 = (Comment.CommentAttachment) attachments.get(1);
+            CommentAttachment resultFindByUserIdAttachment1 = (CommentAttachment) attachments.get(0);
+            CommentAttachment resultFindByUserIdAttachment2 = (CommentAttachment) attachments.get(1);
 
             soft.assertThat(comment)
                     .hasFieldOrPropertyWithValue("text", resultFindByUserIdCommentInstance[1])
@@ -318,11 +321,13 @@ class CommentRepositoryTest {
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             // комментарий пользователя с id=1
-            Comment comment = new Comment("Текст комментария", createDateComment, editDateComment, 1, 1);
-            Comment comment2 = new Comment("Текст комментария 2", createDateComment, editDateComment, 1, 1);
+            Comment comment = new Comment("Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()),
+                    Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
+            Comment comment2 = new Comment("Текст комментария 2", Timestamp.valueOf(createDateComment.atStartOfDay()),
+                    Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
             // 2 прикрепления к комментарию выше
-            Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment("Прикрепление 1", "/static/attachments/image1.png", 1);
-            Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 2", "/static/attachments/image2.png", 2);
+            CommentAttachment commentAttachment1 = new CommentAttachment("Прикрепление 1", "/static/attachments/image1.png", 1);
+            CommentAttachment commentAttachment2 = new CommentAttachment("Прикрепление 2", "/static/attachments/image2.png", 2);
             comment.addNewAttachment(commentAttachment1);
             comment2.addNewAttachment(commentAttachment2);
             // добавляем 2 комментария в БД
@@ -344,8 +349,8 @@ class CommentRepositoryTest {
             Object[] resultFindAllCommentInstance2 = resultFindAllCommentList.get(1).getObjects();
             ArrayList attachments = (ArrayList) resultFindAllCommentInstance[6];
             ArrayList attachments2 = (ArrayList) resultFindAllCommentInstance2[6];
-            Comment.CommentAttachment resultFindAllAttachment1 = (Comment.CommentAttachment) attachments.get(0);
-            Comment.CommentAttachment resultFindAllAttachment2 = (Comment.CommentAttachment) attachments2.get(0);
+            CommentAttachment resultFindAllAttachment1 = (CommentAttachment) attachments.get(0);
+            CommentAttachment resultFindAllAttachment2 = (CommentAttachment) attachments2.get(0);
 
             soft.assertThat(comment)
                     .hasFieldOrPropertyWithValue("text", resultFindAllCommentInstance[1])
@@ -384,9 +389,10 @@ class CommentRepositoryTest {
             CommentRepository commentRepository = new CommentRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            Comment comment = new Comment("Текст комментария", createDateComment, editDateComment, 1, 1);
-            Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment("Прикрепление 1", "/static/attachments/image1.png", 1);
-            Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 2", "/static/attachments/image2.png", 1);
+            Comment comment = new Comment("Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()),
+                    Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
+            CommentAttachment commentAttachment1 = new CommentAttachment("Прикрепление 1", "/static/attachments/image1.png", 1);
+            CommentAttachment commentAttachment2 = new CommentAttachment("Прикрепление 2", "/static/attachments/image2.png", 1);
             comment.addNewAttachment(commentAttachment1);
             comment.addNewAttachment(commentAttachment2);
 
@@ -470,9 +476,10 @@ class CommentRepositoryTest {
                     "Прикрепление 2", "/static/attachments/image2.png", 1);
             statement.executeUpdate(sqlInsertAttachments);
             // объект, которым будем обновлять данные в БД
-            Comment comment = new Comment(1,"Текст комментария новый", createDateComment.plusDays(1), editDateComment.plusDays(1), 2, 1);
-            Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment(2,"Прикрепление 2 новое", "/static/attachments/image2_новое.png", 1);
-            Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 3", "/static/attachments/image3.png", 1);
+            Comment comment = new Comment(1,"Текст комментария новый", Timestamp.valueOf(createDateComment.plusDays(1).atStartOfDay()),
+                    Timestamp.valueOf(editDateComment.plusDays(1).atStartOfDay()), 2, 1);
+            CommentAttachment commentAttachment1 = new CommentAttachment(2,"Прикрепление 2 новое", "/static/attachments/image2_новое.png", 1);
+            CommentAttachment commentAttachment2 = new CommentAttachment("Прикрепление 3", "/static/attachments/image3.png", 1);
             comment.addNewAttachment(commentAttachment1);
             comment.addNewAttachment(commentAttachment2);
 

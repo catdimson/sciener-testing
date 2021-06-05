@@ -12,15 +12,14 @@ public class Source {
 
     @Id
     @Column(name = "id")
-    //@GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Basic
-    //@Column(name = "title", nullable = false, length = 50)
     @Column(name = "title")
     private String title;
 
-    //@Column(name = "url", nullable = false, length = 500)
+    @Basic
     @Column(name = "url")
     private String url;
 
@@ -35,6 +34,14 @@ public class Source {
     public Source(String title, String url) {
         this.title = title;
         this.url = url;
+    }
+
+    public int getSourceId() {
+        return this.id;
+    }
+
+    public void setSourceId(int id) {
+        this.id = id;
     }
 
     /**

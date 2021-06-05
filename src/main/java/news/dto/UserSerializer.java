@@ -3,8 +3,6 @@ package news.dto;
 import news.model.User;
 
 import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,8 +25,8 @@ public class UserSerializer implements Serializer<User> {
     public String toJSON() {
         String[] userFields = User.getFields();
         Object[] userInstance = user.getObjects();
-        LocalDate lastLogin = (LocalDate) userInstance[6];
-        LocalDate dateJoined = (LocalDate) userInstance[7];
+        Timestamp lastLogin = (Timestamp) userInstance[6];
+        Timestamp dateJoined = (Timestamp) userInstance[7];
 
         return "" +
             "{\n" +
@@ -38,8 +36,8 @@ public class UserSerializer implements Serializer<User> {
             "\t" + "\"" + userFields[3] + "\"" + ":" + "\"" + userInstance[3] + "\"" + ",\n" +
             "\t" + "\"" + userFields[4] + "\"" + ":" + "\"" + userInstance[4] + "\"" + ",\n" +
             "\t" + "\"" + userFields[5] + "\"" + ":" + "\"" + userInstance[5] + "\"" + ",\n" +
-            "\t" + "\"" + userFields[6] + "\"" + ":" + Timestamp.valueOf(lastLogin.atStartOfDay()).getTime() / 1000 + ",\n" +
-            "\t" + "\"" + userFields[7] + "\"" + ":" + Timestamp.valueOf(dateJoined.atStartOfDay()).getTime() / 1000 + ",\n" +
+            "\t" + "\"" + userFields[6] + "\"" + ":" + lastLogin.getTime() / 1000 + ",\n" +
+            "\t" + "\"" + userFields[7] + "\"" + ":" + dateJoined.getTime() / 1000 + ",\n" +
             "\t" + "\"" + userFields[8] + "\"" + ":" + userInstance[8] + ",\n" +
             "\t" + "\"" + userFields[9] + "\"" + ":" + userInstance[9] + ",\n" +
             "\t" + "\"" + userFields[10] + "\"" + ":" + userInstance[10] + ",\n" +
@@ -55,8 +53,8 @@ public class UserSerializer implements Serializer<User> {
         String firstName;
         String lastName;
         String email;
-        LocalDate lastLogin;
-        LocalDate dateJoined;
+        Timestamp lastLogin;
+        Timestamp dateJoined;
         boolean isSuperuser = false;
         boolean isStaff = false;
         boolean isActive = false;
@@ -106,14 +104,12 @@ public class UserSerializer implements Serializer<User> {
         // lastLogin
         m = Pattern.compile(":(\\d+),").matcher(lines[indexLine]);
         m.find();
-        int timestampLastLogin = Integer.parseInt(m.group(1));
-        lastLogin = Timestamp.from(Instant.ofEpochSecond(timestampLastLogin)).toLocalDateTime().toLocalDate();
+        lastLogin = new Timestamp(Long.parseLong(m.group(1)));
         indexLine++;
         // dateJoined
         m = Pattern.compile(":(\\d+),").matcher(lines[indexLine]);
         m.find();
-        int timestampDateJoined= Integer.parseInt(m.group(1));
-        dateJoined = Timestamp.from(Instant.ofEpochSecond(timestampDateJoined)).toLocalDateTime().toLocalDate();
+        dateJoined = new Timestamp(Long.parseLong(m.group(1)));
         indexLine++;
         // isSuperuser
         m = Pattern.compile(":(\\w{4,5}),").matcher(lines[indexLine]);

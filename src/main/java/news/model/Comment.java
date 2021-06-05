@@ -1,22 +1,49 @@
 package news.model;
 
-import java.time.LocalDate;
+import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Комментарий к новости
  */
+@Entity
+@Table(name = "comment", schema = "public", catalog = "news_db")
 public class Comment {
-    private int id;
-    private String text;
-    final private LocalDate createDate;
-    private LocalDate editDate;
-    final private int userId;
-    private int articleId;
-    private Collection<CommentAttachment> attachments = new ArrayList<>();
 
-    public Comment(int id, String text, LocalDate createDate, LocalDate editDate, int userId, int articleId) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
+
+    @Basic
+    @Column(name = "text")
+    private String text;
+
+    @Basic
+    @Column(name = "create_date")
+    private Timestamp createDate;
+
+    @Basic
+    @Column(name = "edit_date")
+    private Timestamp editDate;
+
+    @Basic
+    @Column(name = "user_id")
+    private int userId;
+
+    @Basic
+    @Column(name = "article_id")
+    private int articleId;
+
+    @OneToMany(mappedBy = "comment", orphanRemoval=true, cascade = CascadeType.ALL)
+    private final Collection<CommentAttachment> attachments = new ArrayList<>();
+
+    public Comment() {}
+
+    public Comment(int id, String text, Timestamp createDate, Timestamp editDate, int userId, int articleId) {
         this.id = id;
         this.text = text;
         this.createDate = createDate;
@@ -25,7 +52,7 @@ public class Comment {
         this.articleId = articleId;
     }
 
-    public Comment(String text, LocalDate createDate, LocalDate editDate, int userId, int articleId) {
+    public Comment(String text, Timestamp createDate, Timestamp editDate, int userId, int articleId) {
         this.text = text;
         this.createDate = createDate;
         this.editDate = editDate;
@@ -33,48 +60,14 @@ public class Comment {
         this.articleId = articleId;
     }
 
-    /**
-     * Прикрепление к комментарию
-     */
-    public static class CommentAttachment {
-        int id;
-        String title;
-        String path;
-        int commentId;
-
-        public CommentAttachment(int id, String title, String path, int commentId) {
-            this.id = id;
-            this.title = title;
-            this.path = path;
-            this.commentId = commentId;
-        }
-
-        public CommentAttachment(String title, String path, int commentId) {
-            this.title = title;
-            this.path = path;
-            this.commentId = commentId;
-        }
-
-        public Object[] getObjects() {
-            return new Object[] {
-                    id,
-                    title,
-                    path,
-                    commentId
-            };
-        }
-
-        public static String[] getFields() {
-            return new String[] {
-                    "id", "title", "path", "commentId"
-            };
-        }
+    public Collection<CommentAttachment> getAttachments() {
+        return this.attachments;
     }
 
     /**
      * Редактирование комментария
      */
-    public void editArticle(String text, LocalDate editDate, int articleId) {
+    public void editArticle(String text, Timestamp editDate, int articleId) {
         this.text = text;
         this.editDate = editDate;
         this.articleId = articleId;
@@ -85,6 +78,10 @@ public class Comment {
      */
     public void addNewAttachment(CommentAttachment attachment) {
         this.attachments.add(attachment);
+    }
+
+    public int getCommentId() {
+        return this.id;
     }
 
     /**
@@ -118,5 +115,18 @@ public class Comment {
         return new String[] {
                 "id", "text", "createDate", "editDate", "userId", "articleId", "attachments"
         };
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Comment that = (Comment) o;
+        return id == that.id && Objects.equals(text, that.text) && Objects.equals(createDate, that.createDate) && Objects.equals(editDate, that.editDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, text, createDate, editDate);
     }
 }

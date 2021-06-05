@@ -6,6 +6,7 @@ import news.dao.specifications.FindByFirstnameUserSpecification;
 import news.dao.specifications.FindByIdUserSpecification;
 import news.model.User;
 import org.assertj.core.api.SoftAssertions;
+import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -82,10 +83,15 @@ class UserRepositoryTest {
     void findById() {
         try {
             SoftAssertions soft = new SoftAssertions();
+            Configuration cfg = new Configuration();
+            cfg.setProperty("hibernate.connection.url", container.getJdbcUrl());
+            cfg.setProperty("hibernate.connection.username", container.getUsername());
+            cfg.setProperty("hibernate.connection.password", container.getPassword());
+            cfg.configure();
             UserRepository userRepository = new UserRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
 
-            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", lastLogin, dateJoined,
+            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
                     true, true, true, 1);
             Object[] userInstance = user.getObjects();
 
@@ -98,10 +104,8 @@ class UserRepositoryTest {
             statement.setString(3, (String) userInstance[3]);
             statement.setString(4, (String) userInstance[4]);
             statement.setString(5, (String) userInstance[5]);
-            LocalDate localDateLogin = (LocalDate) userInstance[6];
-            statement.setTimestamp(6, Timestamp.valueOf(localDateLogin.atStartOfDay()));
-            LocalDate localDateJoined = (LocalDate) userInstance[7];
-            statement.setTimestamp(7, Timestamp.valueOf(localDateJoined.atStartOfDay()));
+            statement.setTimestamp(6, (Timestamp) userInstance[6]);
+            statement.setTimestamp(7, (Timestamp) userInstance[7]);
             statement.setBoolean(8, (boolean) userInstance[8]);
             statement.setBoolean(9, (boolean) userInstance[9]);
             statement.setBoolean(10, (boolean) userInstance[10]);
@@ -139,9 +143,9 @@ class UserRepositoryTest {
             UserRepository userRepository = new UserRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
 
-            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", lastLogin, dateJoined,
+            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
                     true, true, true, 1);
-            User user2 = new User(4, "ytrewq321", "cyber777", "Александр", "Жбанов", "jban1990@mail.ru", lastLogin, dateJoined,
+            User user2 = new User(4, "ytrewq321", "cyber777", "Александр", "Жбанов", "jban1990@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
                     false, false, true, 2);
             Object[] userInstance = user.getObjects();
             Object[] userInstance2 = user2.getObjects();
@@ -207,9 +211,9 @@ class UserRepositoryTest {
             UserRepository userRepository = new UserRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
 
-            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", lastLogin, dateJoined,
+            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
                     true, true, true, 1);
-            User user2 = new User(4, "ytrewq321", "cyber777", "Александр", "Жбанов", "jban1990@mail.ru", lastLogin, dateJoined,
+            User user2 = new User(4, "ytrewq321", "cyber777", "Александр", "Жбанов", "jban1990@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
                     false, false, true, 2);
             Object[] userInstance = user.getObjects();
             Object[] userInstance2 = user2.getObjects();
@@ -275,7 +279,7 @@ class UserRepositoryTest {
             UserRepository userRepository = new UserRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            User user = new User("qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", lastLogin, dateJoined,
+            User user = new User("qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
                     true, true, true, 1);
 
             userRepository.create(user);
@@ -307,7 +311,7 @@ class UserRepositoryTest {
             UserRepository userRepository = new UserRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", lastLogin, dateJoined,
+            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
                     true, true, true, 1);
             Object[] userInstance = user.getObjects();
             LocalDate localDateLogin = (LocalDate) userInstance[6];
@@ -338,9 +342,9 @@ class UserRepositoryTest {
             UserRepository userRepository = new UserRepository(this.poolConnection);
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            User user = new User("qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", lastLogin, dateJoined,
+            User user = new User("qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
                     true, true, true, 1);
-            User user2 = new User(1, "ytrewq321", "cyber777", "Александр", "Жбанов", "jban1990@mail.ru", lastLogin, dateJoined,
+            User user2 = new User(1, "ytrewq321", "cyber777", "Александр", "Жбанов", "jban1990@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
                     false, false, true, 2);
             Object[] userInstance = user.getObjects();
             LocalDate localDateLogin = (LocalDate) userInstance[6];

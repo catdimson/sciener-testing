@@ -3,8 +3,6 @@ package news.dto;
 import news.model.Afisha;
 
 import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +25,7 @@ public class AfishaSerializer implements Serializer<Afisha> {
     public String toJSON() {
         String[] afishaFields = Afisha.getFields();
         Object[] afishaInstance = afisha.getObjects();
-        LocalDate date = (LocalDate) afishaInstance[9];
+        Timestamp date = (Timestamp) afishaInstance[9];
 
         return "" +
             "{\n" +
@@ -40,7 +38,7 @@ public class AfishaSerializer implements Serializer<Afisha> {
             "\t" + "\"" + afishaFields[6] + "\"" + ":" + "\"" + afishaInstance[6] + "\"" + ",\n" +
             "\t" + "\"" + afishaFields[7] + "\"" + ":" + "\"" + afishaInstance[7] + "\"" + ",\n" +
             "\t" + "\"" + afishaFields[8] + "\"" + ":" + "\"" + afishaInstance[8] + "\"" + ",\n" +
-            "\t" + "\"" + afishaFields[9] + "\"" + ":" + Timestamp.valueOf(date.atStartOfDay()).getTime() / 1000 + ",\n" +
+            "\t" + "\"" + afishaFields[9] + "\"" + ":" + date.getTime() / 1000 + ",\n" +
             "\t" + "\"" + afishaFields[10] + "\"" + ":" + afishaInstance[10] + ",\n" +
             "\t" + "\"" + afishaFields[11] + "\"" + ":" + afishaInstance[11] + ",\n" +
             "\t" + "\"" + afishaFields[12] + "\"" + ":" + afishaInstance[12] + "\n" +
@@ -58,7 +56,7 @@ public class AfishaSerializer implements Serializer<Afisha> {
         String timing;
         String place;
         String phone;
-        LocalDate date;
+        Timestamp date;
         boolean isCommercial = false;
         int userId;
         int sourceId;
@@ -122,8 +120,7 @@ public class AfishaSerializer implements Serializer<Afisha> {
         // date
         m = Pattern.compile(":(\\d+),").matcher(lines[indexLine]);
         m.find();
-        int timestampCreateDate = Integer.parseInt(m.group(1));
-        date = Timestamp.from(Instant.ofEpochSecond(timestampCreateDate)).toLocalDateTime().toLocalDate();
+        date = new Timestamp(Long.parseLong(m.group(1)));
         indexLine++;
         // isCommercial
         m = Pattern.compile(":(\\w{4,5}),").matcher(lines[indexLine]);

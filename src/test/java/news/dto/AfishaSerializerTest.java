@@ -21,7 +21,7 @@ class AfishaSerializerTest {
     @Test
     void toJSON() {
         Afisha afisha = new Afisha(1, "Заголовок 1", "/static/afisha/image.png", "Лид 1",
-                "Описание 1", "12+", "240", "Соборная площадь", "89205950000", date,
+                "Описание 1", "12+", "240", "Соборная площадь", "89205950000", Timestamp.valueOf(date.atStartOfDay()),
                 false, 1, 1);
         final String expectedJSON =
                 "{\n" +

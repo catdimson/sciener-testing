@@ -23,7 +23,8 @@ class UserSerializerTest {
     @Test
     void toJSON() {
         User user = new User(1,"qwerty123", "alex1993", "Александр", "Колесников",
-                "alex1993@mail.ru", lastLogin, dateJoined, true, true, true, 1);
+                "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
+                true, true, true, 1);
         final String expectedJSON =
                 "{\n" +
                 "\t\"id\":1,\n" +
