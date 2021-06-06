@@ -17,11 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GroupRepository implements ExtendRepository<Group> {
-    final private ConnectionPool connectionPool;
 
-    public GroupRepository(ConnectionPool connectionPool) {
-        this.connectionPool = connectionPool;
-    }
+    public GroupRepository() {}
 
     @Override
     public List<Group> query(ExtendSqlSpecification<Group> groupSpecification) throws SQLException {

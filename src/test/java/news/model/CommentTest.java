@@ -41,7 +41,7 @@ class CommentTest {
         soft.assertThat(comment)
                 .hasFieldOrPropertyWithValue("text", "comment 2")
                 .hasFieldOrPropertyWithValue("articleId", 2)
-                .hasFieldOrPropertyWithValue("editDate", editDate2);
+                .hasFieldOrPropertyWithValue("editDate", Timestamp.valueOf(editDate2.atStartOfDay()));
         soft.assertAll();
     }
 

@@ -1,3 +1,4 @@
+/*
 package news;
 
 import news.dao.connection.ConnectionPool;
@@ -37,3 +38,4 @@ public class NewsApp extends Thread {
         return response;
     }
 }
+*/

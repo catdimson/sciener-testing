@@ -1,6 +1,5 @@
 package news.di.container;
 
-import news.dao.connection.DBPool;
 import news.web.controllers.AfishaController;
 import news.web.controllers.ArticleController;
 import news.web.controllers.CategoryController;
@@ -18,12 +17,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BeanFactoryTest {
 
     HttpRequest httpRequest = Mockito.mock(HttpRequest.class);
-    DBPool connectionPool = Mockito.mock(DBPool.class);
 
     @DisplayName("Создание DI из несуществующего файла")
     @Test
     void createDIFromNullXML() throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        BeanFactory.setSettings(connectionPool, httpRequest, "error/path/to/file.xml");
+        BeanFactory.setSettings(httpRequest, "error/path/to/file.xml");
         BeanFactory beanFactory = BeanFactory.getInstance();
 
         UserController userController = beanFactory.getBean(UserController.class);
@@ -34,7 +32,7 @@ class BeanFactoryTest {
     @DisplayName("Создание DI из пустого файла")
     @Test
     void createDIFromEmptyXML() throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        BeanFactory.setSettings(connectionPool, httpRequest, "src/test/resources/di/emptyXML.xml");
+        BeanFactory.setSettings(httpRequest, "src/test/resources/di/emptyXML.xml");
         BeanFactory beanFactory = BeanFactory.getInstance();
 
         UserController userController = beanFactory.getBean(UserController.class);
@@ -45,7 +43,7 @@ class BeanFactoryTest {
     @DisplayName("Создание DI из корректного файла")
     @Test
     void createDIFromCorrectXML() throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        BeanFactory.setSettings(connectionPool, httpRequest, "src/test/resources/di/correctXML.xml");
+        BeanFactory.setSettings(httpRequest, "src/test/resources/di/correctXML.xml");
         BeanFactory beanFactory = BeanFactory.getInstance();
 
         CategoryController categoryController = beanFactory.getBean(CategoryController.class);
@@ -60,7 +58,7 @@ class BeanFactoryTest {
     @DisplayName("Создание DI из файла с ошибкой")
     @Test
     void createDIFromErrorXML() throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        BeanFactory.setSettings(connectionPool, httpRequest, "src/test/resources/di/errorXML.xml");
+        BeanFactory.setSettings(httpRequest, "src/test/resources/di/errorXML.xml");
         BeanFactory beanFactory = BeanFactory.getInstance();
 
         ArticleController articleController = beanFactory.getBean(ArticleController.class);

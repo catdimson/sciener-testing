@@ -1,6 +1,5 @@
 package news.web.servlets;
 
-import news.dao.connection.DBPool;
 import news.di.container.BeanFactory;
 import news.web.controllers.ArticleController;
 import news.web.http.HttpRequest;
@@ -77,17 +76,7 @@ public class ArticleServlet extends HttpServlet {
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
 
         URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        if (request.getHeader("UnitTest") == null) {
-            BeanFactory.setSettings(new DBPool(), customHttpRequest, path.getPath());
-        } else {
-            BeanFactory.setSettings(
-                    new DBPool(
-                            request.getHeader("UrlPostgres"),
-                            request.getHeader("UserPostgres"),
-                            request.getHeader("PasswordPostgres")
-                    ),
-                    customHttpRequest, path.getPath());
-        }
+        BeanFactory.setSettings(customHttpRequest, path.getPath());
         beanFactory = BeanFactory.getInstance();
 
         try {
@@ -115,17 +104,7 @@ public class ArticleServlet extends HttpServlet {
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
 
         URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        if (request.getHeader("UnitTest") == null) {
-            BeanFactory.setSettings(new DBPool(), customHttpRequest, path.getPath());
-        } else {
-            BeanFactory.setSettings(
-                    new DBPool(
-                            request.getHeader("UrlPostgres"),
-                            request.getHeader("UserPostgres"),
-                            request.getHeader("PasswordPostgres")
-                    ),
-                    customHttpRequest, path.getPath());
-        }
+        BeanFactory.setSettings(customHttpRequest, path.getPath());
         beanFactory = BeanFactory.getInstance();
 
         try {
@@ -150,17 +129,7 @@ public class ArticleServlet extends HttpServlet {
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
 
         URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        if (request.getHeader("UnitTest") == null) {
-            BeanFactory.setSettings(new DBPool(), customHttpRequest, path.getPath());
-        } else {
-            BeanFactory.setSettings(
-                    new DBPool(
-                            request.getHeader("UrlPostgres"),
-                            request.getHeader("UserPostgres"),
-                            request.getHeader("PasswordPostgres")
-                    ),
-                    customHttpRequest, path.getPath());
-        }
+        BeanFactory.setSettings(customHttpRequest, path.getPath());
         beanFactory = BeanFactory.getInstance();
 
         try {
@@ -185,17 +154,7 @@ public class ArticleServlet extends HttpServlet {
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
 
         URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        if (request.getHeader("UnitTest") == null) {
-            BeanFactory.setSettings(new DBPool(), customHttpRequest, path.getPath());
-        } else {
-            BeanFactory.setSettings(
-                    new DBPool(
-                            request.getHeader("UrlPostgres"),
-                            request.getHeader("UserPostgres"),
-                            request.getHeader("PasswordPostgres")
-                    ),
-                    customHttpRequest, path.getPath());
-        }
+        BeanFactory.setSettings(customHttpRequest, path.getPath());
         beanFactory = BeanFactory.getInstance();
 
         try {

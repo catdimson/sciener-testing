@@ -17,11 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CategoryRepository implements ExtendRepository<Category> {
-    final private ConnectionPool connectionPool;
 
-    public CategoryRepository(ConnectionPool connectionPool) {
-        this.connectionPool = connectionPool;
-    }
+    public CategoryRepository() {}
 
     @Override
     public List<Category> query(ExtendSqlSpecification<Category> categorySpecification) throws SQLException {

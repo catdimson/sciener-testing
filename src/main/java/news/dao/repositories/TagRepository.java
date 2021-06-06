@@ -1,7 +1,6 @@
 package news.dao.repositories;
 
 import news.HibernateUtil;
-import news.dao.connection.ConnectionPool;
 import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Tag;
 import org.hibernate.Session;
@@ -17,11 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TagRepository implements ExtendRepository<Tag> {
-    final private ConnectionPool connectionPool;
 
-    public TagRepository(ConnectionPool connectionPool) {
-        this.connectionPool = connectionPool;
-    }
+    public TagRepository() {}
 
     @Override
     public List<Tag> query(ExtendSqlSpecification<Tag> tagSpecification) throws SQLException {

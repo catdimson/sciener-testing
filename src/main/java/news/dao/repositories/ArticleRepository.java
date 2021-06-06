@@ -1,7 +1,6 @@
 package news.dao.repositories;
 
 import news.HibernateUtil;
-import news.dao.connection.ConnectionPool;
 import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Article;
 import org.hibernate.Session;
@@ -17,11 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ArticleRepository implements ExtendRepository<Article> {
-    final private ConnectionPool connectionPool;
 
-    public ArticleRepository(ConnectionPool connectionPool) {
-        this.connectionPool = connectionPool;
-    }
+    public ArticleRepository() {}
 
     @Override
     public List<Article> query(ExtendSqlSpecification<Article> articleSpecification) throws SQLException {

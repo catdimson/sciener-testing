@@ -1,7 +1,6 @@
 package news.dao.repositories;
 
 import news.HibernateUtil;
-import news.dao.connection.ConnectionPool;
 import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Mailing;
 import org.hibernate.Session;
@@ -12,16 +11,13 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
-import java.sql.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MailingRepository implements ExtendRepository<Mailing> {
-    final private ConnectionPool connectionPool;
 
-    public MailingRepository(ConnectionPool connectionPool) {
-        this.connectionPool = connectionPool;
-    }
+    public MailingRepository() {}
 
     @Override
     public List<Mailing> query(ExtendSqlSpecification<Mailing> mailingSpecification) throws SQLException {
