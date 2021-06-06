@@ -6,9 +6,9 @@
   <session-factory>
     <!--db-->
     <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQL95Dialect</property>
-    <property name="connection.url">jdbc:postgresql://localhost:5432/news_db</property>
     <property name="connection.driver_class">org.postgresql.Driver</property>
-    <!--user,password-->
+    <!--url,user,password-->
+    <property name="connection.url">jdbc:postgresql://localhost:5432/news_db</property>
     <property name="connection.username">root</property>
     <property name="connection.password">rootroot</property>
     <!--settings-->
@@ -18,18 +18,5 @@
     <property name="show_sql">true</property>
     <property name="hibernate.format_sql">true</property>
     <property name="hibernate.current_session_context_class">thread</property>
-<!--    <property name="hbm2ddl.auto">update</property>-->
-    <!--mapping-->
-    <mapping class="news.model.Mailing" />
-    <mapping class="news.model.Group" />
-    <mapping class="news.model.Source" />
-    <mapping class="news.model.Afisha" />
-    <mapping class="news.model.Category" />
-    <mapping class="news.model.User" />
-    <mapping class="news.model.Comment" />
-    <mapping class="news.model.CommentAttachment" />
-    <mapping class="news.model.Tag" />
-    <mapping class="news.model.Article" />
-    <mapping class="news.model.ArticleImage" />
   </session-factory>
 </hibernate-configuration>
