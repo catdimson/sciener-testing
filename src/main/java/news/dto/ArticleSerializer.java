@@ -37,20 +37,20 @@ public class ArticleSerializer implements Serializer<Article> {
 
         return "" +
             "{\n" +
-            "\t" + "\"" + articleFields[0] + "\"" + ":" + articleInstance[0] + ",\n" +
-            "\t" + "\"" + articleFields[1] + "\"" + ":" + "\"" + articleInstance[1] + "\"" + ",\n" +
-            "\t" + "\"" + articleFields[2] + "\"" + ":" + "\"" + articleInstance[2] + "\"" + ",\n" +
-            "\t" + "\"" + articleFields[3] + "\"" + ":" + createDate.getTime() / 1000 + ",\n" +
-            "\t" + "\"" + articleFields[4] + "\"" + ":" + editDate.getTime() / 1000 + ",\n" +
-            "\t" + "\"" + articleFields[5] + "\"" + ":" + "\"" + articleInstance[5] + "\"" + ",\n" +
-            "\t" + "\"" + articleFields[6] + "\"" + ":" + articleInstance[6] + ",\n" +
-            "\t" + "\"" + articleFields[7] + "\"" + ":" + articleInstance[7] + ",\n" +
-            "\t" + "\"" + articleFields[8] + "\"" + ":" + articleInstance[8] + ",\n" +
-            "\t" + "\"" + articleFields[9] + "\"" + ":" + articleInstance[9] + ",\n" +
-            "\t" + "\"" + articleFields[10] + "\"" + ":" + "[\n" +
+            "\t" + "\"" + articleFields[0] + "\"" + ": " + articleInstance[0] + ",\n" +
+            "\t" + "\"" + articleFields[1] + "\"" + ": " + "\"" + articleInstance[1] + "\"" + ",\n" +
+            "\t" + "\"" + articleFields[2] + "\"" + ": " + "\"" + articleInstance[2] + "\"" + ",\n" +
+            "\t" + "\"" + articleFields[3] + "\"" + ": " + createDate.getTime() / 1000 + ",\n" +
+            "\t" + "\"" + articleFields[4] + "\"" + ": " + editDate.getTime() / 1000 + ",\n" +
+            "\t" + "\"" + articleFields[5] + "\"" + ": " + "\"" + articleInstance[5] + "\"" + ",\n" +
+            "\t" + "\"" + articleFields[6] + "\"" + ": " + articleInstance[6] + ",\n" +
+            "\t" + "\"" + articleFields[7] + "\"" + ": " + articleInstance[7] + ",\n" +
+            "\t" + "\"" + articleFields[8] + "\"" + ": " + articleInstance[8] + ",\n" +
+            "\t" + "\"" + articleFields[9] + "\"" + ": " + articleInstance[9] + ",\n" +
+            "\t" + "\"" + articleFields[10] + "\"" + ": " + "[\n" +
             serializeImagesToJSON(articleImageFields, article.getImages()) +
             "\t" + "],\n" +
-            "\t" + "\"" + articleFields[11] + "\"" + ":" + "[\n" +
+            "\t" + "\"" + articleFields[11] + "\"" + ": " + "[\n" +
             serializeTagsIdToJSON(tagFields, article.getTags()) +
             "\t" + "]\n" +
             "}";
@@ -75,43 +75,43 @@ public class ArticleSerializer implements Serializer<Article> {
         /*for (int i = 0; i < lines.length; i++) {
             System.out.println(i + ":" + lines[i]);
         }*/
-        Pattern p = Pattern.compile("\"id\":.+");
+        Pattern p = Pattern.compile("\"id\":\\s*.+");
         Matcher m = p.matcher(lines[indexLine]);
         withId = m.find();
         if (withId) {
-            p = Pattern.compile(":(\\d+),");
+            p = Pattern.compile(":\\s*(\\d+),");
             m = p.matcher(lines[indexLine]);
             m.find();
             id = Integer.parseInt(m.group(1));
             indexLine++;
         }
         // title
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]); // 1/2
+        m = Pattern.compile(":\\s*\"(.+)\",").matcher(lines[indexLine]); // 1/2
         m.find();
         title = m.group(1);
         indexLine++;
         // lead
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]); // 2/3
+        m = Pattern.compile(":\\s*\"(.+)\",").matcher(lines[indexLine]); // 2/3
         m.find();
         lead = m.group(1);
         indexLine++;
         // createDate
-        m = Pattern.compile(":(\\d+),").matcher(lines[indexLine]); // 3/4
+        m = Pattern.compile(":\\s*(\\d+),").matcher(lines[indexLine]); // 3/4
         m.find();
         createDate = new Timestamp(Long.parseLong(m.group(1)));
         indexLine++;
         // editDate
-        m = Pattern.compile(":(\\d+),").matcher(lines[indexLine]); // 4/5
+        m = Pattern.compile(":\\s*(\\d+),").matcher(lines[indexLine]); // 4/5
         m.find();
         editDate = new Timestamp(Long.parseLong(m.group(1)));
         indexLine++;
         // text
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]); // 5/6
+        m = Pattern.compile(":\\s*\"(.+)\",").matcher(lines[indexLine]); // 5/6
         m.find();
         text = m.group(1);
         indexLine++;
         // isPublished
-        m = Pattern.compile(":(\\w{4,5}),").matcher(lines[indexLine]); // 6/7
+        m = Pattern.compile(":\\s*(\\w{4,5}),").matcher(lines[indexLine]); // 6/7
         if (m.find()) {
             if (m.group(1).equals("true")) {
                 isPublished = true;
@@ -122,17 +122,17 @@ public class ArticleSerializer implements Serializer<Article> {
         }
         indexLine++;
         // categoryId
-        m = Pattern.compile(":(\\d+),").matcher(lines[indexLine]); // 7/8
+        m = Pattern.compile(":\\s*(\\d+),").matcher(lines[indexLine]); // 7/8
         m.find();
         categoryId = Integer.parseInt(m.group(1));
         indexLine++;
         // userId
-        m = Pattern.compile(":(\\d+),").matcher(lines[indexLine]); // 8/9
+        m = Pattern.compile(":\\s*(\\d+),").matcher(lines[indexLine]); // 8/9
         m.find();
         userId = Integer.parseInt(m.group(1));
         indexLine++;
         // sourceId
-        m = Pattern.compile(":(\\d+),").matcher(lines[indexLine]); // 9/10
+        m = Pattern.compile(":\\s*(\\d+),").matcher(lines[indexLine]); // 9/10
         m.find();
         sourceId = Integer.parseInt(m.group(1));
         // создаем по распарсеным данным объект статьи
@@ -156,20 +156,20 @@ public class ArticleSerializer implements Serializer<Article> {
                     String titleTag;
                     boolean withIdTag;
 
-                    Pattern p0 = Pattern.compile("\"id\":.+");
+                    Pattern p0 = Pattern.compile("\"id\":\\s*.+");
                     Matcher m0 = p0.matcher(lines[indexEndTag]);
                     withIdTag = m0.find();
 
                     // id
                     if (withIdTag) {
-                        Matcher m1 = Pattern.compile(":(\\d+),").matcher(lines[indexEndTag]);
+                        Matcher m1 = Pattern.compile(":\\s*(\\d+),").matcher(lines[indexEndTag]);
                         m1.find();
                         idTag = Integer.parseInt(m1.group(1));
                         indexEndTag += 1;
                     }
 
                     // title
-                    Matcher m2 = Pattern.compile(":\"(.+)\"").matcher(lines[indexEndTag]);
+                    Matcher m2 = Pattern.compile(":\\s*\"(.+)\"").matcher(lines[indexEndTag]);
                     m2.find();
                     titleTag = m2.group(1);
                     indexEndTag += 2;
@@ -202,25 +202,25 @@ public class ArticleSerializer implements Serializer<Article> {
                 String pathImage;
                 boolean withIdImage;
 
-                Pattern p0 = Pattern.compile("\"id\":.+");
+                Pattern p0 = Pattern.compile("\"id\":\\s*(.+)");
                 Matcher m0 = p0.matcher(lines[indexEndImages]);
                 withIdImage = m0.find();
                 //id
                 if (withIdImage) {
-                    Matcher m1 = Pattern.compile(":(\\d+),").matcher(lines[indexEndImages]);
+                    Matcher m1 = Pattern.compile(":\\s*(\\d+),").matcher(lines[indexEndImages]);
                     m1.find();
                     idImage = Integer.parseInt(m1.group(1));
                     indexEndImages += 1;
                 }
 
                 // title
-                Matcher m2 = Pattern.compile(":\"(.+)\",").matcher(lines[indexEndImages]);
+                Matcher m2 = Pattern.compile(":\\s*\"(.+)\",").matcher(lines[indexEndImages]);
                 m2.find();
                 titleImage = m2.group(1);
                 indexEndImages += 1;
 
                 // path
-                Matcher m3 = Pattern.compile(":\"(.+)\"").matcher(lines[indexEndImages]);
+                Matcher m3 = Pattern.compile(":\\s*\"(.+)\"").matcher(lines[indexEndImages]);
                 m3.find();
                 pathImage = m3.group(1);
                 indexEndImages += 2;
@@ -254,20 +254,20 @@ public class ArticleSerializer implements Serializer<Article> {
                     String titleTag;
                     boolean withIdTag;
 
-                    Pattern p0 = Pattern.compile("\"id\":.+");
+                    Pattern p0 = Pattern.compile("\"id\":\\s*.+");
                     Matcher m0 = p0.matcher(lines[indexEndTag]);
                     withIdTag = m0.find();
 
                     // id
                     if (withIdTag) {
-                        Matcher m1 = Pattern.compile(":(\\d+),").matcher(lines[indexEndTag]);
+                        Matcher m1 = Pattern.compile(":\\s*(\\d+),").matcher(lines[indexEndTag]);
                         m1.find();
                         idTag = Integer.parseInt(m1.group(1));
                         indexEndTag += 1;
                     }
 
                     // title
-                    Matcher m2 = Pattern.compile(":\"(.+)\"").matcher(lines[indexEndTag]);
+                    Matcher m2 = Pattern.compile(":\\s*\"(.+)\"").matcher(lines[indexEndTag]);
                     m2.find();
                     titleTag = m2.group(1);
                     indexEndTag += 2;
@@ -302,8 +302,8 @@ public class ArticleSerializer implements Serializer<Article> {
             Object[] tagInstance = tag.getObjects();
             String tagString = "" +
                     "\t\t" + "{\n" +
-                    "\t\t\t" + "\"" + tagFields[0] + "\"" + ":" + tagInstance[0] + ",\n" +
-                    "\t\t\t" + "\"" + tagFields[1] + "\"" + ":" + "\"" + tagInstance[1] + "\"" + "\n" +
+                    "\t\t\t" + "\"" + tagFields[0] + "\"" + ": " + tagInstance[0] + ",\n" +
+                    "\t\t\t" + "\"" + tagFields[1] + "\"" + ": " + "\"" + tagInstance[1] + "\"" + "\n" +
                     "\t\t";
             if (i != listTags.size() - 1) {
                 tagString += "},\n";
@@ -323,9 +323,9 @@ public class ArticleSerializer implements Serializer<Article> {
             Object[] imageInstance = image.getObjects();
             String imageString = "" +
                     "\t\t" + "{\n" +
-                    "\t\t\t" + "\"" + imageFields[0] + "\"" + ":" + imageInstance[0] + ",\n" +
-                    "\t\t\t" + "\"" + imageFields[1] + "\"" + ":" + "\"" + imageInstance[1] + "\"" + ",\n" +
-                    "\t\t\t" + "\"" + imageFields[2] + "\"" + ":" + "\"" + imageInstance[2] + "\"" + "\n" +
+                    "\t\t\t" + "\"" + imageFields[0] + "\"" + ": " + imageInstance[0] + ",\n" +
+                    "\t\t\t" + "\"" + imageFields[1] + "\"" + ": " + "\"" + imageInstance[1] + "\"" + ",\n" +
+                    "\t\t\t" + "\"" + imageFields[2] + "\"" + ": " + "\"" + imageInstance[2] + "\"" + "\n" +
                     "\t\t";
             if (i != listImageObjects.size() - 1) {
                 imageString += "},\n";

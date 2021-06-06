@@ -27,8 +27,8 @@ public class MailingSerializer implements Serializer<Mailing> {
 
         return "" +
             "{\n" +
-            "\t" + "\"" + mailingFields[0] + "\"" + ":" + mailingInstance[0] + ",\n" +
-            "\t" + "\"" + mailingFields[1] + "\"" + ":" + "\"" + mailingInstance[1] + "\"" + "\n" +
+            "\t" + "\"" + mailingFields[0] + "\"" + ": " + mailingInstance[0] + ",\n" +
+            "\t" + "\"" + mailingFields[1] + "\"" + ": " + "\"" + mailingInstance[1] + "\"" + "\n" +
             "}";
     }
 
@@ -45,18 +45,18 @@ public class MailingSerializer implements Serializer<Mailing> {
         }*/
 
         // id
-        Pattern p = Pattern.compile("\"id\":.+");
+        Pattern p = Pattern.compile("\"id\":\\s*.+");
         Matcher m = p.matcher(lines[indexLine]);
         withId = m.find();
         if (withId) {
-            p = Pattern.compile(":(\\d+),");
+            p = Pattern.compile(":\\s*(\\d+),");
             m = p.matcher(lines[indexLine]);
             m.find();
             id = Integer.parseInt(m.group(1));
             indexLine++;
         }
         // email
-        m = Pattern.compile(":\"(.+)\"").matcher(lines[indexLine]);
+        m = Pattern.compile(":\\s*\"(.+)\"").matcher(lines[indexLine]);
         m.find();
         email = m.group(1);
 

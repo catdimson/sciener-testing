@@ -27,8 +27,8 @@ public class TagSerializer implements Serializer<Tag> {
 
         return "" +
             "{\n" +
-            "\t" + "\"" + tagFields[0] + "\"" + ":" + tagInstance[0] + ",\n" +
-            "\t" + "\"" + tagFields[1] + "\"" + ":" + "\"" + tagInstance[1] + "\"" + "\n" +
+            "\t" + "\"" + tagFields[0] + "\"" + ": " + tagInstance[0] + ",\n" +
+            "\t" + "\"" + tagFields[1] + "\"" + ": " + "\"" + tagInstance[1] + "\"" + "\n" +
             "}";
     }
 
@@ -45,18 +45,18 @@ public class TagSerializer implements Serializer<Tag> {
         }*/
 
         // id
-        Pattern p = Pattern.compile("\"id\":.+");
+        Pattern p = Pattern.compile("\"id\":\\s*.+");
         Matcher m = p.matcher(lines[indexLine]);
         withId = m.find();
         if (withId) {
-            p = Pattern.compile(":(\\d+),");
+            p = Pattern.compile(":\\s*(\\d+),");
             m = p.matcher(lines[indexLine]);
             m.find();
             id = Integer.parseInt(m.group(1));
             indexLine++;
         }
         // title
-        m = Pattern.compile(":\"(.+)\"").matcher(lines[indexLine]);
+        m = Pattern.compile(":\\s*\"(.+)\"").matcher(lines[indexLine]);
         m.find();
         title = m.group(1);
 

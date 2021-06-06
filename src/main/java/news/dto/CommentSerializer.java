@@ -35,13 +35,13 @@ public class CommentSerializer implements Serializer<Comment> {
 
         return "" +
             "{\n" +
-            "\t" + "\"" + commentFields[0] + "\"" + ":" + commentInstance[0] + ",\n" +
-            "\t" + "\"" + commentFields[1] + "\"" + ":" + "\"" + commentInstance[1] + "\"" + ",\n" +
-            "\t" + "\"" + commentFields[2] + "\"" + ":" + createDate.getTime() / 1000 + ",\n" +
-            "\t" + "\"" + commentFields[3] + "\"" + ":" + editDate.getTime() / 1000 + ",\n" +
-            "\t" + "\"" + commentFields[4] + "\"" + ":" + commentInstance[4] + ",\n" +
-            "\t" + "\"" + commentFields[5] + "\"" + ":" + commentInstance[5] + ",\n" +
-            "\t" + "\"" + commentFields[6] + "\"" + ":" + "[\n" +
+            "\t" + "\"" + commentFields[0] + "\"" + ": " + commentInstance[0] + ",\n" +
+            "\t" + "\"" + commentFields[1] + "\"" + ": " + "\"" + commentInstance[1] + "\"" + ",\n" +
+            "\t" + "\"" + commentFields[2] + "\"" + ": " + createDate.getTime() / 1000 + ",\n" +
+            "\t" + "\"" + commentFields[3] + "\"" + ": " + editDate.getTime() / 1000 + ",\n" +
+            "\t" + "\"" + commentFields[4] + "\"" + ": " + commentInstance[4] + ",\n" +
+            "\t" + "\"" + commentFields[5] + "\"" + ": " + commentInstance[5] + ",\n" +
+            "\t" + "\"" + commentFields[6] + "\"" + ": " + "[\n" +
             serializeAttachmentsToJSON(commentAttachmentFields, comment.getAttachments()) +
             "\t" + "]\n" +
             "}";
@@ -62,38 +62,38 @@ public class CommentSerializer implements Serializer<Comment> {
         /*for (int i = 0; i < lines.length; i++) {
             System.out.println(i + ":" + lines[i]);
         }*/
-        Pattern p = Pattern.compile("\"id\":.+");
+        Pattern p = Pattern.compile("\"id\":\\s*.+");
         Matcher m = p.matcher(lines[indexLine]);
         withId = m.find();
         if (withId) {
-            p = Pattern.compile(":(\\d+),");
+            p = Pattern.compile(":\\s*(\\d+),");
             m = p.matcher(lines[indexLine]);
             m.find();
             id = Integer.parseInt(m.group(1));
             indexLine++;
         }
         // text
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);    // 1/2
+        m = Pattern.compile(":\\s*\"(.+)\",").matcher(lines[indexLine]);    // 1/2
         m.find();
         text = m.group(1);
         indexLine++;
         // createDate
-        m = Pattern.compile(":(\\d+),").matcher(lines[indexLine]);  // 2/3
+        m = Pattern.compile(":\\s*(\\d+),").matcher(lines[indexLine]);  // 2/3
         m.find();
         createDate = new Timestamp(Long.parseLong(m.group(1)));
         indexLine++;
         // editDate
-        m = Pattern.compile(":(\\d+),").matcher(lines[indexLine]);  // 3/4
+        m = Pattern.compile(":\\s*(\\d+),").matcher(lines[indexLine]);  // 3/4
         m.find();
         editDate = new Timestamp(Long.parseLong(m.group(1)));
         indexLine++;
         // userId
-        m = Pattern.compile(":(\\d+),").matcher(lines[indexLine]);  // 4/5
+        m = Pattern.compile(":\\s*(\\d+),").matcher(lines[indexLine]);  // 4/5
         m.find();
         userId = Integer.parseInt(m.group(1));
         indexLine++;
         // articleId
-        m = Pattern.compile(":(\\d+),").matcher(lines[indexLine]);  // 5/6
+        m = Pattern.compile(":\\s*(\\d+),").matcher(lines[indexLine]);  // 5/6
         m.find();
         articleId = Integer.parseInt(m.group(1));
 
@@ -118,25 +118,25 @@ public class CommentSerializer implements Serializer<Comment> {
                 String pathAttachment;
                 boolean withIdAttachment;
 
-                Pattern p0 = Pattern.compile("\"id\":.+");
+                Pattern p0 = Pattern.compile("\"id\":\\s*.+");
                 Matcher m0 = p0.matcher(lines[indexEndAttachments]);
                 withIdAttachment = m0.find();
                 //id
                 if (withIdAttachment) {
-                    Matcher m1 = Pattern.compile(":(\\d+),").matcher(lines[indexEndAttachments]);
+                    Matcher m1 = Pattern.compile(":\\s*(\\d+),").matcher(lines[indexEndAttachments]);
                     m1.find();
                     idAttachment = Integer.parseInt(m1.group(1));
                     indexEndAttachments += 1;
                 }
 
                 // title
-                Matcher m2 = Pattern.compile(":\"(.+)\",").matcher(lines[indexEndAttachments]);
+                Matcher m2 = Pattern.compile(":\\s*\"(.+)\",").matcher(lines[indexEndAttachments]);
                 m2.find();
                 titleAttachment = m2.group(1);
                 indexEndAttachments += 1;
 
                 // path
-                Matcher m3 = Pattern.compile(":\"(.+)\"").matcher(lines[indexEndAttachments]);
+                Matcher m3 = Pattern.compile(":\\s*\"(.+)\"").matcher(lines[indexEndAttachments]);
                 m3.find();
                 pathAttachment = m3.group(1);
                 indexEndAttachments += 2;
@@ -170,9 +170,9 @@ public class CommentSerializer implements Serializer<Comment> {
             Object[] attachmentInstance = commentAttachment.getObjects();
             String attachmentString = "" +
                     "\t\t" + "{\n" +
-                    "\t\t\t" + "\"" + attachmentFields[0] + "\"" + ":" + attachmentInstance[0] + ",\n" +
-                    "\t\t\t" + "\"" + attachmentFields[1] + "\"" + ":" + "\"" + attachmentInstance[1] + "\"" + ",\n" +
-                    "\t\t\t" + "\"" + attachmentFields[2] + "\"" + ":" + "\"" + attachmentInstance[2] + "\"" + "\n" +
+                    "\t\t\t" + "\"" + attachmentFields[0] + "\"" + ": " + attachmentInstance[0] + ",\n" +
+                    "\t\t\t" + "\"" + attachmentFields[1] + "\"" + ": " + "\"" + attachmentInstance[1] + "\"" + ",\n" +
+                    "\t\t\t" + "\"" + attachmentFields[2] + "\"" + ": " + "\"" + attachmentInstance[2] + "\"" + "\n" +
                     "\t\t";
             if (i != attachmentsList.size() - 1) {
                 attachmentString += "},\n";

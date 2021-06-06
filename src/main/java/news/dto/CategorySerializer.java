@@ -27,8 +27,8 @@ public class CategorySerializer implements Serializer<Category> {
 
         return "" +
             "{\n" +
-            "\t" + "\"" + categoryFields[0] + "\"" + ":" + categoryInstance[0] + ",\n" +
-            "\t" + "\"" + categoryFields[1] + "\"" + ":" + "\"" + categoryInstance[1] + "\"" + "\n" +
+            "\t" + "\"" + categoryFields[0] + "\"" + ": " + categoryInstance[0] + ",\n" +
+            "\t" + "\"" + categoryFields[1] + "\"" + ": " + "\"" + categoryInstance[1] + "\"" + "\n" +
             "}";
     }
 
@@ -40,18 +40,18 @@ public class CategorySerializer implements Serializer<Category> {
         boolean withId;
 
         String[] lines = json.split("\n");
-        Pattern p = Pattern.compile("\"id\":.+");
+        Pattern p = Pattern.compile("\"id\":\\s*.+");
         Matcher m = p.matcher(lines[indexLine]);
         withId = m.find();
         if (withId) {
-            p = Pattern.compile(":(\\d+),");
+            p = Pattern.compile(":\\s*(\\d+),");
             m = p.matcher(lines[indexLine]);
             m.find();
             id = Integer.parseInt(m.group(1));
             indexLine++;
         }
         // title
-        m = Pattern.compile(":\"(.+)\"").matcher(lines[indexLine]);
+        m = Pattern.compile(":\\s*\"(.+)\"").matcher(lines[indexLine]);
         m.find();
         title = m.group(1);
         Category category;

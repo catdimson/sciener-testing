@@ -29,19 +29,19 @@ public class AfishaSerializer implements Serializer<Afisha> {
 
         return "" +
             "{\n" +
-            "\t" + "\"" + afishaFields[0] + "\"" + ":" + afishaInstance[0] + ",\n" +
-            "\t" + "\"" + afishaFields[1] + "\"" + ":" + "\"" + afishaInstance[1] + "\"" + ",\n" +
-            "\t" + "\"" + afishaFields[2] + "\"" + ":" + "\"" + afishaInstance[2] + "\"" + ",\n" +
-            "\t" + "\"" + afishaFields[3] + "\"" + ":" + "\"" + afishaInstance[3] + "\"" + ",\n" +
-            "\t" + "\"" + afishaFields[4] + "\"" + ":" + "\"" + afishaInstance[4] + "\"" + ",\n" +
-            "\t" + "\"" + afishaFields[5] + "\"" + ":" + "\"" + afishaInstance[5] + "\"" + ",\n" +
-            "\t" + "\"" + afishaFields[6] + "\"" + ":" + "\"" + afishaInstance[6] + "\"" + ",\n" +
-            "\t" + "\"" + afishaFields[7] + "\"" + ":" + "\"" + afishaInstance[7] + "\"" + ",\n" +
-            "\t" + "\"" + afishaFields[8] + "\"" + ":" + "\"" + afishaInstance[8] + "\"" + ",\n" +
-            "\t" + "\"" + afishaFields[9] + "\"" + ":" + date.getTime() / 1000 + ",\n" +
-            "\t" + "\"" + afishaFields[10] + "\"" + ":" + afishaInstance[10] + ",\n" +
-            "\t" + "\"" + afishaFields[11] + "\"" + ":" + afishaInstance[11] + ",\n" +
-            "\t" + "\"" + afishaFields[12] + "\"" + ":" + afishaInstance[12] + "\n" +
+            "\t" + "\"" + afishaFields[0] + "\"" + ": " + afishaInstance[0] + ",\n" +
+            "\t" + "\"" + afishaFields[1] + "\"" + ": " + "\"" + afishaInstance[1] + "\"" + ",\n" +
+            "\t" + "\"" + afishaFields[2] + "\"" + ": " + "\"" + afishaInstance[2] + "\"" + ",\n" +
+            "\t" + "\"" + afishaFields[3] + "\"" + ": " + "\"" + afishaInstance[3] + "\"" + ",\n" +
+            "\t" + "\"" + afishaFields[4] + "\"" + ": " + "\"" + afishaInstance[4] + "\"" + ",\n" +
+            "\t" + "\"" + afishaFields[5] + "\"" + ": " + "\"" + afishaInstance[5] + "\"" + ",\n" +
+            "\t" + "\"" + afishaFields[6] + "\"" + ": " + "\"" + afishaInstance[6] + "\"" + ",\n" +
+            "\t" + "\"" + afishaFields[7] + "\"" + ": " + "\"" + afishaInstance[7] + "\"" + ",\n" +
+            "\t" + "\"" + afishaFields[8] + "\"" + ": " + "\"" + afishaInstance[8] + "\"" + ",\n" +
+            "\t" + "\"" + afishaFields[9] + "\"" + ": " + date.getTime() / 1000 + ",\n" +
+            "\t" + "\"" + afishaFields[10] + "\"" + ": " + afishaInstance[10] + ",\n" +
+            "\t" + "\"" + afishaFields[11] + "\"" + ": " + afishaInstance[11] + ",\n" +
+            "\t" + "\"" + afishaFields[12] + "\"" + ": " + afishaInstance[12] + "\n" +
             "}";
     }
 
@@ -67,63 +67,63 @@ public class AfishaSerializer implements Serializer<Afisha> {
         /*for (int i = 0; i < lines.length; i++) {
             System.out.println(i + ":" + lines[i]);
         }*/
-        Pattern p = Pattern.compile("\"id\":.+");
+        Pattern p = Pattern.compile("\"id\":\\s*.+");
         Matcher m = p.matcher(lines[indexLine]);
         withId = m.find();
         if (withId) {
-            p = Pattern.compile(":(\\d+),");
+            p = Pattern.compile(":\\s*(\\d+),");
             m = p.matcher(lines[indexLine]);
             m.find();
             id = Integer.parseInt(m.group(1));
             indexLine++;
         }
         // title
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
+        m = Pattern.compile(":\\s*\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         title = m.group(1);
         indexLine++;
         // imageUrl
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
+        m = Pattern.compile(":\\s*\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         imageUrl = m.group(1);
         indexLine++;
         // lead
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
+        m = Pattern.compile(":\\s*\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         lead = m.group(1);
         indexLine++;
         // description
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
+        m = Pattern.compile(":\\s*\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         description = m.group(1);
         indexLine++;
         // ageLimit
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
+        m = Pattern.compile(":\\s*\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         ageLimit = m.group(1);
         indexLine++;
         // timing
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
+        m = Pattern.compile(":\\s*\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         timing = m.group(1);
         indexLine++;
         // place
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
+        m = Pattern.compile(":\\s*\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         place = m.group(1);
         indexLine++;
         // phone
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
+        m = Pattern.compile(":\\s*\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         phone = m.group(1);
         indexLine++;
         // date
-        m = Pattern.compile(":(\\d+),").matcher(lines[indexLine]);
+        m = Pattern.compile(":\\s*(\\d+),").matcher(lines[indexLine]);
         m.find();
         date = new Timestamp(Long.parseLong(m.group(1)));
         indexLine++;
         // isCommercial
-        m = Pattern.compile(":(\\w{4,5}),").matcher(lines[indexLine]);
+        m = Pattern.compile(":\\s*(\\w{4,5}),").matcher(lines[indexLine]);
         if (m.find()) {
             if (m.group(1).equals("true")) {
                 isCommercial = true;
@@ -134,12 +134,12 @@ public class AfishaSerializer implements Serializer<Afisha> {
         }
         indexLine++;
         // userId
-        m = Pattern.compile(":(\\d+),").matcher(lines[indexLine]);
+        m = Pattern.compile(":\\s*(\\d+),").matcher(lines[indexLine]);
         m.find();
         userId = Integer.parseInt(m.group(1));
         indexLine++;
         // sourceId
-        m = Pattern.compile(":(\\d+)").matcher(lines[indexLine]);
+        m = Pattern.compile(":\\s*(\\d+)").matcher(lines[indexLine]);
         m.find();
         sourceId = Integer.parseInt(m.group(1));
 
