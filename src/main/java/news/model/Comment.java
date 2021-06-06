@@ -38,7 +38,7 @@ public class Comment {
     @Column(name = "article_id")
     private int articleId;
 
-    @OneToMany(mappedBy = "comment", orphanRemoval=true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "comment", orphanRemoval=true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private final Collection<CommentAttachment> attachments = new ArrayList<>();
 
     public Comment() {}

@@ -106,7 +106,7 @@ public class CommentSerializer implements Serializer<Comment> {
         }
 
         // если прикреплений нет
-        if (Pattern.compile("]").matcher(lines[indexLine + 2]).find()) {
+        if (Pattern.compile("]").matcher(lines[indexLine + 1]).find()) {
             System.out.println("Прикреплений нет");
         // если прикрепления есть
         } else {
@@ -126,7 +126,6 @@ public class CommentSerializer implements Serializer<Comment> {
                     Matcher m1 = Pattern.compile(":(\\d+),").matcher(lines[indexEndAttachments]);
                     m1.find();
                     idAttachment = Integer.parseInt(m1.group(1));
-                    System.out.println("idAttachment: " + idAttachment);
                     indexEndAttachments += 1;
                 }
 
@@ -134,17 +133,15 @@ public class CommentSerializer implements Serializer<Comment> {
                 Matcher m2 = Pattern.compile(":\"(.+)\",").matcher(lines[indexEndAttachments]);
                 m2.find();
                 titleAttachment = m2.group(1);
-                System.out.println("titleAttachment: " + titleAttachment);
                 indexEndAttachments += 1;
 
                 // path
                 Matcher m3 = Pattern.compile(":\"(.+)\"").matcher(lines[indexEndAttachments]);
                 m3.find();
                 pathAttachment = m3.group(1);
-                System.out.println("pathAttachment: " + pathAttachment);
                 indexEndAttachments += 2;
 
-                // создаем пркрепление и добавляем в комментарию
+                // создаем прирепление и добавляем в комментарию
                 CommentAttachment commentAttachment;
                 if (withIdAttachment) {
                     commentAttachment = new CommentAttachment(idAttachment, titleAttachment, pathAttachment);
@@ -176,7 +173,6 @@ public class CommentSerializer implements Serializer<Comment> {
                     "\t\t\t" + "\"" + attachmentFields[0] + "\"" + ":" + attachmentInstance[0] + ",\n" +
                     "\t\t\t" + "\"" + attachmentFields[1] + "\"" + ":" + "\"" + attachmentInstance[1] + "\"" + ",\n" +
                     "\t\t\t" + "\"" + attachmentFields[2] + "\"" + ":" + "\"" + attachmentInstance[2] + "\"" + "\n" +
-                    //"\t\t\t" + "\"" + attachmentFields[3] + "\"" + ":" + attachmentInstance[3] + "\n" +
                     "\t\t";
             if (i != attachmentsList.size() - 1) {
                 attachmentString += "},\n";

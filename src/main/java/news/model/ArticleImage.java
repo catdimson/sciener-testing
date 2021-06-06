@@ -4,44 +4,44 @@ import javax.persistence.*;
 import java.util.Objects;
 
 /**
- * Прикрепление к комментарию
+ * Изображение новости
  */
 @Entity
-@Table(name = "attachment", schema = "public", catalog = "news_db")
-public class CommentAttachment {
+@Table(name = "image", schema = "public", catalog = "news_db")
+public class ArticleImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    int id;
+    private int id;
 
     @Basic
     @Column(name = "title")
-    String title;
+    private String title;
 
     @Basic
     @Column(name = "path")
-    String path;
+    private String path;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id", referencedColumnName = "id")
-    Comment comment;
+    @JoinColumn(name = "article_id", referencedColumnName = "id")
+    Article article;
 
-    public CommentAttachment() {}
+    public ArticleImage() {}
 
-    public CommentAttachment(int id, String title, String path) {
+    public ArticleImage(int id, String title, String path) {
         this.id = id;
         this.title = title;
         this.path = path;
     }
 
-    public CommentAttachment(String title, String path) {
+    public ArticleImage(String title, String path) {
         this.title = title;
         this.path = path;
     }
 
-    public void setComment(Comment comment) {
-        this.comment = comment;
+    public void setArticle(Article article) {
+        this.article = article;
     }
 
     public Object[] getObjects() {
@@ -49,12 +49,13 @@ public class CommentAttachment {
                 id,
                 title,
                 path
+                //articleId
         };
     }
 
     public static String[] getFields() {
         return new String[] {
-                "id", "title", "path", "commentId"
+                "id", "title", "path", "articleId"
         };
     }
 
@@ -62,7 +63,7 @@ public class CommentAttachment {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CommentAttachment that = (CommentAttachment) o;
+        ArticleImage that = (ArticleImage) o;
         return id == that.id && Objects.equals(title, that.title) && Objects.equals(path, that.path);
     }
 

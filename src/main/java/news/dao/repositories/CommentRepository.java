@@ -88,7 +88,7 @@ public class CommentRepository implements ExtendRepository<Comment> {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
         try {
-            session.update(comment);
+            session.merge(comment);
             transaction.commit();
             session.close();
         } catch (Exception e) {
