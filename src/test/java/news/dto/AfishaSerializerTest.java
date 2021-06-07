@@ -34,7 +34,7 @@ class AfishaSerializerTest {
                 "\t\"timing\": \"240\",\n" +
                 "\t\"place\": \"Соборная площадь\",\n" +
                 "\t\"phone\": \"89205950000\",\n" +
-                "\t\"date\": " + Timestamp.valueOf(date.atStartOfDay()).getTime() + ",\n" +
+                "\t\"date\": " + Timestamp.valueOf(date.atStartOfDay()).getTime() / 1000 + ",\n" +
                 "\t\"isCommercial\": false,\n" +
                 "\t\"userId\": 1,\n" +
                 "\t\"sourceId\": 1\n" +

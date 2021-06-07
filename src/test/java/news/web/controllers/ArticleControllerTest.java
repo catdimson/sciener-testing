@@ -231,32 +231,30 @@
 //            "Cache-Control: no-store, no-cache, must-revalidate\n" +
 //            "Pragma: no-cache\n" +
 //            "Content-Type: application/json;charset=UTF-8\n" +
-//            "Content-Length: 955\n" +
+//            "Content-Length: 5000\n" +
 //            "\n" +
 //            "[\n" +
 //            "{\n" +
-//            "\t\"id\":1,\n" +
-//            "\t\"title\":\"Заголовок 1\",\n" +
-//            "\t\"lead\":\"Лид 1\",\n" +
-//            "\t\"createDate\":1561410000,\n" +
-//            "\t\"editDate\":1561410000,\n" +
-//            "\t\"text\":\"Текст 1\",\n" +
-//            "\t\"isPublished\":true,\n" +
-//            "\t\"categoryId\":1,\n" +
-//            "\t\"userId\":1,\n" +
-//            "\t\"sourceId\":1,\n" +
-//            "\t\"images\":[\n" +
+//            "\t\"id\": 1,\n" +
+//            "\t\"title\": \"Заголовок 1\",\n" +
+//            "\t\"lead\": \"Лид 1\",\n" +
+//            "\t\"createDate\": 1561410000,\n" +
+//            "\t\"editDate\": 1561410000,\n" +
+//            "\t\"text\": \"Текст 1\",\n" +
+//            "\t\"isPublished\": true,\n" +
+//            "\t\"categoryId\": 1,\n" +
+//            "\t\"userId\": 1,\n" +
+//            "\t\"sourceId\": 1,\n" +
+//            "\t\"images\": [\n" +
 //            "\t\t{\n" +
-//            "\t\t\t\"id\":1,\n" +
-//            "\t\t\t\"title\":\"Изображение 1\",\n" +
-//            "\t\t\t\"path\":\"/static/images/image1.png\",\n" +
-//            "\t\t\t\"articleId\":1\n" +
+//            "\t\t\t\"id\": 1,\n" +
+//            "\t\t\t\"title\": \"Изображение 1\",\n" +
+//            "\t\t\t\"path\": \"/static/images/image1.png\"\n" +
 //            "\t\t},\n" +
 //            "\t\t{\n" +
-//            "\t\t\t\"id\":2,\n" +
-//            "\t\t\t\"title\":\"Изображение 2\",\n" +
-//            "\t\t\t\"path\":\"/static/images/image2.png\",\n" +
-//            "\t\t\t\"articleId\":1\n" +
+//            "\t\t\t\"id\": 2,\n" +
+//            "\t\t\t\"title\": \"Изображение 2\",\n" +
+//            "\t\t\t\"path\": \"/static/images/image2.png\"\n" +
 //            "\t\t}\n" +
 //            "\t],\n" +
 //            "\t\"tagsId\":[\n" +

@@ -38,7 +38,7 @@ public class AfishaSerializer implements Serializer<Afisha> {
             "\t" + "\"" + afishaFields[6] + "\"" + ": " + "\"" + afishaInstance[6] + "\"" + ",\n" +
             "\t" + "\"" + afishaFields[7] + "\"" + ": " + "\"" + afishaInstance[7] + "\"" + ",\n" +
             "\t" + "\"" + afishaFields[8] + "\"" + ": " + "\"" + afishaInstance[8] + "\"" + ",\n" +
-            "\t" + "\"" + afishaFields[9] + "\"" + ": " + date.getTime() + ",\n" +
+            "\t" + "\"" + afishaFields[9] + "\"" + ": " + date.getTime() / 1000 + ",\n" +
             "\t" + "\"" + afishaFields[10] + "\"" + ": " + afishaInstance[10] + ",\n" +
             "\t" + "\"" + afishaFields[11] + "\"" + ": " + afishaInstance[11] + ",\n" +
             "\t" + "\"" + afishaFields[12] + "\"" + ": " + afishaInstance[12] + "\n" +
@@ -67,6 +67,7 @@ public class AfishaSerializer implements Serializer<Afisha> {
         /*for (int i = 0; i < lines.length; i++) {
             System.out.println(i + ":" + lines[i]);
         }*/
+        System.out.println(json);
         Pattern p = Pattern.compile("\"id\":\\s*.+");
         Matcher m = p.matcher(lines[indexLine]);
         withId = m.find();

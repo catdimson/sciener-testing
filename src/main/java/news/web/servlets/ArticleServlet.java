@@ -1,5 +1,6 @@
 package news.web.servlets;
 
+import news.HibernateUtil;
 import news.di.container.BeanFactory;
 import news.web.controllers.ArticleController;
 import news.web.http.HttpRequest;
@@ -77,6 +78,16 @@ public class ArticleServlet extends HttpServlet {
 
         URL path = getClass().getClassLoader().getResource("applicationContext.xml");
         BeanFactory.setSettings(customHttpRequest, path.getPath());
+        if (request.getHeader("UnitTest") != null) {
+            try {
+                HibernateUtil.setConnectionProperties(
+                        request.getHeader("UrlPostgres"),
+                        request.getHeader("UserPostgres"),
+                        request.getHeader("PasswordPostgres"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         beanFactory = BeanFactory.getInstance();
 
         try {
@@ -105,6 +116,16 @@ public class ArticleServlet extends HttpServlet {
 
         URL path = getClass().getClassLoader().getResource("applicationContext.xml");
         BeanFactory.setSettings(customHttpRequest, path.getPath());
+        if (request.getHeader("UnitTest") != null) {
+            try {
+                HibernateUtil.setConnectionProperties(
+                        request.getHeader("UrlPostgres"),
+                        request.getHeader("UserPostgres"),
+                        request.getHeader("PasswordPostgres"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         beanFactory = BeanFactory.getInstance();
 
         try {
@@ -130,6 +151,16 @@ public class ArticleServlet extends HttpServlet {
 
         URL path = getClass().getClassLoader().getResource("applicationContext.xml");
         BeanFactory.setSettings(customHttpRequest, path.getPath());
+        if (request.getHeader("UnitTest") != null) {
+            try {
+                HibernateUtil.setConnectionProperties(
+                        request.getHeader("UrlPostgres"),
+                        request.getHeader("UserPostgres"),
+                        request.getHeader("PasswordPostgres"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         beanFactory = BeanFactory.getInstance();
 
         try {
@@ -155,6 +186,16 @@ public class ArticleServlet extends HttpServlet {
 
         URL path = getClass().getClassLoader().getResource("applicationContext.xml");
         BeanFactory.setSettings(customHttpRequest, path.getPath());
+        if (request.getHeader("UnitTest") != null) {
+            try {
+                HibernateUtil.setConnectionProperties(
+                        request.getHeader("UrlPostgres"),
+                        request.getHeader("UserPostgres"),
+                        request.getHeader("PasswordPostgres"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         beanFactory = BeanFactory.getInstance();
 
         try {

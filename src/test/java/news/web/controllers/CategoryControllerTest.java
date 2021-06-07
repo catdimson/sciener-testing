@@ -59,17 +59,18 @@ class CategoryControllerTest {
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
             "Content-Type: application/json;charset=UTF-8\n" +
+            "Content-Length: 85\n" +
             "\n" +
             "[\n" +
             "{\n" +
-            "\t\"id\":1,\n" +
-            "\t\"title\":\"Спорт\"\n" +
+            "\t\"id\": 1,\n" +
+            "\t\"title\": \"Спорт\"\n" +
             "},\n" +
             "{\n" +
-            "\t\"id\":2,\n" +
-            "\t\"title\":\"Политика\"\n" +
+            "\t\"id\": 2,\n" +
+            "\t\"title\": \"Политика\"\n" +
             "}\n" +
-            "]\n";
+            "]";
         clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
@@ -103,7 +104,7 @@ class CategoryControllerTest {
     void buildResponseGETMethodFindByTitle() throws IOException, SQLException {
         Connection connection = this.poolConnection.getConnection();
         Statement statement = connection.createStatement();
-        String sqlInsertCategory = "INSERT INTO category (title) VALUES ('Спорт'), ('Политика');";
+        String sqlInsertCategory = "INSERT INTO category (title) VALUES ('sport'), ('politic');";
         statement.executeUpdate(sqlInsertCategory);
 
         // ожидаемый результат
@@ -112,19 +113,20 @@ class CategoryControllerTest {
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
                 "Content-Type: application/json;charset=UTF-8\n" +
+                "Content-Length: 36\n" +
                 "\n" +
                 "[\n" +
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"Спорт\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"sport\"\n" +
                 "}\n" +
-                "]\n";
+                "]";
         clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /blg_kotik_dmitry_war/category?title=Спорт HTTP/1.1\n" +
+                "GET /blg_kotik_dmitry_war/category?title=sport HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
                 "Host: 127.0.0.1:8080\n" +
@@ -161,10 +163,11 @@ class CategoryControllerTest {
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
                 "Content-Type: application/json;charset=UTF-8\n" +
+                "Content-Length: 36\n" +
                 "\n" +
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"Спорт\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"Спорт\"\n" +
                 "}";
 
         clientSocket = new Socket("127.0.0.1", 8080);
@@ -207,12 +210,14 @@ class CategoryControllerTest {
             "HTTP/1.1 201 \n" +
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
-            "Location: /category/1/\n";
+            "Location: /category/1/\n" +
+            "Content-Length: 0\n";
 
         String request = "" +
             "POST /blg_kotik_dmitry_war/category/ HTTP/1.1\n" +
             "Accept: application/json, */*; q=0.01\n" +
             "Content-Type: application/json\n" +
+            "Content-Length: 100\n" +
             "Host: 127.0.0.1:8080\n" +
             "UnitTest: true\n" +
             "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
@@ -220,7 +225,7 @@ class CategoryControllerTest {
             "PasswordPostgres: " + this.container.getPassword() + "\n" +
             "\n" +
             "{\n" +
-            "\t\"title\":\"Спорт\",\n" +
+            "\t\"title\": \"Спорт\",\n" +
             "}\n";
         out.println(request);
         out.flush();
@@ -267,6 +272,7 @@ class CategoryControllerTest {
                 "PUT /blg_kotik_dmitry_war/category/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
+                "Content-Length: 100\n" +
                 "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
@@ -274,8 +280,8 @@ class CategoryControllerTest {
                 "PasswordPostgres: " + this.container.getPassword() + "\n" +
                 "\n" +
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"Редактор\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"Редактор\"\n" +
                 "}";
         out.println(request);
         out.flush();
@@ -317,7 +323,7 @@ class CategoryControllerTest {
                 "Pragma: no-cache\n";
 
         String request = "" +
-                "DELETE /blg_kotik_dmitry_war/blg_kotik_dmitry_war/category/1/ HTTP/1.1\n" +
+                "DELETE /blg_kotik_dmitry_war/category/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
                 "Host: 127.0.0.1:8080\n" +

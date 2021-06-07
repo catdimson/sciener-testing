@@ -59,16 +59,16 @@ class TagControllerTest {
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
             "Content-Type: application/json;charset=UTF-8\n" +
-            "Content-Length: 68\n" +
+            "Content-Length: 72\n" +
             "\n" +
             "[\n" +
             "{\n" +
-            "\t\"id\":1,\n" +
-            "\t\"title\":\"ufc\"\n" +
+            "\t\"id\": 1,\n" +
+            "\t\"title\": \"ufc\"\n" +
             "},\n" +
             "{\n" +
-            "\t\"id\":2,\n" +
-            "\t\"title\":\"балет\"\n" +
+            "\t\"id\": 2,\n" +
+            "\t\"title\": \"балет\"\n" +
             "}\n" +
             "]";
         clientSocket = new Socket("127.0.0.1", 8080);
@@ -113,12 +113,12 @@ class TagControllerTest {
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
                 "Content-Type: application/json;charset=UTF-8\n" +
-                "Content-Length: 32\n" +
+                "Content-Length: 34\n" +
                 "\n" +
                 "[\n" +
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"ufc\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"ufc\"\n" +
                 "}\n" +
                 "]";
         clientSocket = new Socket("127.0.0.1", 8080);
@@ -163,11 +163,11 @@ class TagControllerTest {
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
                 "Content-Type: application/json;charset=UTF-8\n" +
-                "Content-Length: 27\n" +
+                "Content-Length: 29\n" +
                 "\n" +
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"ufc\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"ufc\"\n" +
                 "}";
 
         clientSocket = new Socket("127.0.0.1", 8080);
@@ -213,21 +213,20 @@ class TagControllerTest {
             "Location: /tag/1/\n" +
             "Content-Length: 0\n";
 
-
         String request = "" +
             "POST /blg_kotik_dmitry_war/tag/ HTTP/1.1\n" +
             "Accept: application/json, */*; q=0.01\n" +
             "Content-Type: application/json\n" +
             "Host: 127.0.0.1:8080\n" +
             "Accept-encoding: gzip, deflate, br\n" +
-            "Content-length: 38\n" +
+            "Content-length: 39\n" +
             "UnitTest: true\n" +
             "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
             "UserPostgres: " + this.container.getUsername() + "\n" +
             "PasswordPostgres: " + this.container.getPassword() + "\n" +
             "\n" +
             "{\n" +
-            "\t\"title\":\"ufc\"\n" +
+            "\t\"title\": \"ufc\"\n" +
             "}\n";
         out.println(request);
         out.flush();
