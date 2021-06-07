@@ -4,7 +4,6 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Objects;
 
 /**
@@ -62,7 +61,7 @@ public class Article {
     @JoinTable(name = "article_tag",
             joinColumns = @JoinColumn(name = "article_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private Collection<Tag> tags = new HashSet<>();
+    private Collection<Tag> tags = new ArrayList<>();
 
     public Article() {}
 
@@ -200,7 +199,7 @@ public class Article {
                 userId,
                 sourceId,
                 images,
-                //tagsId
+                tags
         };
     }
 
