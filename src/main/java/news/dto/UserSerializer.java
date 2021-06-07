@@ -36,8 +36,8 @@ public class UserSerializer implements Serializer<User> {
             "\t" + "\"" + userFields[3] + "\"" + ": " + "\"" + userInstance[3] + "\"" + ",\n" +
             "\t" + "\"" + userFields[4] + "\"" + ": " + "\"" + userInstance[4] + "\"" + ",\n" +
             "\t" + "\"" + userFields[5] + "\"" + ": " + "\"" + userInstance[5] + "\"" + ",\n" +
-            "\t" + "\"" + userFields[6] + "\"" + ": " + lastLogin.getTime() / 1000 + ",\n" +
-            "\t" + "\"" + userFields[7] + "\"" + ": " + dateJoined.getTime() / 1000 + ",\n" +
+            "\t" + "\"" + userFields[6] + "\"" + ": " + lastLogin.getTime() + ",\n" +
+            "\t" + "\"" + userFields[7] + "\"" + ": " + dateJoined.getTime() + ",\n" +
             "\t" + "\"" + userFields[8] + "\"" + ": " + userInstance[8] + ",\n" +
             "\t" + "\"" + userFields[9] + "\"" + ": " + userInstance[9] + ",\n" +
             "\t" + "\"" + userFields[10] + "\"" + ": " + userInstance[10] + ",\n" +

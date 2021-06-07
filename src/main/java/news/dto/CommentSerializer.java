@@ -37,8 +37,8 @@ public class CommentSerializer implements Serializer<Comment> {
             "{\n" +
             "\t" + "\"" + commentFields[0] + "\"" + ": " + commentInstance[0] + ",\n" +
             "\t" + "\"" + commentFields[1] + "\"" + ": " + "\"" + commentInstance[1] + "\"" + ",\n" +
-            "\t" + "\"" + commentFields[2] + "\"" + ": " + createDate.getTime() / 1000 + ",\n" +
-            "\t" + "\"" + commentFields[3] + "\"" + ": " + editDate.getTime() / 1000 + ",\n" +
+            "\t" + "\"" + commentFields[2] + "\"" + ": " + createDate.getTime() + ",\n" +
+            "\t" + "\"" + commentFields[3] + "\"" + ": " + editDate.getTime()+ ",\n" +
             "\t" + "\"" + commentFields[4] + "\"" + ": " + commentInstance[4] + ",\n" +
             "\t" + "\"" + commentFields[5] + "\"" + ": " + commentInstance[5] + ",\n" +
             "\t" + "\"" + commentFields[6] + "\"" + ": " + "[\n" +

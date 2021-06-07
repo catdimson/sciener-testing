@@ -27,18 +27,18 @@ class UserSerializerTest {
                 true, true, true, 1);
         final String expectedJSON =
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"password\":\"qwerty123\",\n" +
-                "\t\"username\":\"alex1993\",\n" +
-                "\t\"firstName\":\"Александр\",\n" +
-                "\t\"lastName\":\"Колесников\",\n" +
-                "\t\"email\":\"alex1993@mail.ru\",\n" +
-                "\t\"lastLogin\":" + Timestamp.valueOf(lastLogin.atStartOfDay()).getTime() / 1000 + ",\n" +
-                "\t\"dateJoined\":" + Timestamp.valueOf(dateJoined.atStartOfDay()).getTime() / 1000 + ",\n" +
-                "\t\"isSuperuser\":true,\n" +
-                "\t\"isStaff\":true,\n" +
-                "\t\"isActive\":true,\n" +
-                "\t\"groupId\":1\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"password\": \"qwerty123\",\n" +
+                "\t\"username\": \"alex1993\",\n" +
+                "\t\"firstName\": \"Александр\",\n" +
+                "\t\"lastName\": \"Колесников\",\n" +
+                "\t\"email\": \"alex1993@mail.ru\",\n" +
+                "\t\"lastLogin\": " + Timestamp.valueOf(lastLogin.atStartOfDay()).getTime() + ",\n" +
+                "\t\"dateJoined\": " + Timestamp.valueOf(dateJoined.atStartOfDay()).getTime() + ",\n" +
+                "\t\"isSuperuser\": true,\n" +
+                "\t\"isStaff\": true,\n" +
+                "\t\"isActive\": true,\n" +
+                "\t\"groupId\": 1\n" +
                 "}";
 
         UserSerializer userSerializer = new UserSerializer(user);
@@ -58,8 +58,8 @@ class UserSerializerTest {
                 "\t\"firstName\":\"Александр\",\n" +
                 "\t\"lastName\":\"Колесников\",\n" +
                 "\t\"email\":\"alex1993@mail.ru\",\n" +
-                "\t\"lastLogin\":" + Timestamp.valueOf(lastLogin.atStartOfDay()).getTime() / 1000 + ",\n" +
-                "\t\"dateJoined\":" + Timestamp.valueOf(dateJoined.atStartOfDay()).getTime() / 1000 + ",\n" +
+                "\t\"lastLogin\":" + Timestamp.valueOf(lastLogin.atStartOfDay()).getTime() + ",\n" +
+                "\t\"dateJoined\":" + Timestamp.valueOf(dateJoined.atStartOfDay()).getTime() + ",\n" +
                 "\t\"isSuperuser\":true,\n" +
                 "\t\"isStaff\":true,\n" +
                 "\t\"isActive\":true,\n" +
@@ -77,8 +77,8 @@ class UserSerializerTest {
                 .hasFieldOrPropertyWithValue("firstName", "Александр")
                 .hasFieldOrPropertyWithValue("lastName", "Колесников")
                 .hasFieldOrPropertyWithValue("email", "alex1993@mail.ru")
-                .hasFieldOrPropertyWithValue("lastLogin", lastLogin)
-                .hasFieldOrPropertyWithValue("dateJoined", dateJoined)
+                .hasFieldOrPropertyWithValue("lastLogin", Timestamp.valueOf(lastLogin.atStartOfDay()))
+                .hasFieldOrPropertyWithValue("dateJoined", Timestamp.valueOf(dateJoined.atStartOfDay()))
                 .hasFieldOrPropertyWithValue("isSuperuser", true)
                 .hasFieldOrPropertyWithValue("isStaff", true)
                 .hasFieldOrPropertyWithValue("isActive", true)

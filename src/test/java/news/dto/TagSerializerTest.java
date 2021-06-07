@@ -13,8 +13,8 @@ class TagSerializerTest {
         Tag tag = new Tag(1, "ufc");
         final String expectedJSON =
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"ufc\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"ufc\"\n" +
                 "}";
 
         TagSerializer tagSerializer = new TagSerializer(tag);
@@ -28,8 +28,8 @@ class TagSerializerTest {
         SoftAssertions soft = new SoftAssertions();
         final String json =
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"ufc\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"ufc\"\n" +
                 "}";
 
         TagSerializer tagSerializer = new TagSerializer(json);

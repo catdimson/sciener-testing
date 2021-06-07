@@ -13,8 +13,8 @@ class MailingSerializerTest {
         Mailing mailing = new Mailing(1, "test@mail.ru");
         final String expectedJSON =
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"email\":\"test@mail.ru\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"email\": \"test@mail.ru\"\n" +
                 "}";
 
         MailingSerializer mailingSerializer = new MailingSerializer(mailing);
@@ -28,8 +28,8 @@ class MailingSerializerTest {
         SoftAssertions soft = new SoftAssertions();
         final String json =
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"email\":\"test@mail.ru\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"email\": \"test@mail.ru\"\n" +
                 "}";
 
         MailingSerializer mailingSerializer = new MailingSerializer(json);

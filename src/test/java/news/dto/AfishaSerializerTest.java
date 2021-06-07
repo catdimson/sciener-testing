@@ -25,19 +25,19 @@ class AfishaSerializerTest {
                 false, 1, 1);
         final String expectedJSON =
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"Заголовок 1\",\n" +
-                "\t\"imageUrl\":\"/static/afisha/image.png\",\n" +
-                "\t\"lead\":\"Лид 1\",\n" +
-                "\t\"description\":\"Описание 1\",\n" +
-                "\t\"ageLimit\":\"12+\",\n" +
-                "\t\"timing\":\"240\",\n" +
-                "\t\"place\":\"Соборная площадь\",\n" +
-                "\t\"phone\":\"89205950000\",\n" +
-                "\t\"date\":" + Timestamp.valueOf(date.atStartOfDay()).getTime() / 1000 + ",\n" +
-                "\t\"isCommercial\":false,\n" +
-                "\t\"userId\":1,\n" +
-                "\t\"sourceId\":1\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"Заголовок 1\",\n" +
+                "\t\"imageUrl\": \"/static/afisha/image.png\",\n" +
+                "\t\"lead\": \"Лид 1\",\n" +
+                "\t\"description\": \"Описание 1\",\n" +
+                "\t\"ageLimit\": \"12+\",\n" +
+                "\t\"timing\": \"240\",\n" +
+                "\t\"place\": \"Соборная площадь\",\n" +
+                "\t\"phone\": \"89205950000\",\n" +
+                "\t\"date\": " + Timestamp.valueOf(date.atStartOfDay()).getTime() + ",\n" +
+                "\t\"isCommercial\": false,\n" +
+                "\t\"userId\": 1,\n" +
+                "\t\"sourceId\": 1\n" +
                 "}";
 
         AfishaSerializer afishaSerializer = new AfishaSerializer(afisha);
@@ -51,19 +51,19 @@ class AfishaSerializerTest {
         SoftAssertions soft = new SoftAssertions();
         final String json =
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"Заголовок 1\",\n" +
-                "\t\"imageUrl\":\"/static/afisha/image.png\",\n" +
-                "\t\"lead\":\"Лид 1\",\n" +
-                "\t\"description\":\"Описание 1\",\n" +
-                "\t\"ageLimit\":\"12+\",\n" +
-                "\t\"timing\":\"240\",\n" +
-                "\t\"place\":\"Соборная площадь\",\n" +
-                "\t\"phone\":\"89205950000\",\n" +
-                "\t\"date\":" + Timestamp.valueOf(date.atStartOfDay()).getTime() / 1000 + ",\n" +
-                "\t\"isCommercial\":false,\n" +
-                "\t\"userId\":1,\n" +
-                "\t\"sourceId\":1\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"Заголовок 1\",\n" +
+                "\t\"imageUrl\": \"/static/afisha/image.png\",\n" +
+                "\t\"lead\": \"Лид 1\",\n" +
+                "\t\"description\": \"Описание 1\",\n" +
+                "\t\"ageLimit\": \"12+\",\n" +
+                "\t\"timing\": \"240\",\n" +
+                "\t\"place\": \"Соборная площадь\",\n" +
+                "\t\"phone\": \"89205950000\",\n" +
+                "\t\"date\": " + Timestamp.valueOf(date.atStartOfDay()).getTime() + ",\n" +
+                "\t\"isCommercial\": false,\n" +
+                "\t\"userId\": 1,\n" +
+                "\t\"sourceId\": 1\n" +
                 "}";
 
         AfishaSerializer afishaSerializer = new AfishaSerializer(json);
@@ -80,7 +80,7 @@ class AfishaSerializerTest {
                 .hasFieldOrPropertyWithValue("timing", "240")
                 .hasFieldOrPropertyWithValue("place", "Соборная площадь")
                 .hasFieldOrPropertyWithValue("phone", "89205950000")
-                .hasFieldOrPropertyWithValue("date", date)
+                .hasFieldOrPropertyWithValue("date", Timestamp.valueOf(date.atStartOfDay()))
                 .hasFieldOrPropertyWithValue("isCommercial", false)
                 .hasFieldOrPropertyWithValue("userId", 1)
                 .hasFieldOrPropertyWithValue("sourceId", 1);
