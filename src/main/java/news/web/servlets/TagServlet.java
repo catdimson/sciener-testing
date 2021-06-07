@@ -91,8 +91,8 @@ public class TagServlet extends HttpServlet {
 
         try {
             TagController tagController = beanFactory.getBean(TagController.class);
-            tagController.buildResponse();
             HttpResponse customHttpResponse = tagController.getResponse();
+            tagController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -129,8 +129,8 @@ public class TagServlet extends HttpServlet {
 
         try {
             TagController tagController = beanFactory.getBean(TagController.class);
-            tagController.buildResponse();
             HttpResponse customHttpResponse = tagController.getResponse();
+            tagController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -164,8 +164,8 @@ public class TagServlet extends HttpServlet {
 
         try {
             TagController tagController = beanFactory.getBean(TagController.class);
-            tagController.buildResponse();
             HttpResponse customHttpResponse = tagController.getResponse();
+            tagController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -199,8 +199,8 @@ public class TagServlet extends HttpServlet {
 
         try {
             TagController tagController = beanFactory.getBean(TagController.class);
-            tagController.buildResponse();
             HttpResponse customHttpResponse = tagController.getResponse();
+            tagController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки

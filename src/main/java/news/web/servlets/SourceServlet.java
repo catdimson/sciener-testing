@@ -91,8 +91,8 @@ public class SourceServlet extends HttpServlet {
 
         try {
             SourceController sourceController = beanFactory.getBean(SourceController.class);
-            sourceController.buildResponse();
             HttpResponse customHttpResponse = sourceController.getResponse();
+            sourceController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -129,8 +129,8 @@ public class SourceServlet extends HttpServlet {
 
         try {
             SourceController sourceController = beanFactory.getBean(SourceController.class);
-            sourceController.buildResponse();
             HttpResponse customHttpResponse = sourceController.getResponse();
+            sourceController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -164,8 +164,8 @@ public class SourceServlet extends HttpServlet {
 
         try {
             SourceController sourceController = beanFactory.getBean(SourceController.class);
-            sourceController.buildResponse();
             HttpResponse customHttpResponse = sourceController.getResponse();
+            sourceController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -199,8 +199,8 @@ public class SourceServlet extends HttpServlet {
 
         try {
             SourceController sourceController = beanFactory.getBean(SourceController.class);
-            sourceController.buildResponse();
             HttpResponse customHttpResponse = sourceController.getResponse();
+            sourceController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки

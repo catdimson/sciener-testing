@@ -91,8 +91,8 @@ public class GroupServlet extends HttpServlet {
 
         try {
             GroupController groupController = beanFactory.getBean(GroupController.class);
-            groupController.buildResponse();
             HttpResponse customHttpResponse = groupController.getResponse();
+            groupController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -129,8 +129,8 @@ public class GroupServlet extends HttpServlet {
 
         try {
             GroupController groupController = beanFactory.getBean(GroupController.class);
-            groupController.buildResponse();
             HttpResponse customHttpResponse = groupController.getResponse();
+            groupController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -164,8 +164,8 @@ public class GroupServlet extends HttpServlet {
 
         try {
             GroupController groupController = beanFactory.getBean(GroupController.class);
-            groupController.buildResponse();
             HttpResponse customHttpResponse = groupController.getResponse();
+            groupController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -199,8 +199,8 @@ public class GroupServlet extends HttpServlet {
 
         try {
             GroupController groupController = beanFactory.getBean(GroupController.class);
-            groupController.buildResponse();
             HttpResponse customHttpResponse = groupController.getResponse();
+            groupController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки

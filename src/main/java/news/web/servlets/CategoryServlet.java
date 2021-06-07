@@ -91,8 +91,8 @@ public class CategoryServlet extends HttpServlet {
 
         try {
             CategoryController categoryController = beanFactory.getBean(CategoryController.class);
-            categoryController.buildResponse();
             HttpResponse customHttpResponse = categoryController.getResponse();
+            categoryController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -129,8 +129,8 @@ public class CategoryServlet extends HttpServlet {
 
         try {
             CategoryController categoryController = beanFactory.getBean(CategoryController.class);
-            categoryController.buildResponse();
             HttpResponse customHttpResponse = categoryController.getResponse();
+            categoryController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -164,8 +164,8 @@ public class CategoryServlet extends HttpServlet {
 
         try {
             CategoryController categoryController = beanFactory.getBean(CategoryController.class);
-            categoryController.buildResponse();
             HttpResponse customHttpResponse = categoryController.getResponse();
+            categoryController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -199,8 +199,8 @@ public class CategoryServlet extends HttpServlet {
 
         try {
             CategoryController categoryController = beanFactory.getBean(CategoryController.class);
-            categoryController.buildResponse();
             HttpResponse customHttpResponse = categoryController.getResponse();
+            categoryController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки

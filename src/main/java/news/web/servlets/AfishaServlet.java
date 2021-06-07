@@ -77,6 +77,7 @@ public class AfishaServlet extends HttpServlet {
 
         URL path = getClass().getClassLoader().getResource("applicationContext.xml");
         BeanFactory.setSettings(customHttpRequest, path.getPath());
+
         if (request.getHeader("UnitTest") != null) {
             try {
                 HibernateUtil.setConnectionProperties(
@@ -91,8 +92,8 @@ public class AfishaServlet extends HttpServlet {
 
         try {
             AfishaController afishaController = beanFactory.getBean(AfishaController.class);
-            afishaController.buildResponse();
             HttpResponse customHttpResponse = afishaController.getResponse();
+            afishaController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -129,8 +130,8 @@ public class AfishaServlet extends HttpServlet {
 
         try {
             AfishaController afishaController = beanFactory.getBean(AfishaController.class);
-            afishaController.buildResponse();
             HttpResponse customHttpResponse = afishaController.getResponse();
+            afishaController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -164,8 +165,8 @@ public class AfishaServlet extends HttpServlet {
 
         try {
             AfishaController afishaController = beanFactory.getBean(AfishaController.class);
-            afishaController.buildResponse();
             HttpResponse customHttpResponse = afishaController.getResponse();
+            afishaController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -199,8 +200,8 @@ public class AfishaServlet extends HttpServlet {
 
         try {
             AfishaController afishaController = beanFactory.getBean(AfishaController.class);
-            afishaController.buildResponse();
             HttpResponse customHttpResponse = afishaController.getResponse();
+            afishaController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки

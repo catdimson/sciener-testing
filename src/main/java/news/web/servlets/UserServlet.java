@@ -91,8 +91,8 @@ public class UserServlet extends HttpServlet {
 
         try {
             UserController userController = beanFactory.getBean(UserController.class);
-            userController.buildResponse();
             HttpResponse customHttpResponse = userController.getResponse();
+            userController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -129,8 +129,8 @@ public class UserServlet extends HttpServlet {
 
         try {
             UserController userController = beanFactory.getBean(UserController.class);
-            userController.buildResponse();
             HttpResponse customHttpResponse = userController.getResponse();
+            userController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -164,8 +164,8 @@ public class UserServlet extends HttpServlet {
 
         try {
             UserController userController = beanFactory.getBean(UserController.class);
-            userController.buildResponse();
             HttpResponse customHttpResponse = userController.getResponse();
+            userController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -199,8 +199,8 @@ public class UserServlet extends HttpServlet {
 
         try {
             UserController userController = beanFactory.getBean(UserController.class);
-            userController.buildResponse();
             HttpResponse customHttpResponse = userController.getResponse();
+            userController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки

@@ -91,8 +91,8 @@ public class MailingServlet extends HttpServlet {
 
         try {
             MailingController mailingController = beanFactory.getBean(MailingController.class);
-            mailingController.buildResponse();
             HttpResponse customHttpResponse = mailingController.getResponse();
+            mailingController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -129,8 +129,8 @@ public class MailingServlet extends HttpServlet {
 
         try {
             MailingController mailingController = beanFactory.getBean(MailingController.class);
-            mailingController.buildResponse();
             HttpResponse customHttpResponse = mailingController.getResponse();
+            mailingController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -164,8 +164,8 @@ public class MailingServlet extends HttpServlet {
 
         try {
             MailingController mailingController = beanFactory.getBean(MailingController.class);
-            mailingController.buildResponse();
             HttpResponse customHttpResponse = mailingController.getResponse();
+            mailingController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -199,8 +199,8 @@ public class MailingServlet extends HttpServlet {
 
         try {
             MailingController mailingController = beanFactory.getBean(MailingController.class);
-            mailingController.buildResponse();
             HttpResponse customHttpResponse = mailingController.getResponse();
+            mailingController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
