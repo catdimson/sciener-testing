@@ -15,18 +15,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MailingController implements Controller {
-    HttpRequest request;
     HttpResponse response = new HttpResponse();
     MailingService mailingService;
     MailingSerializer mailingSerializer;
 
-    public MailingController(MailingService mailingService, HttpRequest request) {
+    public MailingController(MailingService mailingService) {
         this.mailingService = mailingService;
-        this.request = request;
     }
 
     @Override
-    public void buildResponse() throws SQLException {
+    public void buildResponse(HttpRequest request) throws SQLException {
         String fullUrl = request.getPath(true);
         String url = request.getPath(false);
         Pattern p;

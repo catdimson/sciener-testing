@@ -15,18 +15,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class UserController implements Controller {
-    HttpRequest request;
     HttpResponse response = new HttpResponse();
     UserService userService;
     UserSerializer userSerializer;
 
-    public UserController(UserService userService, HttpRequest request) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.request = request;
     }
 
     @Override
-    public void buildResponse() throws SQLException {
+    public void buildResponse(HttpRequest request) throws SQLException {
         String fullUrl = request.getPath(true);
         String url = request.getPath(false);
         Pattern p;
