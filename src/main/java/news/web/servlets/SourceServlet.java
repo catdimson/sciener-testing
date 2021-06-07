@@ -2,9 +2,11 @@ package news.web.servlets;
 
 import news.HibernateUtil;
 import news.di.container.BeanFactory;
+import news.web.controllers.MailingController;
 import news.web.controllers.SourceController;
 import news.web.http.HttpRequest;
 import news.web.http.HttpResponse;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -24,7 +26,7 @@ import java.util.regex.Pattern;
 @WebServlet(name="SourceServlet", urlPatterns={"/source/*", "/source/"})
 public class SourceServlet extends HttpServlet {
 
-    protected BeanFactory beanFactory;
+    protected ClassPathXmlApplicationContext context;
 
     private String extractPath(HttpServletRequest request) {
         String requestURI = request.getRequestURI();
@@ -74,9 +76,8 @@ public class SourceServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding("UTF-8");
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
+        context = new ClassPathXmlApplicationContext("springApplicationContext.xml");
 
-        URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        BeanFactory.setSettings(customHttpRequest, path.getPath());
         if (request.getHeader("UnitTest") != null) {
             try {
                 HibernateUtil.setConnectionProperties(
@@ -87,10 +88,9 @@ public class SourceServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
-        beanFactory = BeanFactory.getInstance();
-
+        
         try {
-            SourceController sourceController = beanFactory.getBean(SourceController.class);
+            SourceController sourceController = context.getBean("sourceController", SourceController.class);
             HttpResponse customHttpResponse = sourceController.getResponse();
             sourceController.buildResponse(customHttpRequest);
             // устанавливает код статуса
@@ -103,7 +103,7 @@ public class SourceServlet extends HttpServlet {
             // устанавливаем тело
             PrintWriter pr = response.getWriter();
             pr.write(customHttpResponse.getBody());
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -112,9 +112,8 @@ public class SourceServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding("UTF-8");
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
+        context = new ClassPathXmlApplicationContext("springApplicationContext.xml");
 
-        URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        BeanFactory.setSettings(customHttpRequest, path.getPath());
         if (request.getHeader("UnitTest") != null) {
             try {
                 HibernateUtil.setConnectionProperties(
@@ -125,10 +124,9 @@ public class SourceServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
-        beanFactory = BeanFactory.getInstance();
-
+        
         try {
-            SourceController sourceController = beanFactory.getBean(SourceController.class);
+            SourceController sourceController = context.getBean("sourceController", SourceController.class);
             HttpResponse customHttpResponse = sourceController.getResponse();
             sourceController.buildResponse(customHttpRequest);
             // устанавливает код статуса
@@ -138,7 +136,7 @@ public class SourceServlet extends HttpServlet {
             for (Map.Entry<String, String> pair: customHeaders.entrySet()) {
                 response.setHeader(pair.getKey(), pair.getValue());
             }
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -147,9 +145,8 @@ public class SourceServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding("UTF-8");
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
+        context = new ClassPathXmlApplicationContext("springApplicationContext.xml");
 
-        URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        BeanFactory.setSettings(customHttpRequest, path.getPath());
         if (request.getHeader("UnitTest") != null) {
             try {
                 HibernateUtil.setConnectionProperties(
@@ -160,10 +157,9 @@ public class SourceServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
-        beanFactory = BeanFactory.getInstance();
-
+        
         try {
-            SourceController sourceController = beanFactory.getBean(SourceController.class);
+            SourceController sourceController = context.getBean("sourceController", SourceController.class);
             HttpResponse customHttpResponse = sourceController.getResponse();
             sourceController.buildResponse(customHttpRequest);
             // устанавливает код статуса
@@ -173,7 +169,7 @@ public class SourceServlet extends HttpServlet {
             for (Map.Entry<String, String> pair: customHeaders.entrySet()) {
                 response.setHeader(pair.getKey(), pair.getValue());
             }
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -182,9 +178,8 @@ public class SourceServlet extends HttpServlet {
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding("UTF-8");
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
+        context = new ClassPathXmlApplicationContext("springApplicationContext.xml");
 
-        URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        BeanFactory.setSettings(customHttpRequest, path.getPath());
         if (request.getHeader("UnitTest") != null) {
             try {
                 HibernateUtil.setConnectionProperties(
@@ -195,10 +190,9 @@ public class SourceServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
-        beanFactory = BeanFactory.getInstance();
-
+        
         try {
-            SourceController sourceController = beanFactory.getBean(SourceController.class);
+            SourceController sourceController = context.getBean("sourceController", SourceController.class);
             HttpResponse customHttpResponse = sourceController.getResponse();
             sourceController.buildResponse(customHttpRequest);
             // устанавливает код статуса
@@ -208,7 +202,7 @@ public class SourceServlet extends HttpServlet {
             for (Map.Entry<String, String> pair: customHeaders.entrySet()) {
                 response.setHeader(pair.getKey(), pair.getValue());
             }
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

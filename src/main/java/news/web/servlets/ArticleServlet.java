@@ -1,7 +1,6 @@
 package news.web.servlets;
 
 import news.HibernateUtil;
-import news.di.container.BeanFactory;
 import news.web.controllers.ArticleController;
 import news.web.http.HttpRequest;
 import news.web.http.HttpResponse;
@@ -23,7 +22,6 @@ import java.util.regex.Pattern;
 @WebServlet(name="ArticleServlet", urlPatterns={"/article/*", "/article/"})
 public class ArticleServlet extends HttpServlet {
 
-    protected BeanFactory beanFactory;
     protected ClassPathXmlApplicationContext context;
 
     private String extractPath(HttpServletRequest request) {
