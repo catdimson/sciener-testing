@@ -27,9 +27,9 @@ public class SourceSerializer implements Serializer<Source> {
 
         return "" +
             "{\n" +
-            "\t" + "\"" + sourceFields[0] + "\"" + ":" + sourceInstance[0] + ",\n" +
-            "\t" + "\"" + sourceFields[1] + "\"" + ":" + "\"" + sourceInstance[1] + "\"" + ",\n" +
-            "\t" + "\"" + sourceFields[2] + "\"" + ":" + "\"" + sourceInstance[2] + "\"" + "\n" +
+            "\t" + "\"" + sourceFields[0] + "\"" + ": " + sourceInstance[0] + ",\n" +
+            "\t" + "\"" + sourceFields[1] + "\"" + ": " + "\"" + sourceInstance[1] + "\"" + ",\n" +
+            "\t" + "\"" + sourceFields[2] + "\"" + ": " + "\"" + sourceInstance[2] + "\"" + "\n" +
             "}";
     }
 
@@ -47,23 +47,23 @@ public class SourceSerializer implements Serializer<Source> {
         }*/
 
         // id
-        Pattern p = Pattern.compile("\"id\":.+");
+        Pattern p = Pattern.compile("\"id\":\\s*.+");
         Matcher m = p.matcher(lines[indexLine]);
         withId = m.find();
         if (withId) {
-            p = Pattern.compile(":(\\d+),");
+            p = Pattern.compile(":\\s*(\\d+),");
             m = p.matcher(lines[indexLine]);
             m.find();
             id = Integer.parseInt(m.group(1));
             indexLine++;
         }
         // title
-        m = Pattern.compile(":\"(.+)\",").matcher(lines[indexLine]);
+        m = Pattern.compile(":\\s*\"(.+)\",").matcher(lines[indexLine]);
         m.find();
         title = m.group(1);
         indexLine++;
         // url
-        m = Pattern.compile(":\"(.+)\"").matcher(lines[indexLine]);
+        m = Pattern.compile(":\\s*\"(.+)\"").matcher(lines[indexLine]);
         m.find();
         url = m.group(1);
 

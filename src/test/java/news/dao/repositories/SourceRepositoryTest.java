@@ -1,5 +1,6 @@
 package news.dao.repositories;
 
+import news.HibernateUtil;
 import news.dao.connection.DBPool;
 import news.dao.specifications.FindAllSourceSpecification;
 import news.dao.specifications.FindByIdSourceSpecification;
@@ -29,16 +30,19 @@ class SourceRepositoryTest {
                 .withPassword("qwerty")
                 .withDatabaseName("news");
         this.container.start();
+        
+        this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
+        
+        HibernateUtil.setConnectionProperties(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
 
+        Statement statement = this.poolConnection.getConnection().createStatement();
+        
         String sqlCreateTableSource = "CREATE TABLE IF NOT EXISTS source (" +
                 "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
                 "title character varying(50) NOT NULL," +
                 "url character varying(500) NOT NULL," +
                 "CONSTRAINT source_pk PRIMARY KEY (id)" +
                 ");";
-        this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
-
-        Statement statement = this.poolConnection.getConnection().createStatement();
         statement.executeUpdate(sqlCreateTableSource);
     }
 
@@ -46,7 +50,7 @@ class SourceRepositoryTest {
     void findById() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            SourceRepository sourceRepository = new SourceRepository(this.poolConnection);
+            SourceRepository sourceRepository = new SourceRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO source (title, url) VALUES('Яндекс ДЗЕН', 'https://zen.yandex.ru/');";
@@ -70,7 +74,7 @@ class SourceRepositoryTest {
     void findByTitle() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            SourceRepository sourceRepository = new SourceRepository(this.poolConnection);
+            SourceRepository sourceRepository = new SourceRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO source (title, url) VALUES('Яндекс ДЗЕН', 'https://zen.yandex.ru/');";
@@ -101,7 +105,7 @@ class SourceRepositoryTest {
     void findAll() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            SourceRepository sourceRepository = new SourceRepository(this.poolConnection);
+            SourceRepository sourceRepository = new SourceRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO source (title, url) VALUES('Яндекс ДЗЕН', 'https://zen.yandex.ru/'), " +
@@ -136,7 +140,7 @@ class SourceRepositoryTest {
     void createSource() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            SourceRepository sourceRepository = new SourceRepository(this.poolConnection);
+            SourceRepository sourceRepository = new SourceRepository();
             Source source = new Source("Яндекс ДЗЕН", "https://zen.yandex.ru/");
 
             sourceRepository.create(source);
@@ -159,7 +163,7 @@ class SourceRepositoryTest {
     @Test
     void deleteSource() {
         try {
-            SourceRepository sourceRepository = new SourceRepository(this.poolConnection);
+            SourceRepository sourceRepository = new SourceRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO source (title, url) VALUES('Яндекс ДЗЕН', 'https://zen.yandex.ru/');";
@@ -182,7 +186,7 @@ class SourceRepositoryTest {
     void updateSource() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            SourceRepository sourceRepository = new SourceRepository(this.poolConnection);
+            SourceRepository sourceRepository = new SourceRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO source (title, url) VALUES('Яндекс ДЗЕН', 'https://zen.yandex.ru/');";

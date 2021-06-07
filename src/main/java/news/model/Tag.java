@@ -1,15 +1,46 @@
 package news.model;
 
+import javax.persistence.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
+
 /**
  * Тэг новости
  */
+@Entity
+@Table(name = "tag", schema = "public", catalog = "news_db")
 public class Tag {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+
+    @Basic
+    @Column(name = "title")
     private String title;
+
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
+    private Collection<Article> articles = new HashSet<>();
+
+    public void addNewArticle(Article article) {
+        this.articles.add(article);
+    }
+
+    public Tag() {};
 
     public Tag(int id, String title) {
         this.id = id;
         this.title = title;
+    }
+
+    public int getTagId() {
+        return this.id;
+    }
+
+    public void setTagId(int id) {
+        this.id = id;
     }
 
     public Tag(String title) {
@@ -47,4 +78,18 @@ public class Tag {
                 "id", "title"
         };
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tag tagEntity = (Tag) o;
+        return id == tagEntity.id && Objects.equals(title, tagEntity.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title);
+    }
+
 }

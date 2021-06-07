@@ -1,6 +1,5 @@
 package news.di.container;
 
-import news.dao.connection.ConnectionPool;
 import news.web.http.HttpRequest;
 
 import java.lang.reflect.Constructor;
@@ -10,19 +9,17 @@ public class BeanFactory {
 
     private static BeanFactory BEAN_FACTORY;
     private final XmlBeansConfiguration configuration;
-    private final ConnectionPool dbPool;
     private final HttpRequest httpRequest;
 
 
-    private BeanFactory(ConnectionPool dbPool, HttpRequest httpRequest, String pathToConfig) {
-        this.dbPool = dbPool;
+    private BeanFactory(HttpRequest httpRequest, String pathToConfig) {
         this.httpRequest = httpRequest;
         this.configuration = new XmlBeansConfiguration();
         configuration.setPathAndLoad(pathToConfig);
     }
 
-    public static void setSettings(ConnectionPool dbPool, HttpRequest httpRequest, String pathToConfig) {
-        BEAN_FACTORY = new BeanFactory(dbPool, httpRequest, pathToConfig);
+    public static void setSettings(HttpRequest httpRequest, String pathToConfig) {
+        BEAN_FACTORY = new BeanFactory(httpRequest, pathToConfig);
     }
 
     public static BeanFactory getInstance() {
@@ -34,9 +31,10 @@ public class BeanFactory {
         T bean;
         String injectClassName = configuration.getRelationClassFromCurrent(currentClass.getTypeName());
         if (injectClassName != null) {
+            System.out.println("injectClassName: " + injectClassName);
             Constructor<?> currentConstructor = currentClass.getConstructors()[0];
             if (injectClassName.equals("")) {
-                bean = (T) currentConstructor.newInstance(dbPool);
+                bean = (T) currentConstructor.newInstance();
             } else {
                 Class<?>[] constructorParameterTypesForCurrentClass = currentConstructor.getParameterTypes();
                 Class<?> injectClass = Class.forName(injectClassName);

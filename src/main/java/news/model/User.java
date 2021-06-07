@@ -1,32 +1,73 @@
 package news.model;
 
+import javax.persistence.*;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDate;
+import java.sql.Timestamp;
+import java.util.Objects;
 
 /**
  * Пользователь
  */
+@Entity
+@Table(name = "user", schema = "public", catalog = "news_db")
 public class User {
-    private int id;
-    private String password;
-    private String username;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private LocalDate lastLogin;
-    final private LocalDate dateJoined;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
+
+    @Basic
+    @Column(name = "password")
+    private String password;
+
+    @Basic
+    @Column(name = "username")
+    private String username;
+
+    @Basic
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Basic
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Basic
+    @Column(name = "email")
+    private String email;
+
+    @Basic
+    @Column(name = "last_login")
+    private Timestamp lastLogin;
+
+    @Basic
+    @Column(name = "date_joined")
+    private Timestamp dateJoined;
+
+    @Basic
+    @Column(name = "is_superuser")
     private boolean isSuperuser;
+
+    @Basic
+    @Column(name = "is_staff")
     private boolean isStaff;
+
+    @Basic
+    @Column(name = "is_active")
     private boolean isActive;
 
+    @Basic
+    @Column(name = "group_id")
     private int groupId;
 
-    public User(int id, String password, String username, String firstName, String lastName, String email, LocalDate lastLogin,
-                LocalDate dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive, int groupId) {
+    public User() {};
+
+    public User(int id, String password, String username, String firstName, String lastName, String email, Timestamp lastLogin,
+                Timestamp dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive, int groupId) {
         this.id = id;
         this.password = password;
         this.username = username;
@@ -41,8 +82,8 @@ public class User {
         this.groupId = groupId;
     }
 
-    public User(String password, String username, String firstName, String lastName, String email, LocalDate lastLogin,
-                LocalDate dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive, int groupId) {
+    public User(String password, String username, String firstName, String lastName, String email, Timestamp lastLogin,
+                Timestamp dateJoined, boolean isSuperuser, boolean isStaff, boolean isActive, int groupId) {
         this.password = password;
         this.username = username;
         this.firstName = firstName;
@@ -54,6 +95,14 @@ public class User {
         this.isStaff = isStaff;
         this.isActive = isActive;
         this.groupId = groupId;
+    }
+
+    public int getUserId() {
+        return this.id;
+    }
+
+    public void setUserId(int id) {
+        this.id = id;
     }
 
     /**
@@ -169,5 +218,18 @@ public class User {
                 "id", "password", "username", "firstName", "lastName", "email", "lastLogin", "dateJoined", "isSuperuser",
                 "isStaff", "isActive", "groupId"
         };
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User that = (User) o;
+        return id == that.id && isSuperuser == that.isSuperuser && isStaff == that.isStaff && isActive == that.isActive && Objects.equals(password, that.password) && Objects.equals(username, that.username) && Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(email, that.email) && Objects.equals(lastLogin, that.lastLogin) && Objects.equals(dateJoined, that.dateJoined);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, password, username, firstName, lastName, email, lastLogin, dateJoined, isSuperuser, isStaff, isActive);
     }
 }

@@ -1,72 +1,97 @@
 package news.dao.repositories;
 
+import news.HibernateUtil;
 import news.dao.connection.ConnectionPool;
-import news.dao.connection.DBPool;
 import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Category;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
-import java.sql.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Root;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CategoryRepository implements ExtendRepository<Category> {
-    final private ConnectionPool connectionPool;
 
-    public CategoryRepository(ConnectionPool connectionPool) {
-        this.connectionPool = connectionPool;
-    }
+    public CategoryRepository() {}
 
     @Override
     public List<Category> query(ExtendSqlSpecification<Category> categorySpecification) throws SQLException {
         List<Category> queryResult = new ArrayList<>();
-        Connection connection = connectionPool.getConnection();
-        String sqlQuery = categorySpecification.toSqlClauses();
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
+        Session session = HibernateUtil.getSessionFactory().openSession();
         if (categorySpecification.isById()) {
-            preparedStatement.setInt(1, (int) categorySpecification.getCriterial());
+            Category category = session.get(Category.class, (int) categorySpecification.getCriterial());
+            queryResult.add(category);
         } else {
             if (categorySpecification.getCriterial() != null) {
-                preparedStatement.setString(1, (String) categorySpecification.getCriterial());
+                // подготовка
+                CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+                CriteriaQuery<Category> criteriaQuery = criteriaBuilder.createQuery(Category.class);
+                Root<Category> root = criteriaQuery.from(Category.class);
+                ParameterExpression<String> title = criteriaBuilder.parameter(String.class);
+                // запрос
+                criteriaQuery.select(root).where(criteriaBuilder.equal(root.get("title"), title));
+                Query<Category> query = session.createQuery(criteriaQuery);
+                query.setParameter(title, (String) categorySpecification.getCriterial());
+                queryResult = query.getResultList();
+            } else {
+                // подготовка
+                CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+                CriteriaQuery<Category> criteriaQuery = criteriaBuilder.createQuery(Category.class);
+                Root<Category> root = criteriaQuery.from(Category.class);
+                // запрос
+                criteriaQuery.select(root);
+                Query<Category> query = session.createQuery(criteriaQuery);
+                queryResult = query.getResultList();
             }
-        }
-        ResultSet result = preparedStatement.executeQuery();
-        while (result.next()) {
-            Category category = new Category(result.getInt(1), result.getString(2));
-            queryResult.add(category);
         }
         return queryResult;
     }
 
     @Override
     public int create(Category category) throws SQLException {
-        Connection connection = this.connectionPool.getConnection();
-        String sqlCreateInstance = "INSERT INTO category (title) VALUES(?)";
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateInstance, PreparedStatement.RETURN_GENERATED_KEYS);
-        Object[] instance = category.getObjects();
-        preparedStatement.setString(1, (String) instance[1]);
-        preparedStatement.executeUpdate();
-        ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-        generatedKeys.next();
-        return generatedKeys.getInt(1);
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        session.save(category);
+        transaction.commit();
+        session.close();
+        return category.getCategoryId();
     }
 
     @Override
     public int delete(int id) throws SQLException {
-        Connection connection = this.connectionPool.getConnection();
-        String sqlDeleteInstance = "DELETE FROM category WHERE id=?;";
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlDeleteInstance);
-        preparedStatement.setInt(1, id);
-        return preparedStatement.executeUpdate();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        Category category = new Category();
+        category.setCategoryId(id);
+        try {
+            session.delete(category);
+            transaction.commit();
+            session.close();
+        } catch (Exception e) {
+            session.close();
+            return 0;
+        }
+        return id;
     }
 
     @Override
     public int update(Category category) throws SQLException {
-        Connection connection = this.connectionPool.getConnection();
-        String sqlUpdateInstance = "UPDATE category SET title=? WHERE id=?;";
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdateInstance);
-        Object[] instance = category.getObjects();
-        preparedStatement.setString(1, (String) instance[1]);
-        preparedStatement.setInt(2, (int) instance[0]);
-        return preparedStatement.executeUpdate();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            session.update(category);
+            transaction.commit();
+            session.close();
+        } catch (Exception e) {
+            session.close();
+            return 0;
+        }
+        return category.getCategoryId();
     }
 }

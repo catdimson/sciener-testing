@@ -13,8 +13,8 @@ class CategorySerializerTest {
         Category category = new Category(1, "Политика");
         final String expectedJSON =
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"Политика\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"Политика\"\n" +
                 "}";
 
         CategorySerializer categorySerializer = new CategorySerializer(category);
@@ -28,8 +28,8 @@ class CategorySerializerTest {
         SoftAssertions soft = new SoftAssertions();
         final String json =
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"Политика\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"Политика\"\n" +
                 "}";
 
         CategorySerializer categorySerializer = new CategorySerializer(json);

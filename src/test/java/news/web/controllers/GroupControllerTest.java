@@ -60,17 +60,18 @@ class GroupControllerTest {
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
             "Content-Type: application/json;charset=UTF-8\n" +
+            "Content-Length: 93\n" +
             "\n" +
             "[\n" +
             "{\n" +
-            "\t\"id\":1,\n" +
-            "\t\"title\":\"Редактор\"\n" +
+            "\t\"id\": 1,\n" +
+            "\t\"title\": \"Редактор\"\n" +
             "},\n" +
             "{\n" +
-            "\t\"id\":2,\n" +
-            "\t\"title\":\"Админушка\"\n" +
+            "\t\"id\": 2,\n" +
+            "\t\"title\": \"Админушка\"\n" +
             "}\n" +
-            "]\n";
+            "]";
         clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
@@ -104,7 +105,7 @@ class GroupControllerTest {
     void buildResponseGETMethodFindByTitle() throws IOException, SQLException {
         Connection connection = this.poolConnection.getConnection();
         Statement statement = connection.createStatement();
-        String sqlInsertGroup = "INSERT INTO \"group\" (title) VALUES ('Редактор'), ('Админушка');";
+        String sqlInsertGroup = "INSERT INTO \"group\" (title) VALUES ('editor'), ('Админушка');";
         statement.executeUpdate(sqlInsertGroup);
 
         // ожидаемый результат
@@ -113,19 +114,20 @@ class GroupControllerTest {
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
                 "Content-Type: application/json;charset=UTF-8\n" +
+                "Content-Length: 37\n" +
                 "\n" +
                 "[\n" +
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"Редактор\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"editor\"\n" +
                 "}\n" +
-                "]\n";
+                "]";
         clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
 
         String request = "" +
-                "GET /blg_kotik_dmitry_war/group?title=Редактор HTTP/1.1\n" +
+                "GET /blg_kotik_dmitry_war/group?title=editor HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
                 "Host: 127.0.0.1:8080\n" +
@@ -162,10 +164,11 @@ class GroupControllerTest {
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
                 "Content-Type: application/json;charset=UTF-8\n" +
+                "Content-Length: 42\n" +
                 "\n" +
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"Редактор\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"Редактор\"\n" +
                 "}";
 
         clientSocket = new Socket("127.0.0.1", 8080);
@@ -208,12 +211,14 @@ class GroupControllerTest {
             "HTTP/1.1 201 \n" +
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
-            "Location: /group/1/\n";
+            "Location: /group/1/\n" +
+            "Content-Length: 0\n";
 
         String request = "" +
             "POST /blg_kotik_dmitry_war/group/ HTTP/1.1\n" +
             "Accept: application/json, */*; q=0.01\n" +
             "Content-Type: application/json\n" +
+            "Content-length: 100\n" +
             "Host: 127.0.0.1:8080\n" +
             "UnitTest: true\n" +
             "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
@@ -221,7 +226,7 @@ class GroupControllerTest {
             "PasswordPostgres: " + this.container.getPassword() + "\n" +
             "\n" +
             "{\n" +
-            "\t\"title\":\"Пользователь\",\n" +
+            "\t\"title\": \"Пользователь\",\n" +
             "}\n";
         out.println(request);
         out.flush();
@@ -268,6 +273,7 @@ class GroupControllerTest {
                 "PUT /blg_kotik_dmitry_war/group/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
+                "Content-length: 100\n" +
                 "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
@@ -275,8 +281,8 @@ class GroupControllerTest {
                 "PasswordPostgres: " + this.container.getPassword() + "\n" +
                 "\n" +
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"Редактор\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"Редактор\"\n" +
                 "}";
         out.println(request);
         out.flush();

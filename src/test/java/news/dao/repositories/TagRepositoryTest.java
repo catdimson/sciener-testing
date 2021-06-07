@@ -1,5 +1,6 @@
 package news.dao.repositories;
 
+import news.HibernateUtil;
 import news.dao.connection.DBPool;
 import news.dao.specifications.FindAllTagSpecification;
 import news.dao.specifications.FindByIdTagSpecification;
@@ -30,14 +31,17 @@ class TagRepositoryTest {
                 .withDatabaseName("news");
         this.container.start();
 
+        this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
+
+        HibernateUtil.setConnectionProperties(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
+
+        Statement statement = this.poolConnection.getConnection().createStatement();
+
         String sqlCreateTableTag = "CREATE TABLE IF NOT EXISTS tag (" +
                 "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
                 "title character varying(50) NOT NULL," +
                 "CONSTRAINT tag_pk PRIMARY KEY (id)" +
                 ");";
-        this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
-
-        Statement statement = this.poolConnection.getConnection().createStatement();
         statement.executeUpdate(sqlCreateTableTag);
     }
 
@@ -45,7 +49,7 @@ class TagRepositoryTest {
     void findById() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            TagRepository tagRepository = new TagRepository(this.poolConnection);
+            TagRepository tagRepository = new TagRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO tag (title) VALUES('ufc');";
@@ -69,7 +73,7 @@ class TagRepositoryTest {
     void findByTitle() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            TagRepository tagRepository = new TagRepository(this.poolConnection);
+            TagRepository tagRepository = new TagRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO tag (title) VALUES('ufc');";
@@ -93,7 +97,7 @@ class TagRepositoryTest {
     void findAll() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            TagRepository tagRepository = new TagRepository(this.poolConnection);
+            TagRepository tagRepository = new TagRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO tag (title) VALUES('ufc'), ('балет');";
@@ -121,7 +125,7 @@ class TagRepositoryTest {
     @Test
     void createTag() {
         try {
-            TagRepository tagRepository = new TagRepository(this.poolConnection);
+            TagRepository tagRepository = new TagRepository();
             Tag tag = new Tag("ufc");
 
             tagRepository.create(tag);
@@ -141,7 +145,7 @@ class TagRepositoryTest {
     @Test
     void deleteTag() {
         try {
-            TagRepository tagRepository = new TagRepository(this.poolConnection);
+            TagRepository tagRepository = new TagRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO tag (title) VALUES('ufc');";
@@ -163,7 +167,7 @@ class TagRepositoryTest {
     @Test
     void updateTag() {
         try {
-            TagRepository tagRepository = new TagRepository(this.poolConnection);
+            TagRepository tagRepository = new TagRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO tag (title) VALUES('ufc');";

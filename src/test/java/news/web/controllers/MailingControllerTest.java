@@ -60,17 +60,18 @@ class MailingControllerTest {
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
             "Content-Type: application/json;charset=UTF-8\n" +
+            "Content-Length: 84\n" +
             "\n" +
             "[\n" +
             "{\n" +
-            "\t\"id\":1,\n" +
-            "\t\"email\":\"test@mail.ru\"\n" +
+            "\t\"id\": 1,\n" +
+            "\t\"email\": \"test@mail.ru\"\n" +
             "},\n" +
             "{\n" +
-            "\t\"id\":2,\n" +
-            "\t\"email\":\"test2@mail.ru\"\n" +
+            "\t\"id\": 2,\n" +
+            "\t\"email\": \"test2@mail.ru\"\n" +
             "}\n" +
-            "]\n";
+            "]";
         clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
@@ -113,13 +114,14 @@ class MailingControllerTest {
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
                 "Content-Type: application/json;charset=UTF-8\n" +
+                "Content-Length: 43\n" +
                 "\n" +
                 "[\n" +
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"email\":\"test@mail.ru\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"email\": \"test@mail.ru\"\n" +
                 "}\n" +
-                "]\n";
+                "]";
         clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
@@ -162,10 +164,11 @@ class MailingControllerTest {
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
                 "Content-Type: application/json;charset=UTF-8\n" +
+                "Content-Length: 38\n" +
                 "\n" +
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"email\":\"test@mail.ru\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"email\": \"test@mail.ru\"\n" +
                 "}";
 
         clientSocket = new Socket("127.0.0.1", 8080);
@@ -208,12 +211,14 @@ class MailingControllerTest {
             "HTTP/1.1 201 \n" +
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
-            "Location: /mailing/1/\n";
+            "Location: /mailing/1/\n" +
+            "Content-Length: 0\n";
 
         String request = "" +
             "POST /blg_kotik_dmitry_war/mailing/ HTTP/1.1\n" +
             "Accept: application/json, */*; q=0.01\n" +
             "Content-Type: application/json\n" +
+            "Content-Length: 100\n" +
             "Host: 127.0.0.1:8080\n" +
             "UnitTest: true\n" +
             "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
@@ -268,6 +273,7 @@ class MailingControllerTest {
                 "PUT /blg_kotik_dmitry_war/mailing/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
+                "Content-length: 100\n" +
                 "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
@@ -275,8 +281,8 @@ class MailingControllerTest {
                 "PasswordPostgres: " + this.container.getPassword() + "\n" +
                 "\n" +
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"email\":\"test2@mail.ru\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"email\": \"test2@mail.ru\"\n" +
                 "}";
         out.println(request);
         out.flush();

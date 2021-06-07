@@ -13,8 +13,8 @@ class GroupSerializerTest {
         Group group = new Group(1, "Редактор");
         final String expectedJSON =
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"Редактор\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"Редактор\"\n" +
                 "}";
 
         GroupSerializer groupSerializer = new GroupSerializer(group);
@@ -28,8 +28,8 @@ class GroupSerializerTest {
         SoftAssertions soft = new SoftAssertions();
         final String json =
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"Редактор\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"Редактор\"\n" +
                 "}";
 
         GroupSerializer groupSerializer = new GroupSerializer(json);

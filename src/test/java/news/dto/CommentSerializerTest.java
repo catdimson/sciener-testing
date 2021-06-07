@@ -1,6 +1,7 @@
 package news.dto;
 
 import news.model.Comment;
+import news.model.CommentAttachment;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -24,31 +25,32 @@ class CommentSerializerTest {
 
     @Test
     void toJSON() {
-        Comment comment = new Comment(1,"Текст 1", createDateArticle, editDateArticle, 1, 1);
-        Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment(1, "Прикрепление 1", "/static/files/file1.png", 1);
-        Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment(2, "Прикрепление 2", "/static/files/file2.png", 1);
+        Comment comment = new Comment(1,"Текст 1", Timestamp.valueOf(createDateArticle.atStartOfDay()),
+                Timestamp.valueOf(editDateArticle.atStartOfDay()), 1, 1);
+        CommentAttachment commentAttachment1 = new CommentAttachment(1, "Прикрепление 1", "/static/files/file1.png");
+        CommentAttachment commentAttachment2 = new CommentAttachment(2, "Прикрепление 2", "/static/files/file2.png");
         comment.addNewAttachment(commentAttachment1);
         comment.addNewAttachment(commentAttachment2);
+        commentAttachment1.setComment(comment);
+        commentAttachment2.setComment(comment);
         final String expectedJSON =
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"text\":\"Текст 1\",\n" +
-                "\t\"createDate\":" + Timestamp.valueOf(createDateArticle.atStartOfDay()).getTime() / 1000 + ",\n" +
-                "\t\"editDate\":" + Timestamp.valueOf(editDateArticle.atStartOfDay()).getTime() / 1000 + ",\n" +
-                "\t\"userId\":1,\n" +
-                "\t\"articleId\":1,\n" +
-                "\t\"attachments\":[\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"text\": \"Текст 1\",\n" +
+                "\t\"createDate\": " + Timestamp.valueOf(createDateArticle.atStartOfDay()).getTime() + ",\n" +
+                "\t\"editDate\": " + Timestamp.valueOf(editDateArticle.atStartOfDay()).getTime() + ",\n" +
+                "\t\"userId\": 1,\n" +
+                "\t\"articleId\": 1,\n" +
+                "\t\"attachments\": [\n" +
                 "\t\t{\n" +
-                "\t\t\t\"id\":1,\n" +
-                "\t\t\t\"title\":\"Прикрепление 1\",\n" +
-                "\t\t\t\"path\":\"/static/files/file1.png\",\n" +
-                "\t\t\t\"commentId\":1\n" +
+                "\t\t\t\"id\": 1,\n" +
+                "\t\t\t\"title\": \"Прикрепление 1\",\n" +
+                "\t\t\t\"path\": \"/static/files/file1.png\"\n" +
                 "\t\t},\n" +
                 "\t\t{\n" +
-                "\t\t\t\"id\":2,\n" +
-                "\t\t\t\"title\":\"Прикрепление 2\",\n" +
-                "\t\t\t\"path\":\"/static/files/file2.png\",\n" +
-                "\t\t\t\"commentId\":1\n" +
+                "\t\t\t\"id\": 2,\n" +
+                "\t\t\t\"title\": \"Прикрепление 2\",\n" +
+                "\t\t\t\"path\": \"/static/files/file2.png\"\n" +
                 "\t\t}\n" +
                 "\t]\n" +
                 "}";
@@ -66,22 +68,20 @@ class CommentSerializerTest {
                 "{\n" +
                 "\t\"id\":1,\n" +
                 "\t\"text\":\"Текст 1\",\n" +
-                "\t\"createDate\":" + Timestamp.valueOf(createDateArticle.atStartOfDay()).getTime() / 1000 + ",\n" +
-                "\t\"editDate\":" + Timestamp.valueOf(editDateArticle.atStartOfDay()).getTime() / 1000 + ",\n" +
+                "\t\"createDate\":" + Timestamp.valueOf(createDateArticle.atStartOfDay()).getTime() + ",\n" +
+                "\t\"editDate\":" + Timestamp.valueOf(editDateArticle.atStartOfDay()).getTime() + ",\n" +
                 "\t\"userId\":1,\n" +
                 "\t\"articleId\":1,\n" +
                 "\t\"attachments\":[\n" +
                 "\t\t{\n" +
                 "\t\t\t\"id\":1,\n" +
                 "\t\t\t\"title\":\"Прикрепление 1\",\n" +
-                "\t\t\t\"path\":\"/static/files/file1.png\",\n" +
-                "\t\t\t\"commentId\":1\n" +
+                "\t\t\t\"path\":\"/static/files/file1.png\"\n" +
                 "\t\t},\n" +
                 "\t\t{\n" +
                 "\t\t\t\"id\":2,\n" +
                 "\t\t\t\"title\":\"Прикрепление 2\",\n" +
-                "\t\t\t\"path\":\"/static/files/file2.png\",\n" +
-                "\t\t\t\"commentId\":1\n" +
+                "\t\t\t\"path\":\"/static/files/file2.png\"\n" +
                 "\t\t}\n" +
                 "\t]\n" +
                 "}";
@@ -92,27 +92,25 @@ class CommentSerializerTest {
         // сверяем данные
         Object[] commentInstance = comment.getObjects();
         List listAttachmentObjects = (ArrayList) commentInstance[6];
-        Comment.CommentAttachment commentAttachment1 = (Comment.CommentAttachment) listAttachmentObjects.get(0);
-        Comment.CommentAttachment commentAttachment2 = (Comment.CommentAttachment) listAttachmentObjects.get(1);
+        CommentAttachment commentAttachment1 = (CommentAttachment) listAttachmentObjects.get(0);
+        CommentAttachment commentAttachment2 = (CommentAttachment) listAttachmentObjects.get(1);
         soft.assertThat(comment)
                 .hasFieldOrPropertyWithValue("id", 1)
                 .hasFieldOrPropertyWithValue("text", "Текст 1")
-                .hasFieldOrPropertyWithValue("createDate", createDateArticle)
-                .hasFieldOrPropertyWithValue("editDate", editDateArticle)
+                .hasFieldOrPropertyWithValue("createDate", Timestamp.valueOf(createDateArticle.atStartOfDay()))
+                .hasFieldOrPropertyWithValue("editDate", Timestamp.valueOf(editDateArticle.atStartOfDay()))
                 .hasFieldOrPropertyWithValue("userId", 1)
                 .hasFieldOrPropertyWithValue("articleId", 1);
         soft.assertAll();
         soft.assertThat(commentAttachment1)
                 .hasFieldOrPropertyWithValue("id", 1)
                 .hasFieldOrPropertyWithValue("title", "Прикрепление 1")
-                .hasFieldOrPropertyWithValue("path", "/static/files/file1.png")
-                .hasFieldOrPropertyWithValue("commentId", 1);
+                .hasFieldOrPropertyWithValue("path", "/static/files/file1.png");
         soft.assertAll();
         soft.assertThat(commentAttachment2)
                 .hasFieldOrPropertyWithValue("id", 2)
                 .hasFieldOrPropertyWithValue("title", "Прикрепление 2")
-                .hasFieldOrPropertyWithValue("path", "/static/files/file2.png")
-                .hasFieldOrPropertyWithValue("commentId", 1);
+                .hasFieldOrPropertyWithValue("path", "/static/files/file2.png");
         soft.assertAll();
     }
 }

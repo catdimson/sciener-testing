@@ -1,5 +1,6 @@
 package news.dao.repositories;
 
+import news.HibernateUtil;
 import news.dao.connection.DBPool;
 import news.dao.specifications.FindAllUserSpecification;
 import news.dao.specifications.FindByFirstnameUserSpecification;
@@ -38,7 +39,11 @@ class UserRepositoryTest {
                 .withPassword("qwerty")
                 .withDatabaseName("news");
         this.container.start();
+
         this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
+
+        HibernateUtil.setConnectionProperties(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
+
         Statement statement = this.poolConnection.getConnection().createStatement();
 
         String sqlCreateTableGroup = "CREATE TABLE IF NOT EXISTS \"group\" (" +
@@ -82,10 +87,10 @@ class UserRepositoryTest {
     void findById() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            UserRepository userRepository = new UserRepository(this.poolConnection);
+            UserRepository userRepository = new UserRepository();
             Connection connection = this.poolConnection.getConnection();
 
-            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", lastLogin, dateJoined,
+            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
                     true, true, true, 1);
             Object[] userInstance = user.getObjects();
 
@@ -98,10 +103,8 @@ class UserRepositoryTest {
             statement.setString(3, (String) userInstance[3]);
             statement.setString(4, (String) userInstance[4]);
             statement.setString(5, (String) userInstance[5]);
-            LocalDate localDateLogin = (LocalDate) userInstance[6];
-            statement.setTimestamp(6, Timestamp.valueOf(localDateLogin.atStartOfDay()));
-            LocalDate localDateJoined = (LocalDate) userInstance[7];
-            statement.setTimestamp(7, Timestamp.valueOf(localDateJoined.atStartOfDay()));
+            statement.setTimestamp(6, (Timestamp) userInstance[6]);
+            statement.setTimestamp(7, (Timestamp) userInstance[7]);
             statement.setBoolean(8, (boolean) userInstance[8]);
             statement.setBoolean(9, (boolean) userInstance[9]);
             statement.setBoolean(10, (boolean) userInstance[10]);
@@ -136,28 +139,28 @@ class UserRepositoryTest {
     void findByFirstname() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            UserRepository userRepository = new UserRepository(this.poolConnection);
+            UserRepository userRepository = new UserRepository();
             Connection connection = this.poolConnection.getConnection();
 
-            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", lastLogin, dateJoined,
+            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
                     true, true, true, 1);
-            User user2 = new User(4, "ytrewq321", "cyber777", "Александр", "Жбанов", "jban1990@mail.ru", lastLogin, dateJoined,
+            User user2 = new User(4, "ytrewq321", "cyber777", "Александр", "Жбанов", "jban1990@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
                     false, false, true, 2);
             Object[] userInstance = user.getObjects();
             Object[] userInstance2 = user2.getObjects();
-            LocalDate localDateLogin = (LocalDate) userInstance[6];
-            LocalDate localDateJoined = (LocalDate) userInstance[7];
-            LocalDate localDateLogin2 = (LocalDate) userInstance2[6];
-            LocalDate localDateJoined2 = (LocalDate) userInstance2[7];
+            Timestamp localDateLogin = (Timestamp) userInstance[6];
+            Timestamp localDateJoined = (Timestamp) userInstance[7];
+            Timestamp localDateLogin2 = (Timestamp) userInstance2[6];
+            Timestamp localDateJoined2 = (Timestamp) userInstance2[7];
 
             String sqlCreateUser1 = String.format("INSERT INTO \"user\"" +
                     "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
                     "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance[1], userInstance[2], userInstance[3], userInstance[4], userInstance[5],
-                    Timestamp.valueOf(localDateLogin.atStartOfDay()), Timestamp.valueOf(localDateJoined.atStartOfDay()), userInstance[8], userInstance[9], userInstance[10], userInstance[11]);
+                    localDateLogin, localDateJoined, userInstance[8], userInstance[9], userInstance[10], userInstance[11]);
             String sqlCreateUser2 = String.format("INSERT INTO \"user\"" +
                     "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
                     "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance2[1], userInstance2[2], userInstance2[3], userInstance2[4], userInstance2[5],
-                    Timestamp.valueOf(localDateLogin2.atStartOfDay()), Timestamp.valueOf(localDateJoined2.atStartOfDay()), userInstance2[8], userInstance2[9], userInstance2[10], userInstance2[11]);
+                    localDateLogin2, localDateJoined2, userInstance2[8], userInstance2[9], userInstance2[10], userInstance2[11]);
 
             Statement statement = connection.createStatement();
             statement.executeUpdate(sqlCreateUser1);
@@ -204,28 +207,28 @@ class UserRepositoryTest {
     void findAll() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            UserRepository userRepository = new UserRepository(this.poolConnection);
+            UserRepository userRepository = new UserRepository();
             Connection connection = this.poolConnection.getConnection();
 
-            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", lastLogin, dateJoined,
+            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
                     true, true, true, 1);
-            User user2 = new User(4, "ytrewq321", "cyber777", "Александр", "Жбанов", "jban1990@mail.ru", lastLogin, dateJoined,
+            User user2 = new User(4, "ytrewq321", "cyber777", "Александр", "Жбанов", "jban1990@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
                     false, false, true, 2);
             Object[] userInstance = user.getObjects();
             Object[] userInstance2 = user2.getObjects();
-            LocalDate localDateLogin = (LocalDate) userInstance[6];
-            LocalDate localDateJoined = (LocalDate) userInstance[7];
-            LocalDate localDateLogin2 = (LocalDate) userInstance2[6];
-            LocalDate localDateJoined2 = (LocalDate) userInstance2[7];
+            Timestamp localDateLogin = (Timestamp) userInstance[6];
+            Timestamp localDateJoined = (Timestamp) userInstance[7];
+            Timestamp localDateLogin2 = (Timestamp) userInstance2[6];
+            Timestamp localDateJoined2 = (Timestamp) userInstance2[7];
 
             String sqlCreateUser1 = String.format("INSERT INTO \"user\"" +
                     "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
                     "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance[1], userInstance[2], userInstance[3], userInstance[4], userInstance[5],
-                    Timestamp.valueOf(localDateLogin.atStartOfDay()), Timestamp.valueOf(localDateJoined.atStartOfDay()), userInstance[8], userInstance[9], userInstance[10], userInstance[11]);
+                    localDateLogin, localDateJoined, userInstance[8], userInstance[9], userInstance[10], userInstance[11]);
             String sqlCreateUser2 = String.format("INSERT INTO \"user\"" +
                     "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
                     "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance2[1], userInstance2[2], userInstance2[3], userInstance2[4], userInstance2[5],
-                    Timestamp.valueOf(localDateLogin2.atStartOfDay()), Timestamp.valueOf(localDateJoined2.atStartOfDay()), userInstance2[8], userInstance2[9], userInstance2[10], userInstance2[11]);
+                    localDateLogin2, localDateJoined2, userInstance2[8], userInstance2[9], userInstance2[10], userInstance2[11]);
 
             Statement statement = connection.createStatement();
             statement.executeUpdate(sqlCreateUser1);
@@ -272,10 +275,10 @@ class UserRepositoryTest {
     void createUser() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            UserRepository userRepository = new UserRepository(this.poolConnection);
+            UserRepository userRepository = new UserRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            User user = new User("qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", lastLogin, dateJoined,
+            User user = new User("qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
                     true, true, true, 1);
 
             userRepository.create(user);
@@ -288,8 +291,8 @@ class UserRepositoryTest {
                     .hasFieldOrPropertyWithValue("firstName", result.getString(4))
                     .hasFieldOrPropertyWithValue("lastName", result.getString(5))
                     .hasFieldOrPropertyWithValue("email", result.getString(6))
-                    .hasFieldOrPropertyWithValue("lastLogin", result.getTimestamp(7).toLocalDateTime().toLocalDate())
-                    .hasFieldOrPropertyWithValue("dateJoined", result.getTimestamp(8).toLocalDateTime().toLocalDate())
+                    .hasFieldOrPropertyWithValue("lastLogin", result.getTimestamp(7))
+                    .hasFieldOrPropertyWithValue("dateJoined", result.getTimestamp(8))
                     .hasFieldOrPropertyWithValue("isSuperuser", result.getBoolean(9))
                     .hasFieldOrPropertyWithValue("isStaff", result.getBoolean(10))
                     .hasFieldOrPropertyWithValue("isActive", result.getBoolean(11))
@@ -304,18 +307,18 @@ class UserRepositoryTest {
     @Test
     void deleteUser() {
         try {
-            UserRepository userRepository = new UserRepository(this.poolConnection);
+            UserRepository userRepository = new UserRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", lastLogin, dateJoined,
+            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
                     true, true, true, 1);
             Object[] userInstance = user.getObjects();
-            LocalDate localDateLogin = (LocalDate) userInstance[6];
-            LocalDate localDateJoined = (LocalDate) userInstance[7];
+            Timestamp localDateLogin = (Timestamp) userInstance[6];
+            Timestamp localDateJoined = (Timestamp) userInstance[7];
             String sqlCreateUser = String.format("INSERT INTO \"user\"" +
                             "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
                             "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance[1], userInstance[2], userInstance[3], userInstance[4], userInstance[5],
-                    Timestamp.valueOf(localDateLogin.atStartOfDay()), Timestamp.valueOf(localDateJoined.atStartOfDay()), userInstance[8], userInstance[9], userInstance[10], userInstance[11]);
+                    localDateLogin, localDateJoined, userInstance[8], userInstance[9], userInstance[10], userInstance[11]);
             statement.executeUpdate(sqlCreateUser, Statement.RETURN_GENERATED_KEYS);
             ResultSet generatedKeys = statement.getGeneratedKeys();
             generatedKeys.next();
@@ -335,20 +338,20 @@ class UserRepositoryTest {
     void updateUser() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            UserRepository userRepository = new UserRepository(this.poolConnection);
+            UserRepository userRepository = new UserRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            User user = new User("qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", lastLogin, dateJoined,
+            User user = new User("qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
                     true, true, true, 1);
-            User user2 = new User(1, "ytrewq321", "cyber777", "Александр", "Жбанов", "jban1990@mail.ru", lastLogin, dateJoined,
+            User user2 = new User(1, "ytrewq321", "cyber777", "Александр", "Жбанов", "jban1990@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
                     false, false, true, 2);
             Object[] userInstance = user.getObjects();
-            LocalDate localDateLogin = (LocalDate) userInstance[6];
-            LocalDate localDateJoined = (LocalDate) userInstance[7];
+            Timestamp localDateLogin = (Timestamp) userInstance[6];
+            Timestamp localDateJoined = (Timestamp) userInstance[7];
             String sqlCreateUser1 = String.format("INSERT INTO \"user\"" +
                             "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
                             "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance[1], userInstance[2], userInstance[3], userInstance[4], userInstance[5],
-                    Timestamp.valueOf(localDateLogin.atStartOfDay()), Timestamp.valueOf(localDateJoined.atStartOfDay()), userInstance[8], userInstance[9], userInstance[10], userInstance[11]);
+                    localDateLogin, localDateJoined, userInstance[8], userInstance[9], userInstance[10], userInstance[11]);
             statement.executeUpdate(sqlCreateUser1);
 
             userRepository.update(user2);
@@ -361,8 +364,8 @@ class UserRepositoryTest {
                     .hasFieldOrPropertyWithValue("firstName", result.getString(4))
                     .hasFieldOrPropertyWithValue("lastName", result.getString(5))
                     .hasFieldOrPropertyWithValue("email", result.getString(6))
-                    .hasFieldOrPropertyWithValue("lastLogin", result.getTimestamp(7).toLocalDateTime().toLocalDate())
-                    .hasFieldOrPropertyWithValue("dateJoined", result.getTimestamp(8).toLocalDateTime().toLocalDate())
+                    .hasFieldOrPropertyWithValue("lastLogin", result.getTimestamp(7))
+                    .hasFieldOrPropertyWithValue("dateJoined", result.getTimestamp(8))
                     .hasFieldOrPropertyWithValue("isSuperuser", result.getBoolean(9))
                     .hasFieldOrPropertyWithValue("isStaff", result.getBoolean(10))
                     .hasFieldOrPropertyWithValue("isActive", result.getBoolean(11))

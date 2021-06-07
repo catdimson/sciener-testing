@@ -1,113 +1,96 @@
 package news.dao.repositories;
 
-import news.dao.connection.ConnectionPool;
+import news.HibernateUtil;
 import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Afisha;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
-import java.sql.*;
-import java.time.LocalDate;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Root;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AfishaRepository implements ExtendRepository<Afisha> {
-    final private ConnectionPool connectionPool;
 
-    public AfishaRepository(ConnectionPool connectionPool) {
-        this.connectionPool = connectionPool;
-    }
+    public AfishaRepository() {}
 
     @Override
     public List<Afisha> query(ExtendSqlSpecification<Afisha> afishaSpecification) throws SQLException {
         List<Afisha> queryResult = new ArrayList<>();
-        Connection connection = connectionPool.getConnection();
-        String sqlQuery = afishaSpecification.toSqlClauses();
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
+        Session session = HibernateUtil.getSessionFactory().openSession();
         if (afishaSpecification.isById()) {
-            preparedStatement.setInt(1, (int) afishaSpecification.getCriterial());
+            Afisha afisha = session.get(Afisha.class, (int) afishaSpecification.getCriterial());
+            queryResult.add(afisha);
         } else {
             if (afishaSpecification.getCriterial() != null) {
-                preparedStatement.setString(1, (String) afishaSpecification.getCriterial());
+                // подготовка
+                CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+                CriteriaQuery<Afisha> criteriaQuery = criteriaBuilder.createQuery(Afisha.class);
+                Root<Afisha> root = criteriaQuery.from(Afisha.class);
+                ParameterExpression<String> title = criteriaBuilder.parameter(String.class);
+                // запрос
+                criteriaQuery.select(root).where(criteriaBuilder.equal(root.get("title"), title));
+                Query<Afisha> query = session.createQuery(criteriaQuery);
+                query.setParameter(title, (String) afishaSpecification.getCriterial());
+                queryResult = query.getResultList();
+            } else {
+                // подготовка
+                CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+                CriteriaQuery<Afisha> criteriaQuery = criteriaBuilder.createQuery(Afisha.class);
+                Root<Afisha> root = criteriaQuery.from(Afisha.class);
+                // запрос
+                criteriaQuery.select(root);
+                Query<Afisha> query = session.createQuery(criteriaQuery);
+                queryResult = query.getResultList();
             }
-        }
-        ResultSet result = preparedStatement.executeQuery();
-        while (result.next()) {
-            Afisha afisha = new Afisha(
-                    result.getInt(1),
-                    result.getString(2),
-                    result.getString(3),
-                    result.getString(4),
-                    result.getString(5),
-                    result.getString(6),
-                    result.getString(7),
-                    result.getString(8),
-                    result.getString(9),
-                    result.getTimestamp(10).toLocalDateTime().toLocalDate(),
-                    result.getBoolean(11),
-                    result.getInt(12),
-                    result.getInt(13));
-            queryResult.add(afisha);
         }
         return queryResult;
     }
 
     @Override
     public int create(Afisha afisha) throws SQLException {
-        Connection connection = this.connectionPool.getConnection();
-        String sqlCreateInstance = "INSERT INTO afisha" +
-                "(title, image_url, lead, description, age_limit, timing, place, phone, date, is_commercial, user_id, source_id) " +
-                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-        PreparedStatement statement = connection.prepareStatement(sqlCreateInstance, PreparedStatement.RETURN_GENERATED_KEYS);
-        Object[] instance = afisha.getObjects();
-        statement.setString(1, (String) instance[1]);
-        statement.setString(2, (String) instance[2]);
-        statement.setString(3, (String) instance[3]);
-        statement.setString(4, (String) instance[4]);
-        statement.setString(5, (String) instance[5]);
-        statement.setString(6, (String) instance[6]);
-        statement.setString(7, (String) instance[7]);
-        statement.setString(8, (String) instance[8]);
-        LocalDate date = (LocalDate) instance[9];
-        statement.setTimestamp(9, Timestamp.valueOf(date.atStartOfDay()));
-        statement.setBoolean(10, (Boolean) instance[10]);
-        statement.setInt(11, (int) instance[11]);
-        statement.setInt(12, (int) instance[12]);
-        statement.executeUpdate();
-        ResultSet generatedKeys = statement.getGeneratedKeys();
-        generatedKeys.next();
-        return generatedKeys.getInt(1);
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        session.save(afisha);
+        transaction.commit();
+        session.close();
+        return afisha.getAfishaId();
     }
 
     @Override
     public int delete(int id) throws SQLException {
-        Connection connection = this.connectionPool.getConnection();
-        String sqlDeleteInstance = "DELETE FROM afisha WHERE id=?;";
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlDeleteInstance);
-        preparedStatement.setInt(1, id);
-        return preparedStatement.executeUpdate();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        Afisha afisha = new Afisha();
+        afisha.setAfishaId(id);
+        try {
+            session.delete(afisha);
+            transaction.commit();
+            session.close();
+        } catch (Exception e) {
+            session.close();
+            return 0;
+        }
+        return id;
     }
 
     @Override
     public int update(Afisha afisha) throws SQLException {
-        Connection connection = this.connectionPool.getConnection();
-        String sqlUpdateInstance = "UPDATE afisha SET " +
-                "title=?, image_url=?, lead=?, description=?, age_limit=?, timing=?, place=?, phone=?, " +
-                "date=?, is_commercial=?, user_id=?, source_id=? WHERE id=?;";
-        PreparedStatement statement = connection.prepareStatement(sqlUpdateInstance);
-        Object[] instance = afisha.getObjects();
-        statement.setString(1, (String) instance[1]);
-        statement.setString(2, (String) instance[2]);
-        statement.setString(3, (String) instance[3]);
-        statement.setString(4, (String) instance[4]);
-        statement.setString(5, (String) instance[5]);
-        statement.setString(6, (String) instance[6]);
-        statement.setString(7, (String) instance[7]);
-        statement.setString(8, (String) instance[8]);
-        LocalDate date = (LocalDate) instance[9];
-        statement.setTimestamp(9, Timestamp.valueOf(date.atStartOfDay()));
-        statement.setBoolean(10, (Boolean) instance[10]);
-        statement.setInt(11, (int) instance[11]);
-        statement.setInt(12, (int) instance[12]);
-        statement.setInt(13, (int) instance[0]);
-        return statement.executeUpdate();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            session.update(afisha);
+            transaction.commit();
+            session.close();
+        } catch (Exception e) {
+            session.close();
+            return 0;
+        }
+        return afisha.getAfishaId();
     }
 }

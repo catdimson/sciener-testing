@@ -1,11 +1,14 @@
 package news.dao.repositories;
 
+import news.HibernateUtil;
 import news.dao.connection.DBPool;
 import news.dao.specifications.FindAllCommentSpecification;
 import news.dao.specifications.FindByIdCommentSpecification;
 import news.dao.specifications.FindByUserIdCommentSpecification;
 import news.model.Comment;
+import news.model.CommentAttachment;
 import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +16,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,7 +57,11 @@ class CommentRepositoryTest {
                 .withPassword("qwerty")
                 .withDatabaseName("news");
         this.container.start();
+
         this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
+
+        HibernateUtil.setConnectionProperties(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
+
         Statement statement = this.poolConnection.getConnection().createStatement();
 
         // осздание группы
@@ -199,14 +206,17 @@ class CommentRepositoryTest {
     void findById() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            CommentRepository commentRepository = new CommentRepository(this.poolConnection);
+            CommentRepository commentRepository = new CommentRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            Comment comment = new Comment("Текст комментария", createDateComment, editDateComment, 1, 1);
-            Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment("Прикрепление 1", "/static/attachments/image1.png", 1);
-            Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 2", "/static/attachments/image2.png", 1);
+            Comment comment = new Comment("Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()),
+                    Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
+            CommentAttachment commentAttachment1 = new CommentAttachment("Прикрепление 1", "/static/attachments/image1.png");
+            CommentAttachment commentAttachment2 = new CommentAttachment("Прикрепление 2", "/static/attachments/image2.png");
             comment.addNewAttachment(commentAttachment1);
             comment.addNewAttachment(commentAttachment2);
+            commentAttachment1.setComment(comment);
+            commentAttachment2.setComment(comment);
             String sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
                     "VALUES ('%s', '%s', '%s', %s, %s);", "Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()),
                     Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
@@ -219,9 +229,10 @@ class CommentRepositoryTest {
             FindByIdCommentSpecification findById = new FindByIdCommentSpecification(1);
             List<Comment> resultFindByIdCommentList = commentRepository.query(findById);
             Object[] resultFindByIdCommentInstance = resultFindByIdCommentList.get(0).getObjects();
-            ArrayList attachments = (ArrayList) resultFindByIdCommentInstance[6];
-            Comment.CommentAttachment resultFindByIdAttachment1 = (Comment.CommentAttachment) attachments.get(0);
-            Comment.CommentAttachment resultFindByIdAttachment2 = (Comment.CommentAttachment) attachments.get(1);
+            Collection<CommentAttachment> commentAttachments = (Collection<CommentAttachment>) resultFindByIdCommentInstance[6];
+            List<Object> attachments = Arrays.asList(commentAttachments.toArray());
+            CommentAttachment resultFindByIdAttachment1 = (CommentAttachment) attachments.get(0);
+            CommentAttachment resultFindByIdAttachment2 = (CommentAttachment) attachments.get(1);
 
             soft.assertThat(comment)
                     .hasFieldOrPropertyWithValue("text", resultFindByIdCommentInstance[1])
@@ -232,13 +243,11 @@ class CommentRepositoryTest {
             soft.assertAll();
             soft.assertThat(resultFindByIdAttachment1)
                     .hasFieldOrPropertyWithValue("title", "Прикрепление 1")
-                    .hasFieldOrPropertyWithValue("path", "/static/attachments/image1.png")
-                    .hasFieldOrPropertyWithValue("commentId", 1);
+                    .hasFieldOrPropertyWithValue("path", "/static/attachments/image1.png");
             soft.assertAll();
             soft.assertThat(resultFindByIdAttachment2)
                     .hasFieldOrPropertyWithValue("title", "Прикрепление 2")
-                    .hasFieldOrPropertyWithValue("path", "/static/attachments/image2.png")
-                    .hasFieldOrPropertyWithValue("commentId", 1);
+                    .hasFieldOrPropertyWithValue("path", "/static/attachments/image2.png");
             soft.assertAll();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
@@ -250,16 +259,19 @@ class CommentRepositoryTest {
     void findByUserId() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            CommentRepository commentRepository = new CommentRepository(this.poolConnection);
+            CommentRepository commentRepository = new CommentRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             // комментарий пользователя с id=1
-            Comment comment = new Comment("Текст комментария", createDateComment, editDateComment, 1, 1);
+            Comment comment = new Comment("Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()),
+                    Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
             // 2 прикрепления к комментарию выше
-            Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment("Прикрепление 1", "/static/attachments/image1.png", 1);
-            Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 2", "/static/attachments/image2.png", 1);
+            CommentAttachment commentAttachment1 = new CommentAttachment("Прикрепление 1", "/static/attachments/image1.png");
+            CommentAttachment commentAttachment2 = new CommentAttachment("Прикрепление 2", "/static/attachments/image2.png");
             comment.addNewAttachment(commentAttachment1);
             comment.addNewAttachment(commentAttachment2);
+            commentAttachment1.setComment(comment);
+            commentAttachment2.setComment(comment);
             // добавляем 2 комментария в БД
             String sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
                             "VALUES ('%s', '%s', '%s', %s, %s), ('%s', '%s', '%s', %s, %s);",
@@ -281,11 +293,11 @@ class CommentRepositoryTest {
 
             FindByUserIdCommentSpecification findByUserId = new FindByUserIdCommentSpecification(1);
             List<Comment> resultFindByUserIdCommentList = commentRepository.query(findByUserId);
-            Comment testComment = resultFindByUserIdCommentList.get(0);
             Object[] resultFindByUserIdCommentInstance = resultFindByUserIdCommentList.get(0).getObjects();
-            ArrayList attachments = (ArrayList) resultFindByUserIdCommentInstance[6];
-            Comment.CommentAttachment resultFindByUserIdAttachment1 = (Comment.CommentAttachment) attachments.get(0);
-            Comment.CommentAttachment resultFindByUserIdAttachment2 = (Comment.CommentAttachment) attachments.get(1);
+            Collection<CommentAttachment> commentAttachments = (Collection<CommentAttachment>) resultFindByUserIdCommentInstance[6];
+            List<Object> attachments = Arrays.asList(commentAttachments.toArray());
+            CommentAttachment resultFindByUserIdAttachment1 = (CommentAttachment) attachments.get(0);
+            CommentAttachment resultFindByUserIdAttachment2 = (CommentAttachment) attachments.get(1);
 
             soft.assertThat(comment)
                     .hasFieldOrPropertyWithValue("text", resultFindByUserIdCommentInstance[1])
@@ -296,13 +308,11 @@ class CommentRepositoryTest {
             soft.assertAll();
             soft.assertThat(resultFindByUserIdAttachment1)
                     .hasFieldOrPropertyWithValue("title", "Прикрепление 1")
-                    .hasFieldOrPropertyWithValue("path", "/static/attachments/image1.png")
-                    .hasFieldOrPropertyWithValue("commentId", 1);
+                    .hasFieldOrPropertyWithValue("path", "/static/attachments/image1.png");
             soft.assertAll();
             soft.assertThat(resultFindByUserIdAttachment2)
                     .hasFieldOrPropertyWithValue("title", "Прикрепление 2")
-                    .hasFieldOrPropertyWithValue("path", "/static/attachments/image2.png")
-                    .hasFieldOrPropertyWithValue("commentId", 1);
+                    .hasFieldOrPropertyWithValue("path", "/static/attachments/image2.png");
             soft.assertAll();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
@@ -314,17 +324,21 @@ class CommentRepositoryTest {
     void findAll() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            CommentRepository commentRepository = new CommentRepository(this.poolConnection);
+            CommentRepository commentRepository = new CommentRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             // комментарий пользователя с id=1
-            Comment comment = new Comment("Текст комментария", createDateComment, editDateComment, 1, 1);
-            Comment comment2 = new Comment("Текст комментария 2", createDateComment, editDateComment, 1, 1);
+            Comment comment = new Comment("Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()),
+                    Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
+            Comment comment2 = new Comment("Текст комментария 2", Timestamp.valueOf(createDateComment.atStartOfDay()),
+                    Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
             // 2 прикрепления к комментарию выше
-            Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment("Прикрепление 1", "/static/attachments/image1.png", 1);
-            Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 2", "/static/attachments/image2.png", 2);
+            CommentAttachment commentAttachment1 = new CommentAttachment("Прикрепление 1", "/static/attachments/image1.png");
+            CommentAttachment commentAttachment2 = new CommentAttachment("Прикрепление 2", "/static/attachments/image2.png");
             comment.addNewAttachment(commentAttachment1);
             comment2.addNewAttachment(commentAttachment2);
+            commentAttachment1.setComment(comment);
+            commentAttachment2.setComment(comment2);
             // добавляем 2 комментария в БД
             String sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
                             "VALUES ('%s', '%s', '%s', %s, %s), ('%s', '%s', '%s', %s, %s);",
@@ -342,10 +356,12 @@ class CommentRepositoryTest {
             List<Comment> resultFindAllCommentList = commentRepository.query(findAll);
             Object[] resultFindAllCommentInstance = resultFindAllCommentList.get(0).getObjects();
             Object[] resultFindAllCommentInstance2 = resultFindAllCommentList.get(1).getObjects();
-            ArrayList attachments = (ArrayList) resultFindAllCommentInstance[6];
-            ArrayList attachments2 = (ArrayList) resultFindAllCommentInstance2[6];
-            Comment.CommentAttachment resultFindAllAttachment1 = (Comment.CommentAttachment) attachments.get(0);
-            Comment.CommentAttachment resultFindAllAttachment2 = (Comment.CommentAttachment) attachments2.get(0);
+            Collection<CommentAttachment> commentAttachments = (Collection<CommentAttachment>) resultFindAllCommentInstance[6];
+            List<Object> attachments1 = Arrays.asList(commentAttachments.toArray());
+            Collection<CommentAttachment> commentAttachments2 = (Collection<CommentAttachment>) resultFindAllCommentInstance2[6];
+            List<Object> attachments2= Arrays.asList(commentAttachments2.toArray());
+            CommentAttachment resultFindAllAttachment1 = (CommentAttachment) attachments1.get(0);
+            CommentAttachment resultFindAllAttachment2 = (CommentAttachment) attachments2.get(0);
 
             soft.assertThat(comment)
                     .hasFieldOrPropertyWithValue("text", resultFindAllCommentInstance[1])
@@ -363,13 +379,11 @@ class CommentRepositoryTest {
             soft.assertAll();
             soft.assertThat(resultFindAllAttachment1)
                     .hasFieldOrPropertyWithValue("title", "Прикрепление 1")
-                    .hasFieldOrPropertyWithValue("path", "/static/attachments/image1.png")
-                    .hasFieldOrPropertyWithValue("commentId", 1);
+                    .hasFieldOrPropertyWithValue("path", "/static/attachments/image1.png");
             soft.assertAll();
             soft.assertThat(resultFindAllAttachment2)
                     .hasFieldOrPropertyWithValue("title", "Прикрепление 2")
-                    .hasFieldOrPropertyWithValue("path", "/static/attachments/image2.png")
-                    .hasFieldOrPropertyWithValue("commentId", 2);
+                    .hasFieldOrPropertyWithValue("path", "/static/attachments/image2.png");
             soft.assertAll();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
@@ -381,14 +395,17 @@ class CommentRepositoryTest {
     void createComment() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            CommentRepository commentRepository = new CommentRepository(this.poolConnection);
+            CommentRepository commentRepository = new CommentRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            Comment comment = new Comment("Текст комментария", createDateComment, editDateComment, 1, 1);
-            Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment("Прикрепление 1", "/static/attachments/image1.png", 1);
-            Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 2", "/static/attachments/image2.png", 1);
+            Comment comment = new Comment("Текст комментария", Timestamp.valueOf(createDateComment.atStartOfDay()),
+                    Timestamp.valueOf(editDateComment.atStartOfDay()), 1, 1);
+            CommentAttachment commentAttachment1 = new CommentAttachment("Прикрепление 1", "/static/attachments/image1.png");
+            CommentAttachment commentAttachment2 = new CommentAttachment("Прикрепление 2", "/static/attachments/image2.png");
             comment.addNewAttachment(commentAttachment1);
             comment.addNewAttachment(commentAttachment2);
+            commentAttachment1.setComment(comment);
+            commentAttachment2.setComment(comment);
 
             commentRepository.create(comment);
 
@@ -398,8 +415,8 @@ class CommentRepositoryTest {
             resultComment.next();
             soft.assertThat(comment)
                     .hasFieldOrPropertyWithValue("text", resultComment.getString("text"))
-                    .hasFieldOrPropertyWithValue("createDate", resultComment.getTimestamp("create_date").toLocalDateTime().toLocalDate())
-                    .hasFieldOrPropertyWithValue("editDate", resultComment.getTimestamp("edit_date").toLocalDateTime().toLocalDate())
+                    .hasFieldOrPropertyWithValue("createDate", resultComment.getTimestamp("create_date"))
+                    .hasFieldOrPropertyWithValue("editDate", resultComment.getTimestamp("edit_date"))
                     .hasFieldOrPropertyWithValue("articleId", resultComment.getInt("article_id"))
                     .hasFieldOrPropertyWithValue("userId", resultComment.getInt("user_id"));
             soft.assertAll();
@@ -407,14 +424,12 @@ class CommentRepositoryTest {
             resultAttachments.next();
             soft.assertThat(commentAttachment1)
                     .hasFieldOrPropertyWithValue("title", resultAttachments.getString("title"))
-                    .hasFieldOrPropertyWithValue("path", resultAttachments.getString("path"))
-                    .hasFieldOrPropertyWithValue("commentId", resultAttachments.getInt("comment_id"));
+                    .hasFieldOrPropertyWithValue("path", resultAttachments.getString("path"));
             soft.assertAll();
             resultAttachments.next();
             soft.assertThat(commentAttachment2)
                     .hasFieldOrPropertyWithValue("title", resultAttachments.getString("title"))
-                    .hasFieldOrPropertyWithValue("path", resultAttachments.getString("path"))
-                    .hasFieldOrPropertyWithValue("commentId", resultAttachments.getInt("comment_id"));
+                    .hasFieldOrPropertyWithValue("path", resultAttachments.getString("path"));
             soft.assertAll();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
@@ -425,7 +440,7 @@ class CommentRepositoryTest {
     @Test
     void deleteComment() {
         try {
-            CommentRepository commentRepository = new CommentRepository(this.poolConnection);
+            CommentRepository commentRepository = new CommentRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertComment = String.format("INSERT INTO comment (text, create_date, edit_date, article_id, user_id) " +
@@ -456,7 +471,7 @@ class CommentRepositoryTest {
     void updateComment() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            CommentRepository commentRepository = new CommentRepository(this.poolConnection);
+            CommentRepository commentRepository = new CommentRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             // данные В БД, которые будем обновлять
@@ -470,11 +485,14 @@ class CommentRepositoryTest {
                     "Прикрепление 2", "/static/attachments/image2.png", 1);
             statement.executeUpdate(sqlInsertAttachments);
             // объект, которым будем обновлять данные в БД
-            Comment comment = new Comment(1,"Текст комментария новый", createDateComment.plusDays(1), editDateComment.plusDays(1), 2, 1);
-            Comment.CommentAttachment commentAttachment1 = new Comment.CommentAttachment(2,"Прикрепление 2 новое", "/static/attachments/image2_новое.png", 1);
-            Comment.CommentAttachment commentAttachment2 = new Comment.CommentAttachment("Прикрепление 3", "/static/attachments/image3.png", 1);
+            Comment comment = new Comment(1,"Текст комментария новый", Timestamp.valueOf(createDateComment.plusDays(1).atStartOfDay()),
+                    Timestamp.valueOf(editDateComment.plusDays(1).atStartOfDay()), 2, 1);
+            CommentAttachment commentAttachment1 = new CommentAttachment(2,"Прикрепление 2 новое", "/static/attachments/image2_новое.png");
+            CommentAttachment commentAttachment2 = new CommentAttachment("Прикрепление 3", "/static/attachments/image3.png");
             comment.addNewAttachment(commentAttachment1);
             comment.addNewAttachment(commentAttachment2);
+            commentAttachment1.setComment(comment);
+            commentAttachment2.setComment(comment);
 
             commentRepository.update(comment);
 
@@ -484,8 +502,8 @@ class CommentRepositoryTest {
             resultComment.next();
             soft.assertThat(comment)
                     .hasFieldOrPropertyWithValue("text", resultComment.getString("text"))
-                    .hasFieldOrPropertyWithValue("createDate", resultComment.getTimestamp("create_date").toLocalDateTime().toLocalDate())
-                    .hasFieldOrPropertyWithValue("editDate", resultComment.getTimestamp("edit_date").toLocalDateTime().toLocalDate())
+                    .hasFieldOrPropertyWithValue("createDate", resultComment.getTimestamp("create_date"))
+                    .hasFieldOrPropertyWithValue("editDate", resultComment.getTimestamp("edit_date"))
                     .hasFieldOrPropertyWithValue("articleId", resultComment.getInt("article_id"))
                     .hasFieldOrPropertyWithValue("userId", resultComment.getInt("user_id"));
             soft.assertAll();
@@ -493,14 +511,12 @@ class CommentRepositoryTest {
             resultAttachments.next();
             soft.assertThat(commentAttachment1)
                     .hasFieldOrPropertyWithValue("title", resultAttachments.getString("title"))
-                    .hasFieldOrPropertyWithValue("path", resultAttachments.getString("path"))
-                    .hasFieldOrPropertyWithValue("commentId", resultAttachments.getInt("comment_id"));
+                    .hasFieldOrPropertyWithValue("path", resultAttachments.getString("path"));
             soft.assertAll();
             resultAttachments.next();
             soft.assertThat(commentAttachment2)
                     .hasFieldOrPropertyWithValue("title", resultAttachments.getString("title"))
-                    .hasFieldOrPropertyWithValue("path", resultAttachments.getString("path"))
-                    .hasFieldOrPropertyWithValue("commentId", resultAttachments.getInt("comment_id"));
+                    .hasFieldOrPropertyWithValue("path", resultAttachments.getString("path"));
             soft.assertAll();
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {

@@ -1,11 +1,15 @@
 package news.dao.repositories;
 
+import news.HibernateUtil;
 import news.dao.connection.DBPool;
 import news.dao.specifications.FindAllArticleSpecification;
 import news.dao.specifications.FindByIdArticleSpecification;
 import news.dao.specifications.FindByTitleArticleSpecification;
 import news.model.Article;
+import news.model.ArticleImage;
+import news.model.Tag;
 import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,9 +17,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,7 +54,11 @@ class ArticleRepositoryTest {
                 .withPassword("qwerty")
                 .withDatabaseName("news");
         this.container.start();
+        
         this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
+
+        HibernateUtil.setConnectionProperties(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
+        
         Statement statement = this.poolConnection.getConnection().createStatement();
 
         // создание группы
@@ -204,13 +210,16 @@ class ArticleRepositoryTest {
     void findById() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            ArticleRepository articleRepository = new ArticleRepository(this.poolConnection);
+            ArticleRepository articleRepository = new ArticleRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            Article article = new Article("Заголовок 1", "Лид 1", createDateArticle, editDateArticle,
+            Article article = new Article("Заголовок 1", "Лид 1", Timestamp.valueOf(createDateArticle.atStartOfDay()),
+                    Timestamp.valueOf(editDateArticle.atStartOfDay()),
                     "Текст 1", true, 1, 1, 1);
-            Article.ArticleImage articleImage1 = new Article.ArticleImage("Изображение 1", "/static/images/image1.png", 1);
-            Article.ArticleImage articleImage2 = new Article.ArticleImage("Изображение 2", "/static/images/image2.png", 1);
+            ArticleImage articleImage1 = new ArticleImage("Изображение 1", "/static/images/image1.png");
+            ArticleImage articleImage2 = new ArticleImage("Изображение 2", "/static/images/image2.png");
+            articleImage1.setArticle(article);
+            articleImage2.setArticle(article);
             article.addNewImage(articleImage1);
             article.addNewImage(articleImage2);
             String sqlInsertArticle = String.format("INSERT INTO article (title, lead, create_date, edit_date, text, is_published, " +
@@ -230,13 +239,15 @@ class ArticleRepositoryTest {
             FindByIdArticleSpecification findById = new FindByIdArticleSpecification(1);
             List<Article> resultFindByIdArticleList = articleRepository.query(findById);
             Object[] resultFindByIdArticleInstance = resultFindByIdArticleList.get(0).getObjects();
-            List images = (ArrayList) resultFindByIdArticleInstance[10];
-            List tagsId = new ArrayList((HashSet) resultFindByIdArticleInstance[11]);
-            Article.ArticleImage resultFindByIdImage1 = (Article.ArticleImage) images.get(0);
-            Article.ArticleImage resultFindByIdImage2 = (Article.ArticleImage) images.get(1);
-            int tagId1 = (int) tagsId.get(0);
-            int tagId2 = (int) tagsId.get(1);
-            int tagId3 = (int) tagsId.get(2);
+            Collection<ArticleImage> imagesCollection = (Collection<ArticleImage>) resultFindByIdArticleInstance[10];
+            List<Object> images = Arrays.asList(imagesCollection.toArray());
+            Collection<Tag> tagsCollection = (Collection<Tag>) resultFindByIdArticleInstance[11];
+            List<Object> tags = Arrays.asList(tagsCollection.toArray());
+            ArticleImage resultFindByIdImage1 = (ArticleImage) images.get(0);
+            ArticleImage resultFindByIdImage2 = (ArticleImage) images.get(1);
+            Tag tag1 = (Tag) tags.get(0);
+            Tag tag2 = (Tag) tags.get(1);
+            Tag tag3 = (Tag) tags.get(2);
 
             soft.assertThat(article)
                     .hasFieldOrPropertyWithValue("title", resultFindByIdArticleInstance[1])
@@ -251,17 +262,15 @@ class ArticleRepositoryTest {
             soft.assertAll();
             soft.assertThat(resultFindByIdImage1)
                     .hasFieldOrPropertyWithValue("title", "Изображение 1")
-                    .hasFieldOrPropertyWithValue("path", "/static/images/image1.png")
-                    .hasFieldOrPropertyWithValue("articleId", 1);
+                    .hasFieldOrPropertyWithValue("path", "/static/images/image1.png");
             soft.assertAll();
             soft.assertThat(resultFindByIdImage2)
                     .hasFieldOrPropertyWithValue("title", "Изображение 2")
-                    .hasFieldOrPropertyWithValue("path", "/static/images/image2.png")
-                    .hasFieldOrPropertyWithValue("articleId", 1);
+                    .hasFieldOrPropertyWithValue("path", "/static/images/image2.png");
             soft.assertAll();
-            assertThat(tagId1).isEqualTo(1);
-            assertThat(tagId2).isEqualTo(2);
-            assertThat(tagId3).isEqualTo(3);
+            assertThat((int) tag1.getObjects()[0]).isEqualTo(1);
+            assertThat((int) tag2.getObjects()[0]).isEqualTo(2);
+            assertThat((int) tag3.getObjects()[0]).isEqualTo(3);
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -272,19 +281,21 @@ class ArticleRepositoryTest {
     void findByTitle() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            ArticleRepository articleRepository = new ArticleRepository(this.poolConnection);
+            ArticleRepository articleRepository = new ArticleRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             // создаем две статьи с одиннаковым title
-            Article article1 = new Article("Заголовок 1", "Лид 1", createDateArticle, editDateArticle,
+            Article article1 = new Article("Заголовок 1", "Лид 1", Timestamp.valueOf(createDateArticle.atStartOfDay()),
+                    Timestamp.valueOf(editDateArticle.atStartOfDay()),
                     "Текст 1", true, 1, 1, 1);
-            Article article2 = new Article("Заголовок 1", "Лид 2", createDateArticle, editDateArticle,
+            Article article2 = new Article("Заголовок 1", "Лид 2", Timestamp.valueOf(createDateArticle.atStartOfDay()),
+                    Timestamp.valueOf(editDateArticle.atStartOfDay()),
                     "Текст 2", true, 2, 2, 2);
             // добавляем к ним по 2 изображения
-            Article.ArticleImage articleImage1 = new Article.ArticleImage("Изображение 1", "/static/images/image1.png", 1);
-            Article.ArticleImage articleImage2 = new Article.ArticleImage("Изображение 2", "/static/images/image2.png", 1);
-            Article.ArticleImage articleImage3 = new Article.ArticleImage("Изображение 3", "/static/images/image3.png", 2);
-            Article.ArticleImage articleImage4 = new Article.ArticleImage("Изображение 4", "/static/images/image4.png", 2);
+            ArticleImage articleImage1 = new ArticleImage("Изображение 1", "/static/images/image1.png");
+            ArticleImage articleImage2 = new ArticleImage("Изображение 2", "/static/images/image2.png");
+            ArticleImage articleImage3 = new ArticleImage("Изображение 3", "/static/images/image3.png");
+            ArticleImage articleImage4 = new ArticleImage("Изображение 4", "/static/images/image4.png");
             article1.addNewImage(articleImage1);
             article1.addNewImage(articleImage2);
             article2.addNewImage(articleImage3);
@@ -318,18 +329,23 @@ class ArticleRepositoryTest {
             List<Article> resultFindByTitleArticleList = articleRepository.query(findByTitle);
             Object[] resultFindByIdArticleInstance1 = resultFindByTitleArticleList.get(0).getObjects();
             Object[] resultFindByIdArticleInstance2 = resultFindByTitleArticleList.get(1).getObjects();
-            List images1 = (ArrayList) resultFindByIdArticleInstance1[10];
-            List tagsId1 = new ArrayList((HashSet) resultFindByIdArticleInstance1[11]);
-            List images2 = (ArrayList) resultFindByIdArticleInstance2[10];
-            List tagsId2 = new ArrayList((HashSet) resultFindByIdArticleInstance2[11]);
-            Article.ArticleImage resultFindByIdImage1 = (Article.ArticleImage) images1.get(0);
-            Article.ArticleImage resultFindByIdImage2 = (Article.ArticleImage) images1.get(1);
-            Article.ArticleImage resultFindByIdImage3 = (Article.ArticleImage) images2.get(0);
-            Article.ArticleImage resultFindByIdImage4 = (Article.ArticleImage) images2.get(1);
-            int tagId1 = (int) tagsId1.get(0);
-            int tagId2 = (int) tagsId1.get(1);
-            int tagId3 = (int) tagsId2.get(0);
-            int tagId4 = (int) tagsId2.get(1);
+
+            Collection<ArticleImage> imagesCollection1 = (Collection<ArticleImage>) resultFindByIdArticleInstance1[10];
+            List<Object> images1 = Arrays.asList(imagesCollection1.toArray());
+            Collection<Tag> tagsCollection1 = (Collection<Tag>) resultFindByIdArticleInstance1[11];
+            List<Object> tags1 = Arrays.asList(tagsCollection1.toArray());
+            Collection<ArticleImage> imagesCollection2 = (Collection<ArticleImage>) resultFindByIdArticleInstance2[10];
+            List<Object> images2 = Arrays.asList(imagesCollection2.toArray());
+            Collection<Tag> tagsCollection2 = (Collection<Tag>) resultFindByIdArticleInstance2[11];
+            List<Object> tags2 = Arrays.asList(tagsCollection2.toArray());
+            ArticleImage resultFindByIdImage1 = (ArticleImage) images1.get(0);
+            ArticleImage resultFindByIdImage2 = (ArticleImage) images1.get(1);
+            ArticleImage resultFindByIdImage3 = (ArticleImage) images2.get(0);
+            ArticleImage resultFindByIdImage4 = (ArticleImage) images2.get(1);
+            Tag tag1 = (Tag) tags1.get(0);
+            Tag tag2 = (Tag) tags1.get(1);
+            Tag tag3 = (Tag) tags2.get(0);
+            Tag tag4 = (Tag) tags2.get(1);
 
             soft.assertThat(article1)
                     .hasFieldOrPropertyWithValue("title", resultFindByIdArticleInstance1[1])
@@ -355,28 +371,24 @@ class ArticleRepositoryTest {
             soft.assertAll();
             soft.assertThat(resultFindByIdImage1)
                     .hasFieldOrPropertyWithValue("title", "Изображение 1")
-                    .hasFieldOrPropertyWithValue("path", "/static/images/image1.png")
-                    .hasFieldOrPropertyWithValue("articleId", 1);
+                    .hasFieldOrPropertyWithValue("path", "/static/images/image1.png");
             soft.assertAll();
             soft.assertThat(resultFindByIdImage2)
                     .hasFieldOrPropertyWithValue("title", "Изображение 2")
-                    .hasFieldOrPropertyWithValue("path", "/static/images/image2.png")
-                    .hasFieldOrPropertyWithValue("articleId", 1);
+                    .hasFieldOrPropertyWithValue("path", "/static/images/image2.png");
             soft.assertAll();
             soft.assertThat(resultFindByIdImage3)
                     .hasFieldOrPropertyWithValue("title", "Изображение 3")
-                    .hasFieldOrPropertyWithValue("path", "/static/images/image3.png")
-                    .hasFieldOrPropertyWithValue("articleId", 2);
+                    .hasFieldOrPropertyWithValue("path", "/static/images/image3.png");
             soft.assertAll();
             soft.assertThat(resultFindByIdImage4)
                     .hasFieldOrPropertyWithValue("title", "Изображение 4")
-                    .hasFieldOrPropertyWithValue("path", "/static/images/image4.png")
-                    .hasFieldOrPropertyWithValue("articleId", 2);
+                    .hasFieldOrPropertyWithValue("path", "/static/images/image4.png");
             soft.assertAll();
-            assertThat(tagId1).isEqualTo(1);
-            assertThat(tagId2).isEqualTo(2);
-            assertThat(tagId3).isEqualTo(3);
-            assertThat(tagId4).isEqualTo(4);
+            assertThat((int) tag1.getObjects()[0]).isEqualTo(1);
+            assertThat((int) tag2.getObjects()[0]).isEqualTo(2);
+            assertThat((int) tag3.getObjects()[0]).isEqualTo(3);
+            assertThat((int) tag4.getObjects()[0]).isEqualTo(4);
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -387,22 +399,22 @@ class ArticleRepositoryTest {
     void findAll() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            ArticleRepository articleRepository = new ArticleRepository(this.poolConnection);
+            ArticleRepository articleRepository = new ArticleRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             // создаем две статьи с одиннаковым title
-            Article article1 = new Article("Заголовок 1", "Лид 1", createDateArticle, editDateArticle,
-                    "Текст 1", true, 1, 1, 1);
-            Article article2 = new Article("Заголовок 2", "Лид 2", createDateArticle, editDateArticle,
-                    "Текст 2", true, 2, 2, 2);
-            Article article3 = new Article("Заголовок 3", "Лид 3", createDateArticle, editDateArticle,
-                    "Текст 3", true, 2, 2, 2);
+            Article article1 = new Article("Заголовок 1", "Лид 1", Timestamp.valueOf(createDateArticle.atStartOfDay()),
+                    Timestamp.valueOf(editDateArticle.atStartOfDay()), "Текст 1", true, 1, 1, 1);
+            Article article2 = new Article("Заголовок 2", "Лид 2", Timestamp.valueOf(createDateArticle.atStartOfDay()),
+                    Timestamp.valueOf(editDateArticle.atStartOfDay()), "Текст 2", true, 2, 2, 2);
+            Article article3 = new Article("Заголовок 3", "Лид 3", Timestamp.valueOf(createDateArticle.atStartOfDay()),
+                    Timestamp.valueOf(editDateArticle.atStartOfDay()), "Текст 3", true, 2, 2, 2);
             // добавляем к ним по 2 изображения
-            Article.ArticleImage articleImage1 = new Article.ArticleImage("Изображение 1", "/static/images/image1.png", 1);
-            Article.ArticleImage articleImage2 = new Article.ArticleImage("Изображение 2", "/static/images/image2.png", 1);
-            Article.ArticleImage articleImage3 = new Article.ArticleImage("Изображение 3", "/static/images/image3.png", 2);
-            Article.ArticleImage articleImage4 = new Article.ArticleImage("Изображение 4", "/static/images/image4.png", 2);
-            Article.ArticleImage articleImage5 = new Article.ArticleImage("Изображение 5", "/static/images/image5.png", 3);
+            ArticleImage articleImage1 = new ArticleImage("Изображение 1", "/static/images/image1.png");
+            ArticleImage articleImage2 = new ArticleImage("Изображение 2", "/static/images/image2.png");
+            ArticleImage articleImage3 = new ArticleImage("Изображение 3", "/static/images/image3.png");
+            ArticleImage articleImage4 = new ArticleImage("Изображение 4", "/static/images/image4.png");
+            ArticleImage articleImage5 = new ArticleImage("Изображение 5", "/static/images/image5.png");
             article1.addNewImage(articleImage1);
             article1.addNewImage(articleImage2);
             article2.addNewImage(articleImage3);
@@ -444,26 +456,29 @@ class ArticleRepositoryTest {
             Object[] resultFindAllArticleInstance1 = resultFindAllArticleList.get(0).getObjects();
             Object[] resultFindAllArticleInstance2 = resultFindAllArticleList.get(1).getObjects();
             Object[] resultFindAllArticleInstance3 = resultFindAllArticleList.get(2).getObjects();
-            List images1 = (ArrayList) resultFindAllArticleInstance1[10];
-            List tagsId1 = new ArrayList((HashSet) resultFindAllArticleInstance1[11]);
-            Collections.sort(tagsId1);
-            List images2 = (ArrayList) resultFindAllArticleInstance2[10];
-            List tagsId2 = new ArrayList((HashSet) resultFindAllArticleInstance2[11]);
-            Collections.sort(tagsId1);
-            List images3 = (ArrayList) resultFindAllArticleInstance3[10];
-            List tagsId3 = new ArrayList((HashSet) resultFindAllArticleInstance3[11]);
-            Collections.sort(tagsId1);
-            Article.ArticleImage resultFindByIdImage1 = (Article.ArticleImage) images1.get(0);
-            Article.ArticleImage resultFindByIdImage2 = (Article.ArticleImage) images1.get(1);
-            Article.ArticleImage resultFindByIdImage3 = (Article.ArticleImage) images2.get(0);
-            Article.ArticleImage resultFindByIdImage4 = (Article.ArticleImage) images2.get(1);
-            Article.ArticleImage resultFindByIdImage5 = (Article.ArticleImage) images3.get(0);
-            int tagId1 = (int) tagsId1.get(0);
-            int tagId2 = (int) tagsId1.get(1);
-            int tagId3 = (int) tagsId2.get(0);
-            int tagId4 = (int) tagsId2.get(1);
-            int tagId5 = (int) tagsId3.get(0);
-            int tagId6 = (int) tagsId3.get(1);
+            Collection<ArticleImage> imagesCollection1 = (Collection<ArticleImage>) resultFindAllArticleInstance1[10];
+            List<Object> images1 = Arrays.asList(imagesCollection1.toArray());
+            Collection<Tag> tagsCollection1 = (Collection<Tag>) resultFindAllArticleInstance1[11];
+            List<Object> tags1 = Arrays.asList(tagsCollection1.toArray());
+            Collection<ArticleImage> imagesCollection2 = (Collection<ArticleImage>) resultFindAllArticleInstance2[10];
+            List<Object> images2 = Arrays.asList(imagesCollection2.toArray());
+            Collection<Tag> tagsCollection2 = (Collection<Tag>) resultFindAllArticleInstance2[11];
+            List<Object> tags2 = Arrays.asList(tagsCollection2.toArray());
+            Collection<ArticleImage> imagesCollection3 = (Collection<ArticleImage>) resultFindAllArticleInstance3[10];
+            List<Object> images3 = Arrays.asList(imagesCollection3.toArray());
+            Collection<Tag> tagsCollection3 = (Collection<Tag>) resultFindAllArticleInstance3[11];
+            List<Object> tags3 = Arrays.asList(tagsCollection3.toArray());
+            ArticleImage resultFindByIdImage1 = (ArticleImage) images1.get(0);
+            ArticleImage resultFindByIdImage2 = (ArticleImage) images1.get(1);
+            ArticleImage resultFindByIdImage3 = (ArticleImage) images2.get(0);
+            ArticleImage resultFindByIdImage4 = (ArticleImage) images2.get(1);
+            ArticleImage resultFindByIdImage5 = (ArticleImage) images3.get(0);
+            Tag tag1 = (Tag) tags1.get(0);
+            Tag tag2 = (Tag) tags1.get(1);
+            Tag tag3 = (Tag) tags2.get(0);
+            Tag tag4 = (Tag) tags2.get(1);
+            Tag tag5 = (Tag) tags3.get(0);
+            Tag tag6 = (Tag) tags3.get(1);
 
             soft.assertThat(article1)
                     .hasFieldOrPropertyWithValue("title", resultFindAllArticleInstance1[1])
@@ -500,35 +515,30 @@ class ArticleRepositoryTest {
             soft.assertAll();
             soft.assertThat(resultFindByIdImage1)
                     .hasFieldOrPropertyWithValue("title", "Изображение 1")
-                    .hasFieldOrPropertyWithValue("path", "/static/images/image1.png")
-                    .hasFieldOrPropertyWithValue("articleId", 1);
+                    .hasFieldOrPropertyWithValue("path", "/static/images/image1.png");
             soft.assertAll();
             soft.assertThat(resultFindByIdImage2)
                     .hasFieldOrPropertyWithValue("title", "Изображение 2")
-                    .hasFieldOrPropertyWithValue("path", "/static/images/image2.png")
-                    .hasFieldOrPropertyWithValue("articleId", 1);
+                    .hasFieldOrPropertyWithValue("path", "/static/images/image2.png");
             soft.assertAll();
             soft.assertThat(resultFindByIdImage3)
                     .hasFieldOrPropertyWithValue("title", "Изображение 3")
-                    .hasFieldOrPropertyWithValue("path", "/static/images/image3.png")
-                    .hasFieldOrPropertyWithValue("articleId", 2);
+                    .hasFieldOrPropertyWithValue("path", "/static/images/image3.png");
             soft.assertAll();
             soft.assertThat(resultFindByIdImage4)
                     .hasFieldOrPropertyWithValue("title", "Изображение 4")
-                    .hasFieldOrPropertyWithValue("path", "/static/images/image4.png")
-                    .hasFieldOrPropertyWithValue("articleId", 2);
+                    .hasFieldOrPropertyWithValue("path", "/static/images/image4.png");
             soft.assertAll();
             soft.assertThat(resultFindByIdImage5)
                     .hasFieldOrPropertyWithValue("title", "Изображение 5")
-                    .hasFieldOrPropertyWithValue("path", "/static/images/image5.png")
-                    .hasFieldOrPropertyWithValue("articleId", 3);
+                    .hasFieldOrPropertyWithValue("path", "/static/images/image5.png");
             soft.assertAll();
-            assertThat(tagId1).isEqualTo(1);
-            assertThat(tagId2).isEqualTo(2);
-            assertThat(tagId3).isEqualTo(3);
-            assertThat(tagId4).isEqualTo(4);
-            assertThat(tagId5).isEqualTo(2);
-            assertThat(tagId6).isEqualTo(4);
+            assertThat((int) tag1.getObjects()[0]).isEqualTo(1);
+            assertThat((int) tag2.getObjects()[0]).isEqualTo(2);
+            assertThat((int) tag3.getObjects()[0]).isEqualTo(3);
+            assertThat((int) tag4.getObjects()[0]).isEqualTo(4);
+            assertThat((int) tag5.getObjects()[0]).isEqualTo(2);
+            assertThat((int) tag6.getObjects()[0]).isEqualTo(4);
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -539,19 +549,25 @@ class ArticleRepositoryTest {
     void createArticle() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            ArticleRepository articleRepository = new ArticleRepository(this.poolConnection);
+            ArticleRepository articleRepository = new ArticleRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             // создаем статью
-            Article article = new Article("Заголовок 1", "Лид 1", createDateArticle, editDateArticle,
-                    "Текст 1", true, 1, 1, 1);
+            Article article = new Article("Заголовок 1", "Лид 1", Timestamp.valueOf(createDateArticle.atStartOfDay()),
+                    Timestamp.valueOf(editDateArticle.atStartOfDay()), "Текст 1", true, 1, 1, 1);
             // изображения к статьям и id тегов
-            Article.ArticleImage articleImage1 = new Article.ArticleImage("Изображение 1", "/static/images/image1.png", 1);
-            Article.ArticleImage articleImage2 = new Article.ArticleImage("Изображение 2", "/static/images/image2.png", 1);
+            ArticleImage articleImage1 = new ArticleImage("Изображение 1", "/static/images/image1.png");
+            ArticleImage articleImage2 = new ArticleImage("Изображение 2", "/static/images/image2.png");
+            articleImage1.setArticle(article);
+            articleImage2.setArticle(article);
             article.addNewImage(articleImage1);
             article.addNewImage(articleImage2);
-            article.addNewTagId(1);
-            article.addNewTagId(2);
+            Tag tag1 = new Tag("new_tag");
+            Tag tag2 = new Tag("new_tag2");
+            tag1.addNewArticle(article);
+            tag2.addNewArticle(article);
+            article.addNewTag(tag1);
+            article.addNewTag(tag2);
 
             // добавление в БД
             articleRepository.create(article);
@@ -564,8 +580,8 @@ class ArticleRepositoryTest {
             soft.assertThat(article)
                     .hasFieldOrPropertyWithValue("title", resultArticle.getString("title"))
                     .hasFieldOrPropertyWithValue("lead", resultArticle.getString("lead"))
-                    .hasFieldOrPropertyWithValue("createDate", resultArticle.getTimestamp("create_date").toLocalDateTime().toLocalDate())
-                    .hasFieldOrPropertyWithValue("editDate", resultArticle.getTimestamp("edit_date").toLocalDateTime().toLocalDate())
+                    .hasFieldOrPropertyWithValue("createDate", resultArticle.getTimestamp("create_date"))
+                    .hasFieldOrPropertyWithValue("editDate", resultArticle.getTimestamp("edit_date"))
                     .hasFieldOrPropertyWithValue("text", resultArticle.getString("text"))
                     .hasFieldOrPropertyWithValue("isPublished", resultArticle.getBoolean("is_published"))
                     .hasFieldOrPropertyWithValue("categoryId", resultArticle.getInt("category_id"))
@@ -578,22 +594,28 @@ class ArticleRepositoryTest {
             resultImages.next();
             soft.assertThat(articleImage1)
                     .hasFieldOrPropertyWithValue("title", resultImages.getString("title"))
-                    .hasFieldOrPropertyWithValue("path", resultImages.getString("path"))
-                    .hasFieldOrPropertyWithValue("articleId", resultImages.getInt("article_id"));
+                    .hasFieldOrPropertyWithValue("path", resultImages.getString("path"));
             soft.assertAll();
             resultImages.next();
             soft.assertThat(articleImage2)
                     .hasFieldOrPropertyWithValue("title", resultImages.getString("title"))
-                    .hasFieldOrPropertyWithValue("path", resultImages.getString("path"))
-                    .hasFieldOrPropertyWithValue("articleId", resultImages.getInt("article_id"));
+                    .hasFieldOrPropertyWithValue("path", resultImages.getString("path"));
             soft.assertAll();
             // сверяем id тегов
             String sqlQueryIdTags = "SELECT * FROM article_tag WHERE article_id=1;";
             ResultSet resultIdTags = statement.executeQuery(sqlQueryIdTags);
             resultIdTags.next();
-            assertThat(resultIdTags.getInt("tag_id")).isEqualTo(1);
+            int idTag1 = resultIdTags.getInt("tag_id");
             resultIdTags.next();
-            assertThat(resultIdTags.getInt("tag_id")).isEqualTo(2);
+            int idTag2 = resultIdTags.getInt("tag_id");
+            sqlQueryIdTags = String.format("SELECT * FROM tag WHERE id=%d;", idTag1);
+            ResultSet resultTags = statement.executeQuery(sqlQueryIdTags);
+            resultTags.next();
+            assertThat(tag1).hasFieldOrPropertyWithValue("title", resultTags.getString("title"));
+            sqlQueryIdTags = String.format("SELECT * FROM tag WHERE id=%d;", idTag2);
+            resultTags = statement.executeQuery(sqlQueryIdTags);
+            resultTags.next();
+            assertThat(tag2).hasFieldOrPropertyWithValue("title", resultTags.getString("title"));
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
             exception.printStackTrace();
@@ -603,19 +625,9 @@ class ArticleRepositoryTest {
     @Test
     void deleteArticle() {
         try {
-            ArticleRepository articleRepository = new ArticleRepository(this.poolConnection);
+            ArticleRepository articleRepository = new ArticleRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
-            // создаем статью которую будем удалять
-            Article article = new Article("Заголовок 1", "Лид 1", createDateArticle, editDateArticle,
-                    "Текст 1", true, 1, 1, 1);
-            // изображения к статьям и id тегов
-            Article.ArticleImage articleImage1 = new Article.ArticleImage("Изображение 1", "/static/images/image1.png", 1);
-            Article.ArticleImage articleImage2 = new Article.ArticleImage("Изображение 2", "/static/images/image2.png", 1);
-            article.addNewImage(articleImage1);
-            article.addNewImage(articleImage2);
-            article.addNewTagId(1);
-            article.addNewTagId(2);
             // добавляем статью в БД
             String sqlInsertArticle = String.format("INSERT INTO article (title, lead, create_date, edit_date, text, is_published, " +
                             "category_id, user_id, source_id) VALUES ('%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);",
@@ -659,7 +671,7 @@ class ArticleRepositoryTest {
     void updateArticle() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            ArticleRepository articleRepository = new ArticleRepository(this.poolConnection);
+            ArticleRepository articleRepository = new ArticleRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             // добавляем данные в БД, которые будем обновлять
@@ -681,15 +693,21 @@ class ArticleRepositoryTest {
             statement.executeUpdate(sqlInsertTagsId);
             // создаем объект статьи, которым будем обновлять
             // статья
-            Article article = new Article(1,"Заголовок 1 новый", "Лид 1 новый", createDateArticle, editDateArticle,
-                    "Текст 1 новый", true, 2, 1, 2);
+            Article article = new Article(1,"Заголовок 1 новый", "Лид 1 новый", Timestamp.valueOf(createDateArticle.atStartOfDay()),
+                    Timestamp.valueOf(editDateArticle.atStartOfDay()), "Текст 1 новый", true, 2, 1, 2);
             // изображения и теги
-            Article.ArticleImage articleImage1 = new Article.ArticleImage("Изображение 2", "/static/images/image2.png", 1);
-            Article.ArticleImage articleImage2 = new Article.ArticleImage("Изображение 3", "/static/images/image3.png", 1);
+            ArticleImage articleImage1 = new ArticleImage("Изображение 2", "/static/images/image2.png");
+            ArticleImage articleImage2 = new ArticleImage("Изображение 3", "/static/images/image3.png");
+            articleImage1.setArticle(article);
+            articleImage2.setArticle(article);
             article.addNewImage(articleImage1);
             article.addNewImage(articleImage2);
-            article.addNewTagId(2);
-            article.addNewTagId(3);
+            Tag tag1 = new Tag(2, "update tag");
+            Tag tag2 = new Tag("new tag");
+            tag1.addNewArticle(article);
+            tag2.addNewArticle(article);
+            article.addNewTag(tag1);
+            article.addNewTag(tag2);
 
             // обновляем данные
             articleRepository.update(article);
@@ -702,8 +720,8 @@ class ArticleRepositoryTest {
             soft.assertThat(article)
                     .hasFieldOrPropertyWithValue("title", resultArticle.getString("title"))
                     .hasFieldOrPropertyWithValue("lead", resultArticle.getString("lead"))
-                    .hasFieldOrPropertyWithValue("createDate", resultArticle.getTimestamp("create_date").toLocalDateTime().toLocalDate())
-                    .hasFieldOrPropertyWithValue("editDate", resultArticle.getTimestamp("edit_date").toLocalDateTime().toLocalDate())
+                    .hasFieldOrPropertyWithValue("createDate", resultArticle.getTimestamp("create_date"))
+                    .hasFieldOrPropertyWithValue("editDate", resultArticle.getTimestamp("edit_date"))
                     .hasFieldOrPropertyWithValue("text", resultArticle.getString("text"))
                     .hasFieldOrPropertyWithValue("isPublished", resultArticle.getBoolean("is_published"))
                     .hasFieldOrPropertyWithValue("categoryId", resultArticle.getInt("category_id"))
@@ -716,22 +734,28 @@ class ArticleRepositoryTest {
             resultImages.next();
             soft.assertThat(articleImage1)
                     .hasFieldOrPropertyWithValue("title", resultImages.getString("title"))
-                    .hasFieldOrPropertyWithValue("path", resultImages.getString("path"))
-                    .hasFieldOrPropertyWithValue("articleId", resultImages.getInt("article_id"));
+                    .hasFieldOrPropertyWithValue("path", resultImages.getString("path"));
             soft.assertAll();
             resultImages.next();
             soft.assertThat(articleImage2)
                     .hasFieldOrPropertyWithValue("title", resultImages.getString("title"))
-                    .hasFieldOrPropertyWithValue("path", resultImages.getString("path"))
-                    .hasFieldOrPropertyWithValue("articleId", resultImages.getInt("article_id"));
+                    .hasFieldOrPropertyWithValue("path", resultImages.getString("path"));
             soft.assertAll();
             // сверяем id тегов
             String sqlQueryIdTags = "SELECT * FROM article_tag WHERE article_id=1;";
             ResultSet resultIdTags = statement.executeQuery(sqlQueryIdTags);
             resultIdTags.next();
-            assertThat(resultIdTags.getInt("tag_id")).isEqualTo(2);
+            int idTag1 = resultIdTags.getInt("tag_id");
             resultIdTags.next();
-            assertThat(resultIdTags.getInt("tag_id")).isEqualTo(3);
+            int idTag2 = resultIdTags.getInt("tag_id");
+            sqlQueryIdTags = String.format("SELECT * FROM tag WHERE id=%d;", idTag1);
+            ResultSet resultTags = statement.executeQuery(sqlQueryIdTags);
+            resultTags.next();
+            assertThat(tag1).hasFieldOrPropertyWithValue("title", resultTags.getString("title"));
+            sqlQueryIdTags = String.format("SELECT * FROM tag WHERE id=%d;", idTag2);
+            resultTags = statement.executeQuery(sqlQueryIdTags);
+            resultTags.next();
+            assertThat(tag2).hasFieldOrPropertyWithValue("title", resultTags.getString("title"));
             this.poolConnection.pullConnection(connection);
         } catch (SQLException exception) {
             exception.printStackTrace();

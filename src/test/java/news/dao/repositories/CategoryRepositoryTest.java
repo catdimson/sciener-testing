@@ -1,5 +1,6 @@
 package news.dao.repositories;
 
+import news.HibernateUtil;
 import news.dao.connection.DBPool;
 import news.dao.specifications.FindAllCategorySpecification;
 import news.dao.specifications.FindByIdCategorySpecification;
@@ -30,14 +31,17 @@ class CategoryRepositoryTest {
                 .withDatabaseName("news");
         this.container.start();
 
+        this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
+
+        HibernateUtil.setConnectionProperties(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
+
+        Statement statement = this.poolConnection.getConnection().createStatement();
+
         String sqlCreateTableCategory = "CREATE TABLE IF NOT EXISTS category (" +
                 "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ), " +
                 "title character varying(50) NOT NULL, " +
                 "CONSTRAINT category_pk PRIMARY KEY (id)," +
                 "CONSTRAINT title_unique_category UNIQUE (title));";
-        this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
-
-        Statement statement = this.poolConnection.getConnection().createStatement();
         statement.executeUpdate(sqlCreateTableCategory);
     }
 
@@ -45,7 +49,7 @@ class CategoryRepositoryTest {
     void findById() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            CategoryRepository categoryRepository = new CategoryRepository(this.poolConnection);
+            CategoryRepository categoryRepository = new CategoryRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO category (title) VALUES('Новости');";
@@ -69,7 +73,7 @@ class CategoryRepositoryTest {
     void findByTitle() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            CategoryRepository categoryRepository = new CategoryRepository(this.poolConnection);
+            CategoryRepository categoryRepository = new CategoryRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO category (title) VALUES('Новости');";
@@ -93,7 +97,7 @@ class CategoryRepositoryTest {
     void findAll() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            CategoryRepository categoryRepository = new CategoryRepository(this.poolConnection);
+            CategoryRepository categoryRepository = new CategoryRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO category (title) VALUES ('Новости'),('Политика');";
@@ -121,7 +125,7 @@ class CategoryRepositoryTest {
     @Test
     void createCategory() {
         try {
-            CategoryRepository categoryRepository = new CategoryRepository(this.poolConnection);
+            CategoryRepository categoryRepository = new CategoryRepository();
             Category category = new Category("Новости");
 
             categoryRepository.create(category);
@@ -141,7 +145,7 @@ class CategoryRepositoryTest {
     @Test
     void deleteCategory() {
         try {
-            CategoryRepository categoryRepository = new CategoryRepository(this.poolConnection);
+            CategoryRepository categoryRepository = new CategoryRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO category (title) VALUES('Новости');";
@@ -163,7 +167,7 @@ class CategoryRepositoryTest {
     @Test
     void updateCategory() {
         try {
-            CategoryRepository categoryRepository = new CategoryRepository(this.poolConnection);
+            CategoryRepository categoryRepository = new CategoryRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO category (title) VALUES('Новости');";

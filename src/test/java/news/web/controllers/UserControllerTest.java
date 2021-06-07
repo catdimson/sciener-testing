@@ -104,37 +104,38 @@ class UserControllerTest {
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
             "Content-Type: application/json;charset=UTF-8\n" +
+            "Content-Length: 566\n" +
             "\n" +
             "[\n" +
             "{\n" +
-            "\t\"id\":1,\n" +
-            "\t\"password\":\"password1\",\n" +
-            "\t\"username\":\"username1\",\n" +
-            "\t\"firstName\":\"firstname1\",\n" +
-            "\t\"lastName\":\"lastname1\",\n" +
-            "\t\"email\":\"email1@mail.ru\",\n" +
-            "\t\"lastLogin\":1589922000,\n" +
-            "\t\"dateJoined\":1558299600,\n" +
-            "\t\"isSuperuser\":true,\n" +
-            "\t\"isStaff\":true,\n" +
-            "\t\"isActive\":true,\n" +
-            "\t\"groupId\":1\n" +
+            "\t\"id\": 1,\n" +
+            "\t\"password\": \"password1\",\n" +
+            "\t\"username\": \"username1\",\n" +
+            "\t\"firstName\": \"firstname1\",\n" +
+            "\t\"lastName\": \"lastname1\",\n" +
+            "\t\"email\": \"email1@mail.ru\",\n" +
+            "\t\"lastLogin\": 1589922000000,\n" +
+            "\t\"dateJoined\": 1558299600000,\n" +
+            "\t\"isSuperuser\": true,\n" +
+            "\t\"isStaff\": true,\n" +
+            "\t\"isActive\": true,\n" +
+            "\t\"groupId\": 1\n" +
             "},\n" +
             "{\n" +
-            "\t\"id\":2,\n" +
-            "\t\"password\":\"password2\",\n" +
-            "\t\"username\":\"username2\",\n" +
-            "\t\"firstName\":\"firstname2\",\n" +
-            "\t\"lastName\":\"lastname2\",\n" +
-            "\t\"email\":\"email2@mail.ru\",\n" +
-            "\t\"lastLogin\":1589922000,\n" +
-            "\t\"dateJoined\":1558299600,\n" +
-            "\t\"isSuperuser\":false,\n" +
-            "\t\"isStaff\":true,\n" +
-            "\t\"isActive\":true,\n" +
-            "\t\"groupId\":1\n" +
+            "\t\"id\": 2,\n" +
+            "\t\"password\": \"password2\",\n" +
+            "\t\"username\": \"username2\",\n" +
+            "\t\"firstName\": \"firstname2\",\n" +
+            "\t\"lastName\": \"lastname2\",\n" +
+            "\t\"email\": \"email2@mail.ru\",\n" +
+            "\t\"lastLogin\": 1589922000000,\n" +
+            "\t\"dateJoined\": 1558299600000,\n" +
+            "\t\"isSuperuser\": false,\n" +
+            "\t\"isStaff\": true,\n" +
+            "\t\"isActive\": true,\n" +
+            "\t\"groupId\": 1\n" +
             "}\n" +
-            "]\n";
+            "]";
         clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
@@ -185,37 +186,38 @@ class UserControllerTest {
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
                 "Content-Type: application/json;charset=UTF-8\n" +
+                "Content-Length: 566\n" +
                 "\n" +
                 "[\n" +
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"password\":\"password1\",\n" +
-                "\t\"username\":\"username1\",\n" +
-                "\t\"firstName\":\"firstname1\",\n" +
-                "\t\"lastName\":\"lastname1\",\n" +
-                "\t\"email\":\"email1@mail.ru\",\n" +
-                "\t\"lastLogin\":1589922000,\n" +
-                "\t\"dateJoined\":1558299600,\n" +
-                "\t\"isSuperuser\":true,\n" +
-                "\t\"isStaff\":true,\n" +
-                "\t\"isActive\":true,\n" +
-                "\t\"groupId\":1\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"password\": \"password1\",\n" +
+                "\t\"username\": \"username1\",\n" +
+                "\t\"firstName\": \"firstname1\",\n" +
+                "\t\"lastName\": \"lastname1\",\n" +
+                "\t\"email\": \"email1@mail.ru\",\n" +
+                "\t\"lastLogin\": 1589922000000,\n" +
+                "\t\"dateJoined\": 1558299600000,\n" +
+                "\t\"isSuperuser\": true,\n" +
+                "\t\"isStaff\": true,\n" +
+                "\t\"isActive\": true,\n" +
+                "\t\"groupId\": 1\n" +
                 "},\n" +
                 "{\n" +
-                "\t\"id\":2,\n" +
-                "\t\"password\":\"password2\",\n" +
-                "\t\"username\":\"username2\",\n" +
-                "\t\"firstName\":\"firstname1\",\n" +
-                "\t\"lastName\":\"lastname2\",\n" +
-                "\t\"email\":\"email2@mail.ru\",\n" +
-                "\t\"lastLogin\":1589922000,\n" +
-                "\t\"dateJoined\":1558299600,\n" +
-                "\t\"isSuperuser\":false,\n" +
-                "\t\"isStaff\":true,\n" +
-                "\t\"isActive\":true,\n" +
-                "\t\"groupId\":1\n" +
+                "\t\"id\": 2,\n" +
+                "\t\"password\": \"password2\",\n" +
+                "\t\"username\": \"username2\",\n" +
+                "\t\"firstName\": \"firstname1\",\n" +
+                "\t\"lastName\": \"lastname2\",\n" +
+                "\t\"email\": \"email2@mail.ru\",\n" +
+                "\t\"lastLogin\": 1589922000000,\n" +
+                "\t\"dateJoined\": 1558299600000,\n" +
+                "\t\"isSuperuser\": false,\n" +
+                "\t\"isStaff\": true,\n" +
+                "\t\"isActive\": true,\n" +
+                "\t\"groupId\": 1\n" +
                 "}\n" +
-                "]\n";
+                "]";
         clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
@@ -266,20 +268,21 @@ class UserControllerTest {
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
                 "Content-Type: application/json;charset=UTF-8\n" +
+                "Content-Length: 279\n" +
                 "\n" +
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"password\":\"password1\",\n" +
-                "\t\"username\":\"username1\",\n" +
-                "\t\"firstName\":\"firstname1\",\n" +
-                "\t\"lastName\":\"lastname1\",\n" +
-                "\t\"email\":\"email1@mail.ru\",\n" +
-                "\t\"lastLogin\":1589922000,\n" +
-                "\t\"dateJoined\":1558299600,\n" +
-                "\t\"isSuperuser\":true,\n" +
-                "\t\"isStaff\":true,\n" +
-                "\t\"isActive\":true,\n" +
-                "\t\"groupId\":1\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"password\": \"password1\",\n" +
+                "\t\"username\": \"username1\",\n" +
+                "\t\"firstName\": \"firstname1\",\n" +
+                "\t\"lastName\": \"lastname1\",\n" +
+                "\t\"email\": \"email1@mail.ru\",\n" +
+                "\t\"lastLogin\": 1589922000000,\n" +
+                "\t\"dateJoined\": 1558299600000,\n" +
+                "\t\"isSuperuser\": true,\n" +
+                "\t\"isStaff\": true,\n" +
+                "\t\"isActive\": true,\n" +
+                "\t\"groupId\": 1\n" +
                 "}";
 
         clientSocket = new Socket("127.0.0.1", 8080);
@@ -315,7 +318,8 @@ class UserControllerTest {
     void buildResponsePOSTMethod() throws SQLException, IOException {
         SoftAssertions soft = new SoftAssertions();
         User user = new User("qwerty123", "alex1992", "Александр", "Колесников",
-                "alex1993@mail.ru", lastLogin, dateJoined, true, true, true, 1);
+                "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
+                true, true, true, 1);
 
         clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -324,12 +328,14 @@ class UserControllerTest {
             "HTTP/1.1 201 \n" +
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
-            "Location: /user/1/\n";
+            "Location: /user/1/\n" +
+            "Content-Length: 0\n";
 
         String request = "" +
             "POST /blg_kotik_dmitry_war/user/ HTTP/1.1\n" +
             "Accept: application/json, */*; q=0.01\n" +
             "Content-Type: application/json\n" +
+            "Content-length: 1500\n" +
             "Host: 127.0.0.1:8080\n" +
             "UnitTest: true\n" +
             "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
@@ -337,17 +343,17 @@ class UserControllerTest {
             "PasswordPostgres: " + this.container.getPassword() + "\n" +
             "\n" +
             "{\n" +
-            "\t\"password\":\"qwerty123\",\n" +
-            "\t\"username\":\"alex1992\",\n" +
-            "\t\"firstName\":\"Александр\",\n" +
-            "\t\"lastName\":\"Колесников\",\n" +
-            "\t\"email\":\"alex1993@mail.ru\",\n" +
-            "\t\"lastLogin\":1589922000,\n" +
-            "\t\"dateJoined\":1558299600,\n" +
-            "\t\"isSuperuser\":true,\n" +
-            "\t\"isStaff\":true,\n" +
-            "\t\"isActive\":true,\n" +
-            "\t\"groupId\":1,\n" +
+            "\t\"password\": \"qwerty123\",\n" +
+            "\t\"username\": \"alex1992\",\n" +
+            "\t\"firstName\": \"Александр\",\n" +
+            "\t\"lastName\": \"Колесников\",\n" +
+            "\t\"email\": \"alex1993@mail.ru\",\n" +
+            "\t\"lastLogin\": 1589922000,\n" +
+            "\t\"dateJoined\": 1558299600,\n" +
+            "\t\"isSuperuser\": true,\n" +
+            "\t\"isStaff\": true,\n" +
+            "\t\"isActive\": true,\n" +
+            "\t\"groupId\": 1\n" +
             "}\n";
         out.println(request);
         out.flush();
@@ -376,8 +382,6 @@ class UserControllerTest {
                 .hasFieldOrPropertyWithValue("firstName", result.getString("first_name"))
                 .hasFieldOrPropertyWithValue("lastName", result.getString("last_name"))
                 .hasFieldOrPropertyWithValue("email", result.getString("email"))
-                .hasFieldOrPropertyWithValue("lastLogin", result.getTimestamp("last_login").toLocalDateTime().toLocalDate())
-                .hasFieldOrPropertyWithValue("dateJoined", result.getTimestamp("date_joined").toLocalDateTime().toLocalDate())
                 .hasFieldOrPropertyWithValue("isSuperuser", result.getBoolean("is_superuser"))
                 .hasFieldOrPropertyWithValue("isStaff", result.getBoolean("is_staff"))
                 .hasFieldOrPropertyWithValue("isActive", result.getBoolean("is_active"))
@@ -396,7 +400,8 @@ class UserControllerTest {
                 Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()), true, true, true, 1);
         statement.executeUpdate(sqlInsertUser);
         User user = new User("qwerty123", "alex1992", "Александр", "Колесников",
-                "alex1993@mail.ru", lastLogin, dateJoined, true, true, true, 1);
+                "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
+                true, true, true, 1);
 
         clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -410,6 +415,7 @@ class UserControllerTest {
                 "PUT /blg_kotik_dmitry_war/user/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
+                "Content-length: 1500\n" +
                 "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
@@ -417,17 +423,17 @@ class UserControllerTest {
                 "PasswordPostgres: " + this.container.getPassword() + "\n" +
                 "\n" +
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"password\":\"qwerty123\",\n" +
-                "\t\"username\":\"alex1992\",\n" +
-                "\t\"firstName\":\"Александр\",\n" +
-                "\t\"lastName\":\"Колесников\",\n" +
-                "\t\"email\":\"alex1993@mail.ru\",\n" +
-                "\t\"lastLogin\":1589922000,\n" +
-                "\t\"dateJoined\":1558299600,\n" +
-                "\t\"isSuperuser\":true,\n" +
-                "\t\"isStaff\":true,\n" +
-                "\t\"isActive\":true,\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"password\": \"qwerty123\",\n" +
+                "\t\"username\": \"alex1992\",\n" +
+                "\t\"firstName\": \"Александр\",\n" +
+                "\t\"lastName\": \"Колесников\",\n" +
+                "\t\"email\": \"alex1993@mail.ru\",\n" +
+                "\t\"lastLogin\": 1589922000000,\n" +
+                "\t\"dateJoined\": 1558299600000,\n" +
+                "\t\"isSuperuser\": true,\n" +
+                "\t\"isStaff\": true,\n" +
+                "\t\"isActive\": true,\n" +
                 "\t\"groupId\":1,\n" +
                 "}";
         out.println(request);
@@ -457,8 +463,6 @@ class UserControllerTest {
                 .hasFieldOrPropertyWithValue("firstName", result.getString("first_name"))
                 .hasFieldOrPropertyWithValue("lastName", result.getString("last_name"))
                 .hasFieldOrPropertyWithValue("email", result.getString("email"))
-                .hasFieldOrPropertyWithValue("lastLogin", result.getTimestamp("last_login").toLocalDateTime().toLocalDate())
-                .hasFieldOrPropertyWithValue("dateJoined", result.getTimestamp("date_joined").toLocalDateTime().toLocalDate())
                 .hasFieldOrPropertyWithValue("isSuperuser", result.getBoolean("is_superuser"))
                 .hasFieldOrPropertyWithValue("isStaff", result.getBoolean("is_staff"))
                 .hasFieldOrPropertyWithValue("isActive", result.getBoolean("is_active"))

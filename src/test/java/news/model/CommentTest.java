@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,7 +18,7 @@ class CommentTest {
     private static LocalDate editDate;
 
     @Mock
-    final private Comment.CommentAttachment commentAttachment = new Comment.CommentAttachment(1, "Документ", "/static/files/file1.txt", 1);
+    final private CommentAttachment commentAttachment = new CommentAttachment(1, "Документ", "/static/files/file1.txt");
 
     @BeforeAll
     static void beforeAll() {
@@ -30,16 +31,17 @@ class CommentTest {
      */
     @Test
     void editComment() {
-        Comment comment = new Comment(1, "comment 1", createDate, editDate, 1, 1);
+        Comment comment = new Comment(1, "comment 1", Timestamp.valueOf(createDate.atStartOfDay()),
+                Timestamp.valueOf(editDate.atStartOfDay()), 1, 1);
         LocalDate editDate2 = LocalDate.of(2020, 6, 20);
         SoftAssertions soft = new SoftAssertions();
 
-        comment.editArticle("comment 2", editDate2, 2);
+        comment.editArticle("comment 2", Timestamp.valueOf(editDate2.atStartOfDay()), 2);
 
         soft.assertThat(comment)
                 .hasFieldOrPropertyWithValue("text", "comment 2")
                 .hasFieldOrPropertyWithValue("articleId", 2)
-                .hasFieldOrPropertyWithValue("editDate", editDate2);
+                .hasFieldOrPropertyWithValue("editDate", Timestamp.valueOf(editDate2.atStartOfDay()));
         soft.assertAll();
     }
 
@@ -48,7 +50,8 @@ class CommentTest {
      */
     @Test
     void addAttachmentInComment() {
-        Comment comment = new Comment(1, "comment 1", createDate, editDate, 1, 1);
+        Comment comment = new Comment(1, "comment 1", Timestamp.valueOf(createDate.atStartOfDay()),
+                Timestamp.valueOf(editDate.atStartOfDay()), 1, 1);
 
         comment.addNewAttachment(commentAttachment);
 

@@ -1,11 +1,26 @@
 package news.model;
 
+import javax.persistence.*;
+import java.util.Objects;
+
 /**
  * Группа пользователей
  */
+
+@Entity
+@Table(name = "group", schema = "public", catalog = "news_db")
 public class Group {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+
+    @Basic
+    @Column(name = "title")
     private String title;
+
+    public Group() {};
 
     public Group(int id, String title) {
         this.id = id;
@@ -14,6 +29,14 @@ public class Group {
 
     public Group(String title) {
         this.title = title;
+    }
+
+    public int getGroupId() {
+        return this.id;
+    }
+
+    public void setGroupId(int id) {
+        this.id = id;
     }
 
     /**
@@ -46,5 +69,18 @@ public class Group {
         return new String[] {
                 "id", "title"
         };
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Group that = (Group) o;
+        return id == that.id && Objects.equals(title, that.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title);
     }
 }

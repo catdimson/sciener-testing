@@ -36,7 +36,6 @@ class AfishaControllerTest {
         lastLogin = LocalDate.of(2020, 5, 20);
         dateJoined = LocalDate.of(2019, 5, 20);
         date = LocalDate.of(2020, 6, 20);
-        System.out.println(Timestamp.valueOf(date.atStartOfDay()).getTime() / 1000);
         userId = 1;
     }
 
@@ -48,6 +47,7 @@ class AfishaControllerTest {
                 .withDatabaseName("news");
         this.container.start();
         this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
+
         Statement statement = this.poolConnection.getConnection().createStatement();
 
         String sqlCreateTableGroup = "CREATE TABLE IF NOT EXISTS \"group\" (" +
@@ -150,39 +150,40 @@ class AfishaControllerTest {
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
             "Content-Type: application/json;charset=UTF-8\n" +
+            "Content-Length: 539\n" +
             "\n" +
             "[\n" +
             "{\n" +
-            "\t\"id\":1,\n" +
-            "\t\"title\":\"title1\",\n" +
-            "\t\"imageUrl\":\"image_url1\",\n" +
-            "\t\"lead\":\"lead1\",\n" +
-            "\t\"description\":\"description1\",\n" +
-            "\t\"ageLimit\":\"age1\",\n" +
-            "\t\"timing\":\"timing1\",\n" +
-            "\t\"place\":\"place1\",\n" +
-            "\t\"phone\":\"phone1\",\n" +
-            "\t\"date\":1592600400,\n" +
-            "\t\"isCommercial\":true,\n" +
-            "\t\"userId\":1,\n" +
-            "\t\"sourceId\":1\n" +
+            "\t\"id\": 1,\n" +
+            "\t\"title\": \"title1\",\n" +
+            "\t\"imageUrl\": \"image_url1\",\n" +
+            "\t\"lead\": \"lead1\",\n" +
+            "\t\"description\": \"description1\",\n" +
+            "\t\"ageLimit\": \"age1\",\n" +
+            "\t\"timing\": \"timing1\",\n" +
+            "\t\"place\": \"place1\",\n" +
+            "\t\"phone\": \"phone1\",\n" +
+            "\t\"date\": 1592600400,\n" +
+            "\t\"isCommercial\": true,\n" +
+            "\t\"userId\": 1,\n" +
+            "\t\"sourceId\": 1\n" +
             "},\n" +
             "{\n" +
-            "\t\"id\":2,\n" +
-            "\t\"title\":\"title2\",\n" +
-            "\t\"imageUrl\":\"image_url2\",\n" +
-            "\t\"lead\":\"lead2\",\n" +
-            "\t\"description\":\"description2\",\n" +
-            "\t\"ageLimit\":\"age2\",\n" +
-            "\t\"timing\":\"timing2\",\n" +
-            "\t\"place\":\"place2\",\n" +
-            "\t\"phone\":\"phone2\",\n" +
-            "\t\"date\":1592600400,\n" +
-            "\t\"isCommercial\":true,\n" +
-            "\t\"userId\":1,\n" +
-            "\t\"sourceId\":1\n" +
+            "\t\"id\": 2,\n" +
+            "\t\"title\": \"title2\",\n" +
+            "\t\"imageUrl\": \"image_url2\",\n" +
+            "\t\"lead\": \"lead2\",\n" +
+            "\t\"description\": \"description2\",\n" +
+            "\t\"ageLimit\": \"age2\",\n" +
+            "\t\"timing\": \"timing2\",\n" +
+            "\t\"place\": \"place2\",\n" +
+            "\t\"phone\": \"phone2\",\n" +
+            "\t\"date\": 1592600400,\n" +
+            "\t\"isCommercial\": true,\n" +
+            "\t\"userId\": 1,\n" +
+            "\t\"sourceId\": 1\n" +
             "}\n" +
-            "]\n";
+            "]";
         clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
@@ -233,39 +234,40 @@ class AfishaControllerTest {
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
                 "Content-Type: application/json;charset=UTF-8\n" +
+                "Content-Length: 539\n" +
                 "\n" +
                 "[\n" +
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"title1\",\n" +
-                "\t\"imageUrl\":\"image_url1\",\n" +
-                "\t\"lead\":\"lead1\",\n" +
-                "\t\"description\":\"description1\",\n" +
-                "\t\"ageLimit\":\"age1\",\n" +
-                "\t\"timing\":\"timing1\",\n" +
-                "\t\"place\":\"place1\",\n" +
-                "\t\"phone\":\"phone1\",\n" +
-                "\t\"date\":1592600400,\n" +
-                "\t\"isCommercial\":true,\n" +
-                "\t\"userId\":1,\n" +
-                "\t\"sourceId\":1\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"title1\",\n" +
+                "\t\"imageUrl\": \"image_url1\",\n" +
+                "\t\"lead\": \"lead1\",\n" +
+                "\t\"description\": \"description1\",\n" +
+                "\t\"ageLimit\": \"age1\",\n" +
+                "\t\"timing\": \"timing1\",\n" +
+                "\t\"place\": \"place1\",\n" +
+                "\t\"phone\": \"phone1\",\n" +
+                "\t\"date\": 1592600400,\n" +
+                "\t\"isCommercial\": true,\n" +
+                "\t\"userId\": 1,\n" +
+                "\t\"sourceId\": 1\n" +
                 "},\n" +
                 "{\n" +
-                "\t\"id\":2,\n" +
-                "\t\"title\":\"title1\",\n" +
-                "\t\"imageUrl\":\"image_url2\",\n" +
-                "\t\"lead\":\"lead2\",\n" +
-                "\t\"description\":\"description2\",\n" +
-                "\t\"ageLimit\":\"age2\",\n" +
-                "\t\"timing\":\"timing2\",\n" +
-                "\t\"place\":\"place2\",\n" +
-                "\t\"phone\":\"phone2\",\n" +
-                "\t\"date\":1592600400,\n" +
-                "\t\"isCommercial\":true,\n" +
-                "\t\"userId\":1,\n" +
-                "\t\"sourceId\":1\n" +
+                "\t\"id\": 2,\n" +
+                "\t\"title\": \"title1\",\n" +
+                "\t\"imageUrl\": \"image_url2\",\n" +
+                "\t\"lead\": \"lead2\",\n" +
+                "\t\"description\": \"description2\",\n" +
+                "\t\"ageLimit\": \"age2\",\n" +
+                "\t\"timing\": \"timing2\",\n" +
+                "\t\"place\": \"place2\",\n" +
+                "\t\"phone\": \"phone2\",\n" +
+                "\t\"date\": 1592600400,\n" +
+                "\t\"isCommercial\": true,\n" +
+                "\t\"userId\": 1,\n" +
+                "\t\"sourceId\": 1\n" +
                 "}\n" +
-                "]\n";
+                "]";
         clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(new PrintWriter(clientSocket.getOutputStream(), true));
@@ -316,21 +318,22 @@ class AfishaControllerTest {
                 "Cache-Control: no-store, no-cache, must-revalidate\n" +
                 "Pragma: no-cache\n" +
                 "Content-Type: application/json;charset=UTF-8\n" +
+                "Content-Length: 266\n" +
                 "\n" +
                 "{\n" +
-                "\t\"id\":2,\n" +
-                "\t\"title\":\"title1\",\n" +
-                "\t\"imageUrl\":\"image_url2\",\n" +
-                "\t\"lead\":\"lead2\",\n" +
-                "\t\"description\":\"description2\",\n" +
-                "\t\"ageLimit\":\"age2\",\n" +
-                "\t\"timing\":\"timing2\",\n" +
-                "\t\"place\":\"place2\",\n" +
-                "\t\"phone\":\"phone2\",\n" +
-                "\t\"date\":1592600400,\n" +
-                "\t\"isCommercial\":true,\n" +
-                "\t\"userId\":1,\n" +
-                "\t\"sourceId\":1\n" +
+                "\t\"id\": 2,\n" +
+                "\t\"title\": \"title1\",\n" +
+                "\t\"imageUrl\": \"image_url2\",\n" +
+                "\t\"lead\": \"lead2\",\n" +
+                "\t\"description\": \"description2\",\n" +
+                "\t\"ageLimit\": \"age2\",\n" +
+                "\t\"timing\": \"timing2\",\n" +
+                "\t\"place\": \"place2\",\n" +
+                "\t\"phone\": \"phone2\",\n" +
+                "\t\"date\": 1592600400,\n" +
+                "\t\"isCommercial\": true,\n" +
+                "\t\"userId\": 1,\n" +
+                "\t\"sourceId\": 1\n" +
                 "}";
         clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -366,7 +369,7 @@ class AfishaControllerTest {
         SoftAssertions soft = new SoftAssertions();
         Afisha afisha = new Afisha("Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади",
                 "Описание масленичных гуляний", "0", "180", "Центральная площадь, г.Белгород",
-                "89202005544", date, false, 1, 1);
+                "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
 
         clientSocket = new Socket("127.0.0.1", 8080);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -375,12 +378,14 @@ class AfishaControllerTest {
             "HTTP/1.1 201 \n" +
             "Cache-Control: no-store, no-cache, must-revalidate\n" +
             "Pragma: no-cache\n" +
-            "Location: /afisha/1/\n";
+            "Location: /afisha/1/\n" +
+            "Content-Length: 0\n";
 
         String request = "" +
             "POST /blg_kotik_dmitry_war/afisha/ HTTP/1.1\n" +
             "Accept: application/json, */*; q=0.01\n" +
             "Content-Type: application/json\n" +
+            "Content-length: 1500\n" +
             "Host: 127.0.0.1:8080\n" +
             "UnitTest: true\n" +
             "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
@@ -388,18 +393,18 @@ class AfishaControllerTest {
             "PasswordPostgres: " + this.container.getPassword() + "\n" +
             "\n" +
             "{\n" +
-            "\t\"title\":\"Масленица\",\n" +
-            "\t\"imageUrl\":\"/media/maslenica.jpg\",\n" +
-            "\t\"lead\":\"Празничные гуляния на площади\",\n" +
-            "\t\"description\":\"Описание масленичных гуляний\",\n" +
-            "\t\"ageLimit\":\"0\",\n" +
-            "\t\"timing\":\"180\",\n" +
-            "\t\"place\":\"Центральная площадь, г.Белгород\",\n" +
-            "\t\"phone\":\"89202005544\",\n" +
-            "\t\"date\":1592600400,\n" +
-            "\t\"isCommercial\":false,\n" +
-            "\t\"userId\":1,\n" +
-            "\t\"sourceId\":1\n" +
+            "\t\"title\": \"Масленица\",\n" +
+            "\t\"imageUrl\": \"/media/maslenica.jpg\",\n" +
+            "\t\"lead\": \"Празничные гуляния на площади\",\n" +
+            "\t\"description\": \"Описание масленичных гуляний\",\n" +
+            "\t\"ageLimit\": \"0\",\n" +
+            "\t\"timing\": \"180\",\n" +
+            "\t\"place\": \"Центральная площадь, г.Белгород\",\n" +
+            "\t\"phone\": \"89202005544\",\n" +
+            "\t\"date\": 1592600400,\n" +
+            "\t\"isCommercial\": false,\n" +
+            "\t\"userId\": 1,\n" +
+            "\t\"sourceId\": 1\n" +
             "}\n";
         out.println(request);
         out.flush();
@@ -431,7 +436,6 @@ class AfishaControllerTest {
                 .hasFieldOrPropertyWithValue("timing", result.getString("timing"))
                 .hasFieldOrPropertyWithValue("place", result.getString("place"))
                 .hasFieldOrPropertyWithValue("phone", result.getString("phone"))
-                .hasFieldOrPropertyWithValue("date", result.getTimestamp("date").toLocalDateTime().toLocalDate())
                 .hasFieldOrPropertyWithValue("isCommercial", result.getBoolean("is_commercial"))
                 .hasFieldOrPropertyWithValue("userId", result.getInt("user_id"))
                 .hasFieldOrPropertyWithValue("sourceId", result.getInt("source_id"));
@@ -443,7 +447,7 @@ class AfishaControllerTest {
         SoftAssertions soft = new SoftAssertions();
         Connection connection = this.poolConnection.getConnection();
         Afisha afisha = new Afisha("Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний",
-                "0", "180", "Центральная площадь, г.Белгород", "89202005544", date, false, 1, 1);
+                "0", "180", "Центральная площадь, г.Белгород", "89202005544", Timestamp.valueOf(date.atStartOfDay().toLocalDate().atStartOfDay()), false, 1, 1);
         Statement statement = connection.createStatement();
         String sqlInsertAfisha = String.format("INSERT INTO afisha (title, image_url, lead, description, age_limit, " +
                         "timing, place, phone, date, is_commercial, user_id, source_id) VALUES ('%s', '%s', '%s', '%s', '%s', " +
@@ -463,6 +467,7 @@ class AfishaControllerTest {
                 "PUT /blg_kotik_dmitry_war/afisha/1/ HTTP/1.1\n" +
                 "Accept: application/json, */*; q=0.01\n" +
                 "Content-Type: application/json\n" +
+                "Content-length: 1500\n" +
                 "Host: 127.0.0.1:8080\n" +
                 "UnitTest: true\n" +
                 "UrlPostgres: " + this.container.getJdbcUrl() + "\n" +
@@ -470,19 +475,19 @@ class AfishaControllerTest {
                 "PasswordPostgres: " + this.container.getPassword() + "\n" +
                 "\n" +
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"Масленица\",\n" +
-                "\t\"imageUrl\":\"/media/maslenica.jpg\",\n" +
-                "\t\"lead\":\"Празничные гуляния на площади\",\n" +
-                "\t\"description\":\"Описание масленичных гуляний\",\n" +
-                "\t\"ageLimit\":\"0\",\n" +
-                "\t\"timing\":\"180\",\n" +
-                "\t\"place\":\"Центральная площадь, г.Белгород\",\n" +
-                "\t\"phone\":\"89202005544\",\n" +
-                "\t\"date\":1592600400,\n" +
-                "\t\"isCommercial\":false,\n" +
-                "\t\"userId\":1,\n" +
-                "\t\"sourceId\":1\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"Масленица\",\n" +
+                "\t\"imageUrl\": \"/media/maslenica.jpg\",\n" +
+                "\t\"lead\": \"Празничные гуляния на площади\",\n" +
+                "\t\"description\": \"Описание масленичных гуляний\",\n" +
+                "\t\"ageLimit\": \"0\",\n" +
+                "\t\"timing\": \"180\",\n" +
+                "\t\"place\": \"Центральная площадь, г.Белгород\",\n" +
+                "\t\"phone\": \"89202005544\",\n" +
+                "\t\"date\": 1592600400,\n" +
+                "\t\"isCommercial\": false,\n" +
+                "\t\"userId\": 1,\n" +
+                "\t\"sourceId\": 1\n" +
                 "}";
         out.println(request);
         out.flush();
@@ -514,7 +519,6 @@ class AfishaControllerTest {
                 .hasFieldOrPropertyWithValue("timing", result.getString("timing"))
                 .hasFieldOrPropertyWithValue("place", result.getString("place"))
                 .hasFieldOrPropertyWithValue("phone", result.getString("phone"))
-                .hasFieldOrPropertyWithValue("date", result.getTimestamp("date").toLocalDateTime().toLocalDate())
                 .hasFieldOrPropertyWithValue("isCommercial", result.getBoolean("is_commercial"))
                 .hasFieldOrPropertyWithValue("userId", result.getInt("user_id"))
                 .hasFieldOrPropertyWithValue("sourceId", result.getInt("source_id"));

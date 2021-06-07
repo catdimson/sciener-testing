@@ -1,29 +1,71 @@
 package news.model;
 
-import java.time.LocalDate;
+import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Objects;
 
 /**
  * Новость
  */
+@Entity
+@Table(name = "article", schema = "public", catalog = "news_db")
 public class Article {
-    private int id;
-    final private LocalDate createDate;
-    private String title;
-    private String lead;
-    private LocalDate editDate;
-    private String text;
-    private boolean isPublished;
-    private int categoryId;
-    private int userId;
-    private int sourceId;
-    private Collection<ArticleImage> images = new ArrayList<>();
-    private Set<Integer> tagsId = new HashSet<>();
 
-    public Article(int id, String title, String lead, LocalDate createDate, LocalDate editDate, String text,
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
+
+    @Basic
+    @Column(name = "create_date")
+    private Timestamp createDate;
+
+    @Basic
+    @Column(name = "title")
+    private String title;
+
+    @Basic
+    @Column(name = "lead")
+    private String lead;
+
+    @Basic
+    @Column(name = "edit_date")
+    private Timestamp editDate;
+
+    @Basic
+    @Column(name = "text")
+    private String text;
+
+    @Basic
+    @Column(name = "is_published")
+    private boolean isPublished;
+
+    @Basic
+    @Column(name = "category_id")
+    private int categoryId;
+
+    @Basic
+    @Column(name = "user_id")
+    private int userId;
+
+    @Basic
+    @Column(name = "source_id")
+    private int sourceId;
+
+    @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Collection<ArticleImage> images = new ArrayList<>();
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "article_tag",
+            joinColumns = @JoinColumn(name = "article_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private Collection<Tag> tags = new ArrayList<>();
+
+    public Article() {}
+
+    public Article(int id, String title, String lead, Timestamp createDate, Timestamp editDate, String text,
                    boolean isPublished, int categoryId, int userId, int sourceId) {
         this.id = id;
         this.title = title;
@@ -37,7 +79,7 @@ public class Article {
         this.sourceId = sourceId;
     }
 
-    public Article(String title, String lead, LocalDate createDate, LocalDate editDate, String text,
+    public Article(String title, String lead, Timestamp createDate, Timestamp editDate, String text,
                    boolean isPublished, int categoryId, int userId, int sourceId) {
         this.title = title;
         this.lead = lead;
@@ -50,48 +92,18 @@ public class Article {
         this.sourceId = sourceId;
     }
 
-    /**
-     * Изображение новости
-     */
-    public static class ArticleImage {
-        private int id;
-        private String title;
-        private String path;
-        private int articleId;
+    public int getArticleId() {
+        return this.id;
+    }
 
-        public ArticleImage(int id, String title, String path, int articleId) {
-            this.id = id;
-            this.title = title;
-            this.path = path;
-            this.articleId = articleId;
-        }
-
-        public ArticleImage(String title, String path, int articleId) {
-            this.title = title;
-            this.path = path;
-            this.articleId = articleId;
-        }
-
-        public Object[] getObjects() {
-            return new Object[] {
-                    id,
-                    title,
-                    path,
-                    articleId
-            };
-        }
-
-        public static String[] getFields() {
-            return new String[] {
-                    "id", "title", "path", "articleId"
-            };
-        }
+    public void setArticleId(int id) {
+        this.id = id;
     }
 
     /**
      * Редактирование новости
      */
-    public void edit(String title, String lead, LocalDate editDate, String text, boolean isPublished, int sourceId) {
+    public void edit(String title, String lead, Timestamp editDate, String text, boolean isPublished, int sourceId) {
         this.title = title;
         this.lead = lead;
         this.editDate = editDate;
@@ -113,6 +125,10 @@ public class Article {
         this.images.clear();
         this.images.addAll(images);
     }
+
+    public Collection<ArticleImage> getImages() {
+        return this.images;
+    }
     /**
      * Содержится ли данное изображение в списке
      */
@@ -123,21 +139,25 @@ public class Article {
     /**
      * Добавить id тега
      */
-    public void addNewTagId(Integer tagId) {
-        this.tagsId.add(tagId);
+    public void addNewTag(Tag tag) {
+        this.tags.add(tag);
     }
     /**
      * Замена новым списком id тегов
      */
-    public void setAllTagsId(ArrayList<Integer> tagsId) {
-        this.tagsId.clear();
-        this.tagsId.addAll(tagsId);
+    public void setAllTags(Collection<Tag> tags) {
+        this.tags.clear();
+        this.tags.addAll(tags);
+    }
+
+    public Collection<Tag> getTags() {
+        return this.tags;
     }
     /**
      * Содержится ли данный id тега в списке
      */
-    public boolean containTag(Integer tagId) {
-        return this.tagsId.contains(tagId);
+    public boolean containTag(Tag tag) {
+        return this.tags.contains(tag);
     }
 
     /**
@@ -179,7 +199,7 @@ public class Article {
                 userId,
                 sourceId,
                 images,
-                tagsId
+                tags
         };
     }
 
@@ -188,5 +208,18 @@ public class Article {
             "id", "title", "lead", "createDate", "editDate", "text", "isPublished", "categoryId",
                 "userId", "sourceId", "images", "tagsId"
         };
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Article that = (Article) o;
+        return id == that.id && Objects.equals(title, that.title) && Objects.equals(lead, that.lead) && Objects.equals(createDate, that.createDate) && Objects.equals(editDate, that.editDate) && Objects.equals(text, that.text) && Objects.equals(isPublished, that.isPublished);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, lead, createDate, editDate, text, isPublished);
     }
 }

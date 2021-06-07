@@ -13,9 +13,9 @@ class SourceSerializerTest {
         Source source = new Source(1, "РИА новости", "https://ria.ru/");
         final String expectedJSON =
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"РИА новости\",\n" +
-                "\t\"url\":\"https://ria.ru/\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"РИА новости\",\n" +
+                "\t\"url\": \"https://ria.ru/\"\n" +
                 "}";
 
         SourceSerializer sourceSerializer = new SourceSerializer(source);
@@ -29,9 +29,9 @@ class SourceSerializerTest {
         SoftAssertions soft = new SoftAssertions();
         final String json =
                 "{\n" +
-                "\t\"id\":1,\n" +
-                "\t\"title\":\"РИА новости\",\n" +
-                "\t\"url\":\"https://ria.ru\"\n" +
+                "\t\"id\": 1,\n" +
+                "\t\"title\": \"РИА новости\",\n" +
+                "\t\"url\": \"https://ria.ru\"\n" +
                 "}";
 
         SourceSerializer sourceSerializer = new SourceSerializer(json);

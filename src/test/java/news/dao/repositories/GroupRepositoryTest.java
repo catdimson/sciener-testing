@@ -1,5 +1,6 @@
 package news.dao.repositories;
 
+import news.HibernateUtil;
 import news.dao.connection.DBPool;
 import news.dao.specifications.FindAllGroupSpecification;
 import news.dao.specifications.FindByIdGroupSpecification;
@@ -30,15 +31,18 @@ class GroupRepositoryTest {
                 .withDatabaseName("news");
         this.container.start();
 
+        this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
+
+        HibernateUtil.setConnectionProperties(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
+
+        Statement statement = this.poolConnection.getConnection().createStatement();
+
         String sqlCreateTableGroup = "CREATE TABLE IF NOT EXISTS \"group\" (" +
                 "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
                 "title character varying(40) NOT NULL," +
                 "CONSTRAINT group_pk PRIMARY KEY (id)," +
                 "CONSTRAINT title_unique UNIQUE (title)" +
                 ");";
-        this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
-
-        Statement statement = this.poolConnection.getConnection().createStatement();
         statement.executeUpdate(sqlCreateTableGroup);
     }
 
@@ -46,7 +50,7 @@ class GroupRepositoryTest {
     void findById() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            GroupRepository groupRepository = new GroupRepository(this.poolConnection);
+            GroupRepository groupRepository = new GroupRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO \"group\" (title) VALUES('Редактор');";
@@ -70,7 +74,7 @@ class GroupRepositoryTest {
     void findByTitle() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            GroupRepository groupRepository = new GroupRepository(this.poolConnection);
+            GroupRepository groupRepository = new GroupRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO \"group\" (title) VALUES('Редактор');";
@@ -94,7 +98,7 @@ class GroupRepositoryTest {
     void findAll() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            GroupRepository groupRepository = new GroupRepository(this.poolConnection);
+            GroupRepository groupRepository = new GroupRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO \"group\" (title) VALUES ('Редактор'), ('Администратор');";
@@ -122,7 +126,7 @@ class GroupRepositoryTest {
     @Test
     void createCategory() {
         try {
-            GroupRepository groupRepository = new GroupRepository(this.poolConnection);
+            GroupRepository groupRepository = new GroupRepository();
             Group group = new Group("Редактор");
 
             groupRepository.create(group);
@@ -142,7 +146,7 @@ class GroupRepositoryTest {
     @Test
     void deleteCategory() {
         try {
-            GroupRepository groupRepository = new GroupRepository(this.poolConnection);
+            GroupRepository groupRepository = new GroupRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO \"group\" (title) VALUES('Редактор');";
@@ -164,7 +168,7 @@ class GroupRepositoryTest {
     @Test
     void updateCategory() {
         try {
-            GroupRepository groupRepository = new GroupRepository(this.poolConnection);
+            GroupRepository groupRepository = new GroupRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO \"group\" (title) VALUES('Редактор');";

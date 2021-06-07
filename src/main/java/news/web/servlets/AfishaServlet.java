@@ -1,6 +1,6 @@
 package news.web.servlets;
 
-import news.dao.connection.DBPool;
+import news.HibernateUtil;
 import news.di.container.BeanFactory;
 import news.web.controllers.AfishaController;
 import news.web.http.HttpRequest;
@@ -76,16 +76,16 @@ public class AfishaServlet extends HttpServlet {
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
 
         URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        if (request.getHeader("UnitTest") == null) {
-            BeanFactory.setSettings(new DBPool(), customHttpRequest, path.getPath());
-        } else {
-            BeanFactory.setSettings(
-                    new DBPool(
-                            request.getHeader("UrlPostgres"),
-                            request.getHeader("UserPostgres"),
-                            request.getHeader("PasswordPostgres")
-                    ),
-                    customHttpRequest, path.getPath());
+        BeanFactory.setSettings(customHttpRequest, path.getPath());
+        if (request.getHeader("UnitTest") != null) {
+            try {
+                HibernateUtil.setConnectionProperties(
+                        request.getHeader("UrlPostgres"),
+                        request.getHeader("UserPostgres"),
+                        request.getHeader("PasswordPostgres"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         beanFactory = BeanFactory.getInstance();
 
@@ -114,16 +114,16 @@ public class AfishaServlet extends HttpServlet {
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
 
         URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        if (request.getHeader("UnitTest") == null) {
-            BeanFactory.setSettings(new DBPool(), customHttpRequest, path.getPath());
-        } else {
-            BeanFactory.setSettings(
-                    new DBPool(
-                            request.getHeader("UrlPostgres"),
-                            request.getHeader("UserPostgres"),
-                            request.getHeader("PasswordPostgres")
-                    ),
-                    customHttpRequest, path.getPath());
+        BeanFactory.setSettings(customHttpRequest, path.getPath());
+        if (request.getHeader("UnitTest") != null) {
+            try {
+                HibernateUtil.setConnectionProperties(
+                        request.getHeader("UrlPostgres"),
+                        request.getHeader("UserPostgres"),
+                        request.getHeader("PasswordPostgres"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         beanFactory = BeanFactory.getInstance();
 
@@ -149,16 +149,16 @@ public class AfishaServlet extends HttpServlet {
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
 
         URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        if (request.getHeader("UnitTest") == null) {
-            BeanFactory.setSettings(new DBPool(), customHttpRequest, path.getPath());
-        } else {
-            BeanFactory.setSettings(
-                    new DBPool(
-                            request.getHeader("UrlPostgres"),
-                            request.getHeader("UserPostgres"),
-                            request.getHeader("PasswordPostgres")
-                    ),
-                    customHttpRequest, path.getPath());
+        BeanFactory.setSettings(customHttpRequest, path.getPath());
+        if (request.getHeader("UnitTest") != null) {
+            try {
+                HibernateUtil.setConnectionProperties(
+                        request.getHeader("UrlPostgres"),
+                        request.getHeader("UserPostgres"),
+                        request.getHeader("PasswordPostgres"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         beanFactory = BeanFactory.getInstance();
 
@@ -184,16 +184,16 @@ public class AfishaServlet extends HttpServlet {
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
 
         URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        if (request.getHeader("UnitTest") == null) {
-            BeanFactory.setSettings(new DBPool(), customHttpRequest, path.getPath());
-        } else {
-            BeanFactory.setSettings(
-                    new DBPool(
-                            request.getHeader("UrlPostgres"),
-                            request.getHeader("UserPostgres"),
-                            request.getHeader("PasswordPostgres")
-                    ),
-                    customHttpRequest, path.getPath());
+        BeanFactory.setSettings(customHttpRequest, path.getPath());
+        if (request.getHeader("UnitTest") != null) {
+            try {
+                HibernateUtil.setConnectionProperties(
+                        request.getHeader("UrlPostgres"),
+                        request.getHeader("UserPostgres"),
+                        request.getHeader("PasswordPostgres"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         beanFactory = BeanFactory.getInstance();
 

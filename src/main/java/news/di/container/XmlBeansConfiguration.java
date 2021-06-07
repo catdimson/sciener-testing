@@ -33,6 +33,7 @@ public class XmlBeansConfiguration {
     public String getRelationClassFromCurrent(String currentClass) {
         String ref = "";
         String result = "";
+        String findClass = "";
 
         if (document != null) {
             NodeList beanList = document.getElementsByTagName("bean");
@@ -42,6 +43,7 @@ public class XmlBeansConfiguration {
             for (int i = 0; i < beanList.getLength(); i++) {
                 Element bean = (Element) beanList.item(i);
                 if (bean.getAttribute("class").equals(currentClass)) {
+                    findClass = currentClass;
                     Element constr = (Element) bean.getElementsByTagName("constructor-arg").item(0);
                     if (constr.hasAttribute("ref")) {
                         ref = constr.getAttribute("ref");
@@ -49,11 +51,15 @@ public class XmlBeansConfiguration {
                     break;
                 }
             }
-            for (int i = 0; i < beanList.getLength(); i++) {
-                Element bean = (Element) beanList.item(i);
-                if (bean.getAttribute("id").equals(ref)) {
-                    result = bean.getAttribute("class");
+            if (!findClass.equals("")) {
+                for (int i = 0; i < beanList.getLength(); i++) {
+                    Element bean = (Element) beanList.item(i);
+                    if (bean.getAttribute("id").equals(ref)) {
+                        result = bean.getAttribute("class");
+                    }
                 }
+            } else {
+                return null;
             }
             if (!ref.equals("") && result.equals("")) {
                 return null;

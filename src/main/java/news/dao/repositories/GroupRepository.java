@@ -1,71 +1,97 @@
 package news.dao.repositories;
 
+import news.HibernateUtil;
 import news.dao.connection.ConnectionPool;
 import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Group;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
-import java.sql.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Root;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GroupRepository implements ExtendRepository<Group> {
-    final private ConnectionPool connectionPool;
 
-    public GroupRepository(ConnectionPool connectionPool) {
-        this.connectionPool = connectionPool;
-    }
+    public GroupRepository() {}
 
     @Override
     public List<Group> query(ExtendSqlSpecification<Group> groupSpecification) throws SQLException {
         List<Group> queryResult = new ArrayList<>();
-        Connection connection = connectionPool.getConnection();
-        String sqlQuery = groupSpecification.toSqlClauses();
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
+        Session session = HibernateUtil.getSessionFactory().openSession();
         if (groupSpecification.isById()) {
-            preparedStatement.setInt(1, (int) groupSpecification.getCriterial());
+            Group group = session.get(Group.class, (int) groupSpecification.getCriterial());
+            queryResult.add(group);
         } else {
             if (groupSpecification.getCriterial() != null) {
-                preparedStatement.setString(1, (String) groupSpecification.getCriterial());
+                // подготовка
+                CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+                CriteriaQuery<Group> criteriaQuery = criteriaBuilder.createQuery(Group.class);
+                Root<Group> root = criteriaQuery.from(Group.class);
+                ParameterExpression<String> title = criteriaBuilder.parameter(String.class);
+                // запрос
+                criteriaQuery.select(root).where(criteriaBuilder.equal(root.get("title"), title));
+                Query<Group> query = session.createQuery(criteriaQuery);
+                query.setParameter(title, (String) groupSpecification.getCriterial());
+                queryResult = query.getResultList();
+            } else {
+                // подготовка
+                CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+                CriteriaQuery<Group> criteriaQuery = criteriaBuilder.createQuery(Group.class);
+                Root<Group> root = criteriaQuery.from(Group.class);
+                // запрос
+                criteriaQuery.select(root);
+                Query<Group> query = session.createQuery(criteriaQuery);
+                queryResult = query.getResultList();
             }
-        }
-        ResultSet result = preparedStatement.executeQuery();
-        while (result.next()) {
-            Group group = new Group(result.getInt(1), result.getString(2));
-            queryResult.add(group);
         }
         return queryResult;
     }
 
     @Override
     public int create(Group group) throws SQLException {
-        Connection connection = this.connectionPool.getConnection();
-        String sqlCreateInstance = "INSERT INTO \"group\" (title) VALUES(?);";
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateInstance, Statement.RETURN_GENERATED_KEYS);
-        Object[] instance = group.getObjects();
-        preparedStatement.setString(1, (String) instance[1]);
-        preparedStatement.executeUpdate();
-        ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-        generatedKeys.next();
-        return generatedKeys.getInt(1);
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        session.save(group);
+        transaction.commit();
+        session.close();
+        return group.getGroupId();
     }
 
     @Override
     public int delete(int id) throws SQLException {
-        Connection connection = this.connectionPool.getConnection();
-        String sqlDeleteInstance = "DELETE FROM \"group\" WHERE id=?;";
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlDeleteInstance);
-        preparedStatement.setInt(1, id);
-        return preparedStatement.executeUpdate();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        Group group = new Group();
+        group.setGroupId(id);
+        try {
+            session.delete(group);
+            transaction.commit();
+            session.close();
+        } catch (Exception e) {
+            session.close();
+            return 0;
+        }
+        return id;
     }
 
     @Override
     public int update(Group group) throws SQLException {
-        Connection connection = this.connectionPool.getConnection();
-        String sqlUpdateInstance = "UPDATE \"group\" SET title=? WHERE id=?;";
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdateInstance);
-        Object[] instance = group.getObjects();
-        preparedStatement.setString(1, (String) instance[1]);
-        preparedStatement.setInt(2, (int) instance[0]);
-        return preparedStatement.executeUpdate();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            session.update(group);
+            transaction.commit();
+            session.close();
+        } catch (Exception e) {
+            session.close();
+            return 0;
+        }
+        return group.getGroupId();
     }
 }

@@ -1,5 +1,6 @@
 package news.dao.repositories;
 
+import news.HibernateUtil;
 import news.dao.connection.DBPool;
 import news.dao.specifications.FindAllMailingSpecification;
 import news.dao.specifications.FindByEmailMailingSpecification;
@@ -29,6 +30,12 @@ class MailingRepositoryTest {
                 .withPassword("qwerty")
                 .withDatabaseName("news");
         this.container.start();
+        
+        this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
+
+        HibernateUtil.setConnectionProperties(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
+
+        Statement statement = this.poolConnection.getConnection().createStatement();
 
         String sqlCreateTableMailing = "CREATE TABLE IF NOT EXISTS mailing (" +
                 "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
@@ -36,9 +43,7 @@ class MailingRepositoryTest {
                 "CONSTRAINT mailing_pk PRIMARY KEY (id)," +
                 "CONSTRAINT email_unique UNIQUE (email)" +
                 ");";
-        this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
 
-        Statement statement = this.poolConnection.getConnection().createStatement();
         statement.executeUpdate(sqlCreateTableMailing);
     }
 
@@ -46,7 +51,7 @@ class MailingRepositoryTest {
     void findById() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            MailingRepository mailingRepository = new MailingRepository(this.poolConnection);
+            MailingRepository mailingRepository = new MailingRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO mailing (email) VALUES('test@mail.ru');";
@@ -70,7 +75,7 @@ class MailingRepositoryTest {
     void findByEmail() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            MailingRepository mailingRepository = new MailingRepository(this.poolConnection);
+            MailingRepository mailingRepository = new MailingRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO mailing (email) VALUES('test@mail.ru');";
@@ -94,7 +99,7 @@ class MailingRepositoryTest {
     void findAll() {
         try {
             SoftAssertions soft = new SoftAssertions();
-            MailingRepository mailingRepository = new MailingRepository(this.poolConnection);
+            MailingRepository mailingRepository = new MailingRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO mailing (email) VALUES ('test@mail.ru'), ('test2@mail.ru');";
@@ -122,7 +127,7 @@ class MailingRepositoryTest {
     @Test
     void createMailing() {
         try {
-            MailingRepository mailingRepository = new MailingRepository(this.poolConnection);
+            MailingRepository mailingRepository = new MailingRepository();
             Mailing mailing = new Mailing("test@mail.ru");
 
             mailingRepository.create(mailing);
@@ -142,7 +147,7 @@ class MailingRepositoryTest {
     @Test
     void deleteMailing() {
         try {
-            MailingRepository mailingRepository = new MailingRepository(this.poolConnection);
+            MailingRepository mailingRepository = new MailingRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO mailing (email) VALUES('test@mail.ru');";
@@ -164,7 +169,7 @@ class MailingRepositoryTest {
     @Test
     void updateMailing() {
         try {
-            MailingRepository mailingRepository = new MailingRepository(this.poolConnection);
+            MailingRepository mailingRepository = new MailingRepository();
             Connection connection = this.poolConnection.getConnection();
             Statement statement = connection.createStatement();
             String sqlInsertInstance = "INSERT INTO mailing (email) VALUES('test@mail.ru');";

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,11 +20,11 @@ class MailingTest {
 
     @Mock
     User userAdmin = new User("qwerty12", "admin", "alexandr", "kanonenko",
-                    "admin@gmail.com", lastLogin, dateJoined, true, true, true, groupId);
+                    "admin@gmail.com", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()), true, true, true, groupId);
 
     @Mock
     User userPersonal = new User("qwerty12", "admin", "alexandr", "kanonenko",
-                    "admin@gmail.com", lastLogin, dateJoined, false, true, true, groupId);
+                    "admin@gmail.com", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()), false, true, true, groupId);
 
     @BeforeAll
     static void beforeAll() {

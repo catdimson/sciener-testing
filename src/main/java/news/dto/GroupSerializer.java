@@ -27,8 +27,8 @@ public class GroupSerializer implements Serializer<Group> {
 
         return "" +
             "{\n" +
-            "\t" + "\"" + groupFields[0] + "\"" + ":" + groupInstance[0] + ",\n" +
-            "\t" + "\"" + groupFields[1] + "\"" + ":" + "\"" + groupInstance[1] + "\"" + "\n" +
+            "\t" + "\"" + groupFields[0] + "\"" + ": " + groupInstance[0] + ",\n" +
+            "\t" + "\"" + groupFields[1] + "\"" + ": " + "\"" + groupInstance[1] + "\"" + "\n" +
             "}";
     }
 
@@ -44,18 +44,18 @@ public class GroupSerializer implements Serializer<Group> {
             System.out.println(i + ":" + lines[i]);
         }*/
 
-        Pattern p = Pattern.compile("\"id\":.+");
+        Pattern p = Pattern.compile("\"id\":\\s*.+");
         Matcher m = p.matcher(lines[indexLine]);
         withId = m.find();
         if (withId) {
-            p = Pattern.compile(":(\\d+),");
+            p = Pattern.compile(":\\s*(\\d+),");
             m = p.matcher(lines[indexLine]);
             m.find();
             id = Integer.parseInt(m.group(1));
             indexLine++;
         }
         // title
-        m = Pattern.compile(":\"(.+)\"").matcher(lines[indexLine]);
+        m = Pattern.compile(":\\s*\"(.+)\"").matcher(lines[indexLine]);
         m.find();
         title = m.group(1);
         Group group;
