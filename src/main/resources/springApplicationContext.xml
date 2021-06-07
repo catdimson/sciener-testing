@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="afishaRepository" class="news.dao.repositories.AfishaRepository">
+    </bean>
+
+    <bean id="afishaService" class="news.service.AfishaService">
+        <constructor-arg ref="afishaRepository" />
+    </bean>
+
+    <bean id="afishaController" class="news.web.controllers.AfishaController">
+        <constructor-arg ref="afishaService" />
+    </bean>
+
+    <!--Article-->
+    <bean id="articleRepository" class="news.dao.repositories.ArticleRepository">
+    </bean>
+
+    <bean id="articleService" class="news.service.ArticleService">
+        <constructor-arg ref="articleRepository" />
+    </bean>
+
+    <bean id="articleController" class="news.web.controllers.ArticleController">
+        <constructor-arg ref="articleService" />
+    </bean>
+
+    <!--Category-->
+    <bean id="categoryRepository" class="news.dao.repositories.CategoryRepository">
+    </bean>
+
+    <bean id="categoryService" class="news.service.CategoryService">
+        <constructor-arg ref="categoryRepository" />
+    </bean>
+
+    <bean id="categoryController" class="news.web.controllers.CategoryController">
+        <constructor-arg ref="categoryService" />
+    </bean>
+
+    <!--Comment-->
+    <bean id="commentRepository" class="news.dao.repositories.CommentRepository">
+    </bean>
+
+    <bean id="commentService" class="news.service.CommentService">
+        <constructor-arg ref="commentRepository" />
+    </bean>
+
+    <bean id="commentController" class="news.web.controllers.CommentController">
+        <constructor-arg ref="commentService" />
+    </bean>
+
+    <!--Group-->
+    <bean id="groupRepository" class="news.dao.repositories.GroupRepository">
+    </bean>
+
+    <bean id="groupService" class="news.service.GroupService">
+        <constructor-arg ref="groupRepository" />
+    </bean>
+
+    <bean id="groupController" class="news.web.controllers.GroupController">
+        <constructor-arg ref="groupService" />
+    </bean>
+
+    <!--Mailing-->
+    <bean id="mailingRepository" class="news.dao.repositories.MailingRepository">
+    </bean>
+
+    <bean id="mailingService" class="news.service.MailingService">
+        <constructor-arg ref="mailingRepository" />
+    </bean>
+
+    <bean id="mailingController" class="news.web.controllers.MailingController">
+        <constructor-arg ref="mailingService" />
+    </bean>
+
+    <!--Source-->
+    <bean id="sourceRepository" class="news.dao.repositories.SourceRepository">
+    </bean>
+
+    <bean id="sourceService" class="news.service.SourceService">
+        <constructor-arg ref="sourceRepository" />
+    </bean>
+
+    <bean id="sourceController" class="news.web.controllers.SourceController">
+        <constructor-arg ref="sourceService" />
+    </bean>
+
+    <!--Tag-->
+    <bean id="tagRepository" class="news.dao.repositories.TagRepository">
+    </bean>
+
+    <bean id="tagService" class="news.service.TagService">
+        <constructor-arg ref="tagRepository" />
+    </bean>
+
+    <bean id="tagController" class="news.web.controllers.TagController">
+        <constructor-arg ref="tagService" />
+    </bean>
+
+    <!--User-->
+    <bean id="userRepository" class="news.dao.repositories.UserRepository">
+    </bean>
+
+    <bean id="userService" class="news.service.UserService">
+        <constructor-arg ref="userRepository" />
+    </bean>
+
+    <bean id="userController" class="news.web.controllers.UserController">
+        <constructor-arg ref="userService" />
+    </bean>
+
+</beans>

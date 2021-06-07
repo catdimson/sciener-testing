@@ -5,6 +5,7 @@ import news.di.container.BeanFactory;
 import news.web.controllers.ArticleController;
 import news.web.http.HttpRequest;
 import news.web.http.HttpResponse;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -24,7 +25,8 @@ import java.util.regex.Pattern;
 @WebServlet(name="ArticleServlet", urlPatterns={"/article/*", "/article/"})
 public class ArticleServlet extends HttpServlet {
 
-    protected BeanFactory beanFactory;
+    //protected BeanFactory beanFactory;
+    protected ClassPathXmlApplicationContext context;
 
     private String extractPath(HttpServletRequest request) {
         String requestURI = request.getRequestURI();
@@ -75,6 +77,7 @@ public class ArticleServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding("UTF-8");
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
+        context = new ClassPathXmlApplicationContext("springApplicationContext.xml");
 
         URL path = getClass().getClassLoader().getResource("applicationContext.xml");
         BeanFactory.setSettings(customHttpRequest, path.getPath());
