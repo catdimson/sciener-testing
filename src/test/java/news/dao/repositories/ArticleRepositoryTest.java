@@ -218,6 +218,8 @@ class ArticleRepositoryTest {
                     "Текст 1", true, 1, 1, 1);
             ArticleImage articleImage1 = new ArticleImage("Изображение 1", "/static/images/image1.png");
             ArticleImage articleImage2 = new ArticleImage("Изображение 2", "/static/images/image2.png");
+            articleImage1.setArticle(article);
+            articleImage2.setArticle(article);
             article.addNewImage(articleImage1);
             article.addNewImage(articleImage2);
             String sqlInsertArticle = String.format("INSERT INTO article (title, lead, create_date, edit_date, text, is_published, " +
