@@ -3,13 +3,16 @@ package news.service;
 import news.dao.repositories.AfishaRepository;
 import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Afisha;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.SQLException;
 import java.util.List;
 
+@org.springframework.stereotype.Service
 public class AfishaService implements Service<Afisha> {
     final private AfishaRepository afishaRepository;
 
+    @Autowired
     public AfishaService(AfishaRepository afishaRepository) {
         this.afishaRepository = afishaRepository;
     }

@@ -3,13 +3,16 @@ package news.service;
 import news.dao.repositories.SourceRepository;
 import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Source;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.SQLException;
 import java.util.List;
 
+@org.springframework.stereotype.Service
 public class SourceService implements Service<Source> {
     final private SourceRepository sourceRepository;
 
+    @Autowired
     public SourceService(SourceRepository sourceRepository) {
         this.sourceRepository = sourceRepository;
     }
