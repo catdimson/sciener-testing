@@ -1,8 +1,5 @@
 package news.web.controllers;
 
-import news.dao.specifications.FindAllSourceSpecification;
-import news.dao.specifications.FindByIdSourceSpecification;
-import news.dao.specifications.FindByTitleSourceSpecification;
 import news.model.Source;
 import news.service.SourceService;
 import news.web.controllers.exceptions.InstanceNotFoundException;
@@ -13,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/source")
@@ -30,38 +27,35 @@ public class SourceController {
     }
 
     @GetMapping(value = "")
-    public List<Source> findAllSources(HttpServletResponse response) throws SQLException {
+    public List<Source> findAllSources(HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindAllSourceSpecification findAll = new FindAllSourceSpecification();
-        return sourceService.query(findAll);
+        return sourceService.findAll();
     }
 
     @GetMapping(value = "", params = {"title"})
-    public List<Source> findSourcesByTitle(HttpServletRequest request, HttpServletResponse response) throws SQLException {
+    public List<Source> findSourcesByTitle(HttpServletRequest request, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindByTitleSourceSpecification findByTitle = new FindByTitleSourceSpecification(request.getParameter("title"));
-        return sourceService.query(findByTitle);
+        return sourceService.findByTitle(request.getParameter("title"));
     }
 
     @GetMapping(value = "/{id}")
-    public Source findSourceById(@PathVariable int id, HttpServletResponse response) throws SQLException {
+    public Optional<Source> findSourceById(@PathVariable int id, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindByIdSourceSpecification findById = new FindByIdSourceSpecification(id);
-        List<Source> findByIdSourceList = sourceService.query(findById);
-        if (findByIdSourceList.isEmpty()) {
+        Optional<Source> source = sourceService.findById(id);
+        if (source.isEmpty()) {
             throw new InstanceNotFoundException();
         }
-        return findByIdSourceList.get(0);
+        return source;
     }
 
     @PostMapping(value = "")
     public void createSource(@RequestBody Source source, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            sourceService.create(source);
+            sourceService.createSource(source);
             response.setStatus(HttpStatus.CREATED.value());
         } catch (Exception e) {
             throw new ServerErrorException();
@@ -72,7 +66,7 @@ public class SourceController {
     public void updateSource(@RequestBody Source source, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            sourceService.update(source);
+            sourceService.updateSource(source);
             response.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             throw new ServerErrorException();
@@ -83,7 +77,7 @@ public class SourceController {
     public void deleteSource(@PathVariable int id, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            sourceService.delete(id);
+            sourceService.deleteSource(id);
             response.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             throw new ServerErrorException();

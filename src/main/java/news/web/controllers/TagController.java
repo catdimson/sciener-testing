@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,14 +34,14 @@ public class TagController {
     }
 
     @GetMapping(value = "", params = {"title"})
-    public List<Tag> findTagsByTitle(HttpServletRequest request, HttpServletResponse response) throws SQLException {
+    public List<Tag> findTagsByTitle(HttpServletRequest request, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         return tagService.findByTitle(request.getParameter("title"));
     }
 
     @GetMapping(value = "/{id}")
-    public Optional<Tag> findTagById(@PathVariable int id, HttpServletResponse response) throws SQLException {
+    public Optional<Tag> findTagById(@PathVariable int id, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         Optional<Tag> tag = tagService.findById(id);
