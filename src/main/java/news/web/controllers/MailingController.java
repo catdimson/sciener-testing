@@ -1,8 +1,5 @@
 package news.web.controllers;
 
-import news.dao.specifications.FindAllMailingSpecification;
-import news.dao.specifications.FindByEmailMailingSpecification;
-import news.dao.specifications.FindByIdMailingSpecification;
 import news.model.Mailing;
 import news.service.MailingService;
 import news.web.controllers.exceptions.InstanceNotFoundException;
@@ -13,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/mailing")
@@ -30,38 +27,35 @@ public class MailingController {
     }
 
     @GetMapping(value = "")
-    public List<Mailing> findAllMailings(HttpServletResponse response) throws SQLException {
+    public List<Mailing> findAllMailings(HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindAllMailingSpecification findAll = new FindAllMailingSpecification();
-        return mailingService.query(findAll);
+        return mailingService.findAll();
     }
 
     @GetMapping(value = "", params = {"email"})
-    public List<Mailing> findMailingsByTitle(HttpServletRequest request, HttpServletResponse response) throws SQLException {
+    public List<Mailing> findMailingsByTitle(HttpServletRequest request, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindByEmailMailingSpecification findByTitle = new FindByEmailMailingSpecification(request.getParameter("email"));
-        return mailingService.query(findByTitle);
+        return mailingService.findByEmail(request.getParameter("email"));
     }
 
     @GetMapping(value = "/{id}")
-    public Mailing findMailingById(@PathVariable int id, HttpServletResponse response) throws SQLException {
+    public Optional<Mailing> findMailingById(@PathVariable int id, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindByIdMailingSpecification findById = new FindByIdMailingSpecification(id);
-        List<Mailing> findByIdMailingList = mailingService.query(findById);
-        if (findByIdMailingList.isEmpty()) {
+        Optional<Mailing> mailing = mailingService.findById(id);
+        if (mailing.isEmpty()) {
             throw new InstanceNotFoundException();
         }
-        return findByIdMailingList.get(0);
+        return mailing;
     }
 
     @PostMapping(value = "")
     public void createMailing(@RequestBody Mailing mailing, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            mailingService.create(mailing);
+            mailingService.createMailing(mailing);
             response.setStatus(HttpStatus.CREATED.value());
         } catch (Exception e) {
             throw new ServerErrorException();
@@ -72,7 +66,7 @@ public class MailingController {
     public void updateMailing(@RequestBody Mailing mailing, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            mailingService.update(mailing);
+            mailingService.updateMailing(mailing);
             response.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             throw new ServerErrorException();
@@ -83,7 +77,7 @@ public class MailingController {
     public void deleteMailing(@PathVariable int id, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            mailingService.delete(id);
+            mailingService.deleteMailing(id);
             response.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             throw new ServerErrorException();

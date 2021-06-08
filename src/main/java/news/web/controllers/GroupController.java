@@ -1,8 +1,5 @@
 package news.web.controllers;
 
-import news.dao.specifications.FindAllGroupSpecification;
-import news.dao.specifications.FindByIdGroupSpecification;
-import news.dao.specifications.FindByTitleGroupSpecification;
 import news.model.Group;
 import news.service.GroupService;
 import news.web.controllers.exceptions.InstanceNotFoundException;
@@ -13,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/group")
@@ -30,38 +27,35 @@ public class GroupController {
     }
 
     @GetMapping(value = "")
-    public List<Group> findAllGroups(HttpServletResponse response) throws SQLException {
+    public List<Group> findAllGroups(HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindAllGroupSpecification findAll = new FindAllGroupSpecification();
-        return groupService.query(findAll);
+        return groupService.findAll();
     }
 
     @GetMapping(value = "", params = {"title"})
-    public List<Group> findGroupsByTitle(HttpServletRequest request, HttpServletResponse response) throws SQLException {
+    public List<Group> findGroupsByTitle(HttpServletRequest request, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindByTitleGroupSpecification findByTitle = new FindByTitleGroupSpecification(request.getParameter("title"));
-        return groupService.query(findByTitle);
+        return groupService.findByTitle(request.getParameter("title"));
     }
 
     @GetMapping(value = "/{id}")
-    public Group findGroupById(@PathVariable int id, HttpServletResponse response) throws SQLException {
+    public Optional<Group> findGroupById(@PathVariable int id, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindByIdGroupSpecification findById = new FindByIdGroupSpecification(id);
-        List<Group> findByIdGroupList = groupService.query(findById);
-        if (findByIdGroupList.isEmpty()) {
+        Optional<Group> group = groupService.findById(id);
+        if (group.isEmpty()) {
             throw new InstanceNotFoundException();
         }
-        return findByIdGroupList.get(0);
+        return group;
     }
 
     @PostMapping(value = "")
     public void createGroup(@RequestBody Group group, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            groupService.create(group);
+            groupService.createGroup(group);
             response.setStatus(HttpStatus.CREATED.value());
         } catch (Exception e) {
             throw new ServerErrorException();
@@ -72,7 +66,7 @@ public class GroupController {
     public void updateGroup(@RequestBody Group group, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            groupService.update(group);
+            groupService.updateGroup(group);
             response.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             throw new ServerErrorException();
@@ -83,7 +77,7 @@ public class GroupController {
     public void deleteGroup(@PathVariable int id, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            groupService.delete(id);
+            groupService.deleteGroup(id);
             response.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             throw new ServerErrorException();
