@@ -1,39 +1,22 @@
 package news.service;
 
-import news.dao.repositories.TagRepository;
-import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
-@org.springframework.stereotype.Service
-public class TagService implements Service<Tag> {
-    final private TagRepository tagRepository;
+public interface TagService {
 
-    @Autowired
-    public TagService(TagRepository tagRepository) {
-        this.tagRepository = tagRepository;
-    }
+    List<Tag> findAll();
 
-    @Override
-    public List<Tag> query(ExtendSqlSpecification<Tag> specification) throws SQLException {
-        return tagRepository.query(specification);
-    }
+    List<Tag> findByTitle(String title);
 
-    @Override
-    public int create(Tag instance) throws SQLException {
-        return tagRepository.create(instance);
-    }
+    Optional<Tag> findById(int id);
 
-    @Override
-    public int delete(int id) throws SQLException {
-        return tagRepository.delete(id);
-    }
+    Tag createTag(Tag tag);
 
-    @Override
-    public int update(Tag instance) throws SQLException {
-        return tagRepository.update(instance);
-    }
+    Tag updateTag(Tag tag);
+
+    void deleteTag(int id);
+
 }

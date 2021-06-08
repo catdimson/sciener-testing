@@ -1,8 +1,5 @@
 package news.web.controllers;
 
-import news.dao.specifications.FindAllTagSpecification;
-import news.dao.specifications.FindByIdTagSpecification;
-import news.dao.specifications.FindByTitleTagSpecification;
 import news.model.Tag;
 import news.service.TagService;
 import news.web.controllers.exceptions.InstanceNotFoundException;
@@ -15,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/tag")
@@ -30,38 +28,35 @@ public class TagController {
     }
 
     @GetMapping(value = "")
-    public List<Tag> findAllTags(HttpServletResponse response) throws SQLException {
+    public List<Tag> findAllTags(HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindAllTagSpecification findAll = new FindAllTagSpecification();
-        return tagService.query(findAll);
+        return tagService.findAll();
     }
 
     @GetMapping(value = "", params = {"title"})
     public List<Tag> findTagsByTitle(HttpServletRequest request, HttpServletResponse response) throws SQLException {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindByTitleTagSpecification findByTitle = new FindByTitleTagSpecification(request.getParameter("title"));
-        return tagService.query(findByTitle);
+        return tagService.findByTitle(request.getParameter("title"));
     }
 
     @GetMapping(value = "/{id}")
-    public Tag findTagById(@PathVariable int id, HttpServletResponse response) throws SQLException {
+    public Optional<Tag> findTagById(@PathVariable int id, HttpServletResponse response) throws SQLException {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindByIdTagSpecification findById = new FindByIdTagSpecification(id);
-        List<Tag> findByIdTagList = tagService.query(findById);
-        if (findByIdTagList.isEmpty()) {
+        Optional<Tag> tag = tagService.findById(id);
+        if (tag.isEmpty()) {
             throw new InstanceNotFoundException();
         }
-        return findByIdTagList.get(0);
+        return tag;
     }
 
     @PostMapping(value = "")
     public void createTag(@RequestBody Tag tag, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            tagService.create(tag);
+            tagService.createTag(tag);
             response.setStatus(HttpStatus.CREATED.value());
         } catch (Exception e) {
             throw new ServerErrorException();
@@ -72,7 +67,7 @@ public class TagController {
     public void updateTag(@RequestBody Tag tag, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            tagService.update(tag);
+            tagService.updateTag(tag);
             response.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             throw new ServerErrorException();
@@ -83,7 +78,7 @@ public class TagController {
     public void deleteTag(@PathVariable int id, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            tagService.delete(id);
+            tagService.deleteTag(id);
             response.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             throw new ServerErrorException();

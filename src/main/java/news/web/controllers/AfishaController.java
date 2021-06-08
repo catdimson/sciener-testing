@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,21 +27,21 @@ public class AfishaController {
     }
 
     @GetMapping(value = "")
-    public List<Afisha> findAllAfishas(HttpServletResponse response) throws SQLException {
+    public List<Afisha> findAllAfishas(HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         return afishaService.findAll();
     }
 
     @GetMapping(value = "", params = {"title"})
-    public List<Afisha> findAfishasByTitle(HttpServletRequest request, HttpServletResponse response) throws SQLException {
+    public List<Afisha> findAfishasByTitle(HttpServletRequest request, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         return afishaService.findByTitle(request.getParameter("title"));
     }
 
     @GetMapping(value = "/{id}")
-    public Optional<Afisha> findAfishaById(@PathVariable int id, HttpServletResponse response) throws SQLException {
+    public Optional<Afisha> findAfishaById(@PathVariable int id, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         Optional<Afisha> afisha = afishaService.findById(id);

@@ -22,7 +22,7 @@ public class AfishaServiceImpl implements AfishaService {
 
     @Override
     public List<Afisha> findAll() {
-        return (List<Afisha>) afishaRepository.findAll();
+        return afishaRepository.findAll();
     }
 
     @Override
