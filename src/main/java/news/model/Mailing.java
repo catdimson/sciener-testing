@@ -1,5 +1,8 @@
 package news.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -13,10 +16,12 @@ public class Mailing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JsonProperty
     private int id;
 
     @Basic
     @Column(name = "email")
+    @JsonProperty
     private String email;
 
     public Mailing(int id, String email) {
@@ -30,6 +35,7 @@ public class Mailing {
         this.email = email;
     }
 
+    @JsonIgnore
     public int getMailingId() {
         return this.id;
     }
@@ -38,6 +44,7 @@ public class Mailing {
         this.id = id;
     }
 
+    @JsonIgnore
     public String getEmail() {
         return this.email;
     }
@@ -62,6 +69,7 @@ public class Mailing {
         return this.email.equals(email);
     }
 
+    @JsonIgnore
     public Object[] getObjects() {
         return new Object[] {
                 id,

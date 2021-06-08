@@ -1,5 +1,8 @@
 package news.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -14,10 +17,12 @@ public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JsonProperty
     private int id;
 
     @Basic
     @Column(name = "title")
+    @JsonProperty
     private String title;
 
     public Group() {};
@@ -31,6 +36,7 @@ public class Group {
         this.title = title;
     }
 
+    @JsonIgnore
     public int getGroupId() {
         return this.id;
     }
@@ -46,6 +52,7 @@ public class Group {
         this.title = newTitle;
     }
 
+    @JsonIgnore
     public String getTitle() {
         return this.title;
     }
@@ -58,6 +65,7 @@ public class Group {
         return this.title.equals(title);
     }
 
+    @JsonIgnore
     public Object[] getObjects() {
         return new Object[] {
                 id,

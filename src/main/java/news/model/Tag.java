@@ -18,12 +18,12 @@ public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    @JsonProperty("id")
+    @JsonProperty
     private int id;
 
     @Basic
     @Column(name = "title")
-    @JsonProperty("title")
+    @JsonProperty
     private String title;
 
     @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)

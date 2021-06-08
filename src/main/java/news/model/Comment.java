@@ -1,5 +1,8 @@
 package news.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -16,26 +19,32 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JsonProperty
     private int id;
 
     @Basic
     @Column(name = "text")
+    @JsonProperty
     private String text;
 
     @Basic
     @Column(name = "create_date")
+    @JsonProperty
     private Timestamp createDate;
 
     @Basic
     @Column(name = "edit_date")
+    @JsonProperty
     private Timestamp editDate;
 
     @Basic
     @Column(name = "user_id")
+    @JsonProperty
     private int userId;
 
     @Basic
     @Column(name = "article_id")
+    @JsonProperty
     private int articleId;
 
     @OneToMany(mappedBy = "comment", orphanRemoval=true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -60,6 +69,7 @@ public class Comment {
         this.articleId = articleId;
     }
 
+    @JsonIgnore
     public int getCommentId() {
         return this.id;
     }
@@ -103,6 +113,7 @@ public class Comment {
         return this.userId == userId;
     }
 
+    @JsonIgnore
     public Object[] getObjects() {
         return new Object[] {
                 id,

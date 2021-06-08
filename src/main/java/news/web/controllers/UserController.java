@@ -1,10 +1,10 @@
 package news.web.controllers;
 
-import news.dao.specifications.FindAllTagSpecification;
-import news.dao.specifications.FindByIdTagSpecification;
-import news.dao.specifications.FindByTitleTagSpecification;
-import news.model.Tag;
-import news.service.TagService;
+import news.dao.specifications.FindAllUserSpecification;
+import news.dao.specifications.FindByFirstnameUserSpecification;
+import news.dao.specifications.FindByIdUserSpecification;
+import news.model.User;
+import news.service.UserService;
 import news.web.controllers.exceptions.InstanceNotFoundException;
 import news.web.controllers.exceptions.ServerErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,51 +17,51 @@ import java.sql.SQLException;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/tag")
-public class TagController {
-    TagService tagService;
+@RequestMapping(value = "/user")
+public class UserController {
+    UserService userService;
 
-    public TagController() {
+    public UserController() {
     }
 
     @Autowired
-    public TagController(TagService tagService) {
-        this.tagService = tagService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping(value = "")
-    public List<Tag> findAllTags(HttpServletResponse response) throws SQLException {
+    public List<User> findAllUsers(HttpServletResponse response) throws SQLException {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindAllTagSpecification findAll = new FindAllTagSpecification();
-        return tagService.query(findAll);
+        FindAllUserSpecification findAll = new FindAllUserSpecification();
+        return userService.query(findAll);
     }
 
-    @GetMapping(value = "", params = {"title"})
-    public List<Tag> findTagsByTitle(HttpServletRequest request, HttpServletResponse response) throws SQLException {
+    @GetMapping(value = "", params = {"firstname"})
+    public List<User> findUsersByFirstname(HttpServletRequest request, HttpServletResponse response) throws SQLException {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindByTitleTagSpecification findByTitle = new FindByTitleTagSpecification(request.getParameter("title"));
-        return tagService.query(findByTitle);
+        FindByFirstnameUserSpecification findByFirstname = new FindByFirstnameUserSpecification(request.getParameter("firstname"));
+        return userService.query(findByFirstname);
     }
 
     @GetMapping(value = "/{id}")
-    public Tag findTagById(@PathVariable int id, HttpServletResponse response) throws SQLException {
+    public User findUserById(@PathVariable int id, HttpServletResponse response) throws SQLException {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindByIdTagSpecification findById = new FindByIdTagSpecification(id);
-        List<Tag> findByIdTagList = tagService.query(findById);
-        if (findByIdTagList.isEmpty()) {
+        FindByIdUserSpecification findById = new FindByIdUserSpecification(id);
+        List<User> findByIdUserList = userService.query(findById);
+        if (findByIdUserList.isEmpty()) {
             throw new InstanceNotFoundException();
         }
-        return findByIdTagList.get(0);
+        return findByIdUserList.get(0);
     }
 
     @PostMapping(value = "")
-    public void createTag(@RequestBody Tag tag, HttpServletResponse response) {
+    public void createUser(@RequestBody User user, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            tagService.create(tag);
+            userService.create(user);
             response.setStatus(HttpStatus.CREATED.value());
         } catch (Exception e) {
             throw new ServerErrorException();
@@ -69,10 +69,10 @@ public class TagController {
     }
 
     @PutMapping(value = "/{id}")
-    public void updateTag(@RequestBody Tag tag, HttpServletResponse response) {
+    public void updateUser(@RequestBody User user, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            tagService.update(tag);
+            userService.update(user);
             response.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             throw new ServerErrorException();
@@ -80,10 +80,10 @@ public class TagController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public void deleteTag(@PathVariable int id, HttpServletResponse response) {
+    public void deleteUser(@PathVariable int id, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            tagService.delete(id);
+            userService.delete(id);
             response.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             throw new ServerErrorException();

@@ -1,10 +1,10 @@
 package news.web.controllers;
 
-import news.dao.specifications.FindAllTagSpecification;
-import news.dao.specifications.FindByIdTagSpecification;
-import news.dao.specifications.FindByTitleTagSpecification;
-import news.model.Tag;
-import news.service.TagService;
+import news.dao.specifications.FindAllAfishaSpecification;
+import news.dao.specifications.FindByIdAfishaSpecification;
+import news.dao.specifications.FindByTitleAfishaSpecification;
+import news.model.Afisha;
+import news.service.AfishaService;
 import news.web.controllers.exceptions.InstanceNotFoundException;
 import news.web.controllers.exceptions.ServerErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,51 +17,51 @@ import java.sql.SQLException;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/tag")
-public class TagController {
-    TagService tagService;
+@RequestMapping(value = "/afisha")
+public class AfishaController {
+    AfishaService afishaService;
 
-    public TagController() {
+    public AfishaController() {
     }
 
     @Autowired
-    public TagController(TagService tagService) {
-        this.tagService = tagService;
+    public AfishaController(AfishaService afishaService) {
+        this.afishaService = afishaService;
     }
 
     @GetMapping(value = "")
-    public List<Tag> findAllTags(HttpServletResponse response) throws SQLException {
+    public List<Afisha> findAllAfishas(HttpServletResponse response) throws SQLException {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindAllTagSpecification findAll = new FindAllTagSpecification();
-        return tagService.query(findAll);
+        FindAllAfishaSpecification findAll = new FindAllAfishaSpecification();
+        return afishaService.query(findAll);
     }
 
     @GetMapping(value = "", params = {"title"})
-    public List<Tag> findTagsByTitle(HttpServletRequest request, HttpServletResponse response) throws SQLException {
+    public List<Afisha> findAfishasByTitle(HttpServletRequest request, HttpServletResponse response) throws SQLException {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindByTitleTagSpecification findByTitle = new FindByTitleTagSpecification(request.getParameter("title"));
-        return tagService.query(findByTitle);
+        FindByTitleAfishaSpecification findByTitle = new FindByTitleAfishaSpecification(request.getParameter("title"));
+        return afishaService.query(findByTitle);
     }
 
     @GetMapping(value = "/{id}")
-    public Tag findTagById(@PathVariable int id, HttpServletResponse response) throws SQLException {
+    public Afisha findAfishaById(@PathVariable int id, HttpServletResponse response) throws SQLException {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindByIdTagSpecification findById = new FindByIdTagSpecification(id);
-        List<Tag> findByIdTagList = tagService.query(findById);
-        if (findByIdTagList.isEmpty()) {
+        FindByIdAfishaSpecification findById = new FindByIdAfishaSpecification(id);
+        List<Afisha> findByIdAfishaList = afishaService.query(findById);
+        if (findByIdAfishaList.isEmpty()) {
             throw new InstanceNotFoundException();
         }
-        return findByIdTagList.get(0);
+        return findByIdAfishaList.get(0);
     }
 
     @PostMapping(value = "")
-    public void createTag(@RequestBody Tag tag, HttpServletResponse response) {
+    public void createAfisha(@RequestBody Afisha afisha, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            tagService.create(tag);
+            afishaService.create(afisha);
             response.setStatus(HttpStatus.CREATED.value());
         } catch (Exception e) {
             throw new ServerErrorException();
@@ -69,10 +69,10 @@ public class TagController {
     }
 
     @PutMapping(value = "/{id}")
-    public void updateTag(@RequestBody Tag tag, HttpServletResponse response) {
+    public void updateAfisha(@RequestBody Afisha afisha, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            tagService.update(tag);
+            afishaService.update(afisha);
             response.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             throw new ServerErrorException();
@@ -80,10 +80,10 @@ public class TagController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public void deleteTag(@PathVariable int id, HttpServletResponse response) {
+    public void deleteAfisha(@PathVariable int id, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            tagService.delete(id);
+            afishaService.delete(id);
             response.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             throw new ServerErrorException();
