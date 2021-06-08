@@ -6,7 +6,7 @@
         <constructor-arg value="instanceDBPool"/>
     </bean>
 
-    <bean id="afishaService" class="news.service.AfishaService">
+    <bean id="afishaService" class="news.service.AfishaServiceOld">
         <constructor-arg ref="afishaRepository" />
     </bean>
 

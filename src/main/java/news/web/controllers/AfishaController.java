@@ -1,8 +1,5 @@
 package news.web.controllers;
 
-import news.dao.specifications.FindAllAfishaSpecification;
-import news.dao.specifications.FindByIdAfishaSpecification;
-import news.dao.specifications.FindByTitleAfishaSpecification;
 import news.model.Afisha;
 import news.service.AfishaService;
 import news.web.controllers.exceptions.InstanceNotFoundException;
@@ -15,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/afisha")
@@ -33,35 +31,32 @@ public class AfishaController {
     public List<Afisha> findAllAfishas(HttpServletResponse response) throws SQLException {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindAllAfishaSpecification findAll = new FindAllAfishaSpecification();
-        return afishaService.query(findAll);
+        return afishaService.findAll();
     }
 
     @GetMapping(value = "", params = {"title"})
     public List<Afisha> findAfishasByTitle(HttpServletRequest request, HttpServletResponse response) throws SQLException {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindByTitleAfishaSpecification findByTitle = new FindByTitleAfishaSpecification(request.getParameter("title"));
-        return afishaService.query(findByTitle);
+        return afishaService.findByTitle(request.getParameter("title"));
     }
 
     @GetMapping(value = "/{id}")
-    public Afisha findAfishaById(@PathVariable int id, HttpServletResponse response) throws SQLException {
+    public Optional<Afisha> findAfishaById(@PathVariable int id, HttpServletResponse response) throws SQLException {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindByIdAfishaSpecification findById = new FindByIdAfishaSpecification(id);
-        List<Afisha> findByIdAfishaList = afishaService.query(findById);
-        if (findByIdAfishaList.isEmpty()) {
+        Optional<Afisha> afisha = afishaService.findById(id);
+        if (afisha.isEmpty()) {
             throw new InstanceNotFoundException();
         }
-        return findByIdAfishaList.get(0);
+        return afisha;
     }
 
     @PostMapping(value = "")
     public void createAfisha(@RequestBody Afisha afisha, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            afishaService.create(afisha);
+            afishaService.createAfisha(afisha);
             response.setStatus(HttpStatus.CREATED.value());
         } catch (Exception e) {
             throw new ServerErrorException();
@@ -72,7 +67,7 @@ public class AfishaController {
     public void updateAfisha(@RequestBody Afisha afisha, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            afishaService.update(afisha);
+            afishaService.updateAfisha(afisha);
             response.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             throw new ServerErrorException();
@@ -83,7 +78,7 @@ public class AfishaController {
     public void deleteAfisha(@PathVariable int id, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            afishaService.delete(id);
+            afishaService.deleteAfisha(id);
             response.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             throw new ServerErrorException();
