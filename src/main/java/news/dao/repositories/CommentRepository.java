@@ -27,7 +27,9 @@ public class CommentRepository implements ExtendRepository<Comment> {
         Session session = HibernateUtil.getSessionFactory().openSession();
         if (commentSpecification.isById()) {
             Comment comment = session.get(Comment.class, (int) commentSpecification.getCriterial());
-            queryResult.add(comment);
+            if (comment != null) {
+                queryResult.add(comment);
+            }
         } else {
             if (commentSpecification.getCriterial() != null) {
                 // подготовка

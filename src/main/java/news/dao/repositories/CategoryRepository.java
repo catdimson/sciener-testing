@@ -29,7 +29,9 @@ public class CategoryRepository implements ExtendRepository<Category> {
         Session session = HibernateUtil.getSessionFactory().openSession();
         if (categorySpecification.isById()) {
             Category category = session.get(Category.class, (int) categorySpecification.getCriterial());
-            queryResult.add(category);
+            if (category != null) {
+                queryResult.add(category);
+            }
         } else {
             if (categorySpecification.getCriterial() != null) {
                 // подготовка

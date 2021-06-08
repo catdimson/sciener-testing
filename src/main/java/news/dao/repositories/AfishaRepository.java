@@ -27,7 +27,9 @@ public class AfishaRepository implements ExtendRepository<Afisha> {
         Session session = HibernateUtil.getSessionFactory().openSession();
         if (afishaSpecification.isById()) {
             Afisha afisha = session.get(Afisha.class, (int) afishaSpecification.getCriterial());
-            queryResult.add(afisha);
+            if (afisha != null) {
+                queryResult.add(afisha);
+            }
         } else {
             if (afishaSpecification.getCriterial() != null) {
                 // подготовка

@@ -27,7 +27,9 @@ public class GroupRepository implements ExtendRepository<Group> {
         Session session = HibernateUtil.getSessionFactory().openSession();
         if (groupSpecification.isById()) {
             Group group = session.get(Group.class, (int) groupSpecification.getCriterial());
-            queryResult.add(group);
+            if (group != null) {
+                queryResult.add(group);
+            }
         } else {
             if (groupSpecification.getCriterial() != null) {
                 // подготовка

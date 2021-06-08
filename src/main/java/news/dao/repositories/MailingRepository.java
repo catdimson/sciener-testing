@@ -27,7 +27,9 @@ public class MailingRepository implements ExtendRepository<Mailing> {
         Session session = HibernateUtil.getSessionFactory().openSession();
         if (mailingSpecification.isById()) {
             Mailing mailing = session.get(Mailing.class, (int) mailingSpecification.getCriterial());
-            queryResult.add(mailing);
+            if (mailing != null) {
+                queryResult.add(mailing);
+            }
         } else {
             if (mailingSpecification.getCriterial() != null) {
                 // подготовка

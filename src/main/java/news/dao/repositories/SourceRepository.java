@@ -6,7 +6,6 @@ import news.model.Source;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -28,7 +27,9 @@ public class SourceRepository implements ExtendRepository<Source> {
         Session session = HibernateUtil.getSessionFactory().openSession();
         if (sourceSpecification.isById()) {
             Source source = session.get(Source.class, (int) sourceSpecification.getCriterial());
-            queryResult.add(source);
+            if (source != null) {
+                queryResult.add(source);
+            }
         } else {
             if (sourceSpecification.getCriterial() != null) {
                 // подготовка

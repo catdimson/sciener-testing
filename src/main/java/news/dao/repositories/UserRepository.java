@@ -28,7 +28,9 @@ public class UserRepository implements ExtendRepository<User> {
         Session session = HibernateUtil.getSessionFactory().openSession();
         if (userSpecification.isById()) {
             User user = session.get(User.class, (int) userSpecification.getCriterial());
-            queryResult.add(user);
+            if (user != null) {
+                queryResult.add(user);
+            }
         } else {
             if (userSpecification.getCriterial() != null) {
                 // подготовка

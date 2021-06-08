@@ -6,7 +6,6 @@ import news.model.Article;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -28,7 +27,9 @@ public class ArticleRepository implements ExtendRepository<Article> {
         Session session = HibernateUtil.getSessionFactory().openSession();
         if (articleSpecification.isById()) {
             Article article = session.get(Article.class, (int) articleSpecification.getCriterial());
-            queryResult.add(article);
+            if (article != null) {
+                queryResult.add(article);
+            }
         } else {
             if (articleSpecification.getCriterial() != null) {
                 // подготовка
