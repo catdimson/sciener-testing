@@ -1,5 +1,8 @@
 package news.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,10 +18,12 @@ public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JsonProperty("id")
     private int id;
 
     @Basic
     @Column(name = "title")
+    @JsonProperty("title")
     private String title;
 
     @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
@@ -35,6 +40,7 @@ public class Tag {
         this.title = title;
     }
 
+    @JsonIgnore
     public int getTagId() {
         return this.id;
     }
@@ -66,6 +72,7 @@ public class Tag {
         return this.title.equals(title);
     }
 
+    @JsonIgnore
     public Object[] getObjects() {
         return new Object[] {
                 id,

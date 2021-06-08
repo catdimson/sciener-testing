@@ -6,7 +6,7 @@ import news.model.Tag;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -16,7 +16,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@Repository
 public class TagRepository implements ExtendRepository<Tag> {
 
     public TagRepository() {}
@@ -27,7 +27,9 @@ public class TagRepository implements ExtendRepository<Tag> {
         Session session = HibernateUtil.getSessionFactory().openSession();
         if (tagSpecification.isById()) {
             Tag tag = session.get(Tag.class, (int) tagSpecification.getCriterial());
-            queryResult.add(tag);
+            if (tag != null) {
+                queryResult.add(tag);
+            }
         } else {
             if (tagSpecification.getCriterial() != null) {
                 // подготовка
