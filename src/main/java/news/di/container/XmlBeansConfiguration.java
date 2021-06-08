@@ -8,6 +8,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 
+@Deprecated
 public class XmlBeansConfiguration {
     private String pathToConfig;
     private Document document;
