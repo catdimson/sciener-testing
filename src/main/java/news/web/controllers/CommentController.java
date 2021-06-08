@@ -1,8 +1,5 @@
 package news.web.controllers;
 
-import news.dao.specifications.FindAllCommentSpecification;
-import news.dao.specifications.FindByIdCommentSpecification;
-import news.dao.specifications.FindByUserIdCommentSpecification;
 import news.model.Comment;
 import news.service.CommentService;
 import news.web.controllers.exceptions.InstanceNotFoundException;
@@ -13,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/comment")
@@ -30,38 +27,35 @@ public class CommentController {
     }
 
     @GetMapping(value = "")
-    public List<Comment> findAllComments(HttpServletResponse response) throws SQLException {
+    public List<Comment> findAllComments(HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindAllCommentSpecification findAll = new FindAllCommentSpecification();
-        return commentService.query(findAll);
+        return commentService.findAll();
     }
 
     @GetMapping(value = "", params = {"userid"})
-    public List<Comment> findCommentsByTitle(HttpServletRequest request, HttpServletResponse response) throws SQLException {
+    public List<Comment> findCommentsByTitle(HttpServletRequest request, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindByUserIdCommentSpecification findByTitle = new FindByUserIdCommentSpecification(Integer.parseInt(request.getParameter("userid")));
-        return commentService.query(findByTitle);
+        return commentService.findByUserId(Integer.parseInt(request.getParameter("userid")));
     }
 
     @GetMapping(value = "/{id}")
-    public Comment findCommentById(@PathVariable int id, HttpServletResponse response) throws SQLException {
+    public Optional<Comment> findCommentById(@PathVariable int id, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindByIdCommentSpecification findById = new FindByIdCommentSpecification(id);
-        List<Comment> findByIdCommentList = commentService.query(findById);
-        if (findByIdCommentList.isEmpty()) {
+        Optional<Comment> comment = commentService.findById(id);
+        if (comment.isEmpty()) {
             throw new InstanceNotFoundException();
         }
-        return findByIdCommentList.get(0);
+        return comment;
     }
 
     @PostMapping(value = "")
     public void createComment(@RequestBody Comment comment, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            commentService.create(comment);
+            commentService.createComment(comment);
             response.setStatus(HttpStatus.CREATED.value());
         } catch (Exception e) {
             throw new ServerErrorException();
@@ -72,7 +66,7 @@ public class CommentController {
     public void updateComment(@RequestBody Comment comment, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            commentService.update(comment);
+            commentService.updateComment(comment);
             response.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             throw new ServerErrorException();
@@ -83,7 +77,7 @@ public class CommentController {
     public void deleteComment(@PathVariable int id, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            commentService.delete(id);
+            commentService.deleteComment(id);
             response.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             throw new ServerErrorException();
