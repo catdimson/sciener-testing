@@ -1,11 +1,11 @@
 package news.web.controllers;
 
-import news.dao.specifications.FindAllUserSpecification;
-import news.dao.specifications.FindByIdUserSpecification;
-import news.dao.specifications.FindByFirstnameUserSpecification;
-import news.dto.UserSerializer;
-import news.model.User;
-import news.service.UserService;
+import news.dao.specifications.FindAllAfishaSpecification;
+import news.dao.specifications.FindByIdAfishaSpecification;
+import news.dao.specifications.FindByTitleAfishaSpecification;
+import news.dto.AfishaSerializer;
+import news.model.Afisha;
+import news.service.AfishaService;
 import news.web.http.HttpRequest;
 import news.web.http.HttpResponse;
 
@@ -14,13 +14,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class UserController implements Controller {
+@Deprecated
+public class OldAfishaController implements Controller {
     HttpResponse response = new HttpResponse();
-    UserService userService;
-    UserSerializer userSerializer;
+    AfishaService afishaService;
+    AfishaSerializer afishaSerializer;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public OldAfishaController(AfishaService afishaService) {
+        this.afishaService = afishaService;
     }
 
     @Override
@@ -32,13 +33,14 @@ public class UserController implements Controller {
 
         switch (request.getMethod()) {
             case ("GET"): {
-                p = Pattern.compile("^/user/$");
+                p = Pattern.compile("^/afisha/$");
                 m = p.matcher(fullUrl);
-                // получение списка всех пользователей
+                System.out.println(fullUrl);
+                // получение списка всех афиш
                 if (m.find()) {
-                    FindAllUserSpecification findAll = new FindAllUserSpecification();
-                    List<User> findAllUserList = userService.query(findAll);
-                    if (findAllUserList.isEmpty()) {
+                    FindAllAfishaSpecification findAll = new FindAllAfishaSpecification();
+                    List<Afisha> findAllAfishaList = afishaService.query(findAll);
+                    if (findAllAfishaList.isEmpty()) {
                         response.setStatusCode(200);
                         response.setStatusText("OK");
                         response.setVersion("HTTP/1.1");
@@ -55,10 +57,10 @@ public class UserController implements Controller {
                         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                         response.setHeader("Pragma", "no-cache");
                         StringBuilder body = new StringBuilder();
-                        for (int i = 0; i < findAllUserList.size(); i++) {
-                            userSerializer = new UserSerializer(findAllUserList.get(i));
-                            body.append(userSerializer.toJSON());
-                            if (i != findAllUserList.size() - 1) {
+                        for (int i = 0; i < findAllAfishaList.size(); i++) {
+                            afishaSerializer = new AfishaSerializer(findAllAfishaList.get(i));
+                            body.append(afishaSerializer.toJSON());
+                            if (i != findAllAfishaList.size() - 1) {
                                 body.append(",\n");
                             } else {
                                 body.append("\n");
@@ -69,13 +71,13 @@ public class UserController implements Controller {
                         break;
                     }
                 }
-                // получение списка пользователей отобранных по параметру firstname
-                p = Pattern.compile("^/user\\?firstname=(?<firstname>([\\w\\d]+))$", Pattern.UNICODE_CHARACTER_CLASS);
+                // получение списка афиш отобранных по параметру title
+                p = Pattern.compile("^/afisha\\?title=(?<title>([\\w@\\d.]+))$", Pattern.UNICODE_CHARACTER_CLASS);
                 m = p.matcher(fullUrl);
                 if (m.find()) {
-                    FindByFirstnameUserSpecification findByFirstname = new FindByFirstnameUserSpecification(m.group("firstname"));
-                    List<User> findByFirstnameUserList = userService.query(findByFirstname);
-                    if (findByFirstnameUserList.isEmpty()) {
+                    FindByTitleAfishaSpecification findByTitle = new FindByTitleAfishaSpecification(m.group("title"));
+                    List<Afisha> findByTitleAfishaList = afishaService.query(findByTitle);
+                    if (findByTitleAfishaList.isEmpty()) {
                         response.setStatusCode(200);
                         response.setStatusText("OK");
                         response.setVersion("HTTP/1.1");
@@ -92,10 +94,10 @@ public class UserController implements Controller {
                         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                         response.setHeader("Pragma", "no-cache");
                         StringBuilder body = new StringBuilder();
-                        for (int i = 0; i < findByFirstnameUserList.size(); i++) {
-                            userSerializer = new UserSerializer(findByFirstnameUserList.get(i));
-                            body.append(userSerializer.toJSON());
-                            if (i != findByFirstnameUserList.size() - 1) {
+                        for (int i = 0; i < findByTitleAfishaList.size(); i++) {
+                            afishaSerializer = new AfishaSerializer(findByTitleAfishaList.get(i));
+                            body.append(afishaSerializer.toJSON());
+                            if (i != findByTitleAfishaList.size() - 1) {
                                 body.append(",\n");
                             } else {
                                 body.append("\n");
@@ -106,15 +108,15 @@ public class UserController implements Controller {
                         break;
                     }
                 }
-                // получение пользователя по id
-                p = Pattern.compile("^/user/(?<id>(\\d+))/$");
+                // получение афиши по id
+                p = Pattern.compile("^/afisha/(?<id>(\\d+))/$");
                 m = p.matcher(fullUrl);
                 if (m.find()) {
-                    FindByIdUserSpecification findById = new FindByIdUserSpecification(Integer.parseInt(m.group("id")));
-                    List<User> findByIdUserList = userService.query(findById);
-                    if (findByIdUserList.isEmpty()) {
+                    FindByIdAfishaSpecification findById = new FindByIdAfishaSpecification(Integer.parseInt(m.group("id")));
+                    List<Afisha> findByIdAfishaList = afishaService.query(findById);
+                    if (findByIdAfishaList.isEmpty()) {
                         response.setStatusCode(404);
-                        response.setStatusText("Пользователь не найден");
+                        response.setStatusText("Афиша не найдена");
                         response.setVersion("HTTP/1.1");
                         response.setHeader("Content-Type", "application/json; charset=UTF-8");
                         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
@@ -122,15 +124,15 @@ public class UserController implements Controller {
                         response.setBody("[]");
                         break;
                     } else {
-                        User user = findByIdUserList.get(0);
-                        userSerializer = new UserSerializer(user);
+                        Afisha afisha = findByIdAfishaList.get(0);
+                        afishaSerializer = new AfishaSerializer(afisha);
                         response.setStatusCode(200);
                         response.setStatusText("OK");
                         response.setVersion("HTTP/1.1");
                         response.setHeader("Content-Type", "application/json; charset=UTF-8");
                         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                         response.setHeader("Pragma", "no-cache");
-                        response.setBody(userSerializer.toJSON());
+                        response.setBody(afishaSerializer.toJSON());
                         break;
                     }
                 } else {
@@ -144,15 +146,15 @@ public class UserController implements Controller {
             }
             case ("POST"): {
                 // создание записи
-                p = Pattern.compile("^/user/$");
+                p = Pattern.compile("^/afisha/$");
                 m = p.matcher(url);
                 if (m.find()) {
-                    userSerializer = new UserSerializer(request.getBody());
-                    int id = userService.create(userSerializer.toObject());
+                    afishaSerializer = new AfishaSerializer(request.getBody());
+                    int id = afishaService.create(afishaSerializer.toObject());
                     response.setStatusCode(201);
-                    response.setStatusText("Пользователь создан");
+                    response.setStatusText("Афиша создана");
                     response.setVersion("HTTP/1.1");
-                    response.setHeader("Location", String.format("/user/%s/", id));
+                    response.setHeader("Location", String.format("/afisha/%s/", id));
                 } else {
                     response.setStatusCode(400);
                     response.setVersion("HTTP/1.1");
@@ -163,27 +165,27 @@ public class UserController implements Controller {
                 break;
             }
             case ("PUT"): {
-                p = Pattern.compile("^/user/(?<id>(\\d+))/$");
+                p = Pattern.compile("^/afisha/(?<id>(\\d+))/$");
                 m = p.matcher(url);
                 // если status=0 - не было выполнено обновление, если не 0 - выполнено
                 int statusUpdate;
                 if (m.find()) {
-                    userSerializer = new UserSerializer(request.getBody());
+                    afishaSerializer = new AfishaSerializer(request.getBody());
                     // нужно сравнить id из fullUrl и id из body. Если не совпадают то вернуть ответ с "Некорректный запрос"
-                    User user = userSerializer.toObject();
-                    int idUserFromBody = (int) user.getObjects()[0];
-                    if (Integer.parseInt(m.group("id")) != idUserFromBody) {
+                    Afisha afisha = afishaSerializer.toObject();
+                    int idAfishaFromBody = (int) afisha.getObjects()[0];
+                    if (Integer.parseInt(m.group("id")) != idAfishaFromBody) {
                         response.setStatusCode(400);
                         response.setVersion("HTTP/1.1");
                         response.setStatusText("Некорректный запрос");
                     } else {
-                        statusUpdate = userService.update(userSerializer.toObject());
+                        statusUpdate = afishaService.update(afishaSerializer.toObject());
                         if (statusUpdate != 0) {
                             response.setStatusCode(204);
                             response.setStatusText("Нет данных");
                         } else {
                             response.setStatusCode(404);
-                            response.setStatusText("Пользователь для обновления не найден");
+                            response.setStatusText("Афиша для обновления не найдена");
                         }
                     }
                     response.setVersion("HTTP/1.1");
@@ -197,18 +199,18 @@ public class UserController implements Controller {
                 break;
             }
             case ("DELETE"): {
-                p = Pattern.compile("^/user/(?<id>(\\d+))/$");
+                p = Pattern.compile("^/afisha/(?<id>(\\d+))/$");
                 m = p.matcher(url);
                 if (m.find()) {
                     int id = Integer.parseInt(m.group("id"));
                     int statusDelete;
-                    statusDelete = userService.delete(id);
+                    statusDelete = afishaService.delete(id);
                     if (statusDelete != 0) {
                         response.setStatusCode(204);
                         response.setStatusText("Нет данных");
                     } else {
                         response.setStatusCode(404);
-                        response.setStatusText("Пользователь для удаления не найден");
+                        response.setStatusText("Афиша для удаления не найдена");
                     }
                 } else {
                     response.setStatusCode(400);

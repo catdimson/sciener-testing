@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 /**
  * Класс сериализации источника в JSON
  */
+@Deprecated
 public class SourceSerializer implements Serializer<Source> {
     private String json;
     private Source source;

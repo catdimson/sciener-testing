@@ -2,6 +2,7 @@ package news.web.http;
 
 import java.util.Map;
 
+@Deprecated
 public interface Request {
 
     String getMethod();

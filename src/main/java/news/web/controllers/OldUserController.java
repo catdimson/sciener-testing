@@ -1,11 +1,11 @@
 package news.web.controllers;
 
-import news.dao.specifications.FindAllSourceSpecification;
-import news.dao.specifications.FindByIdSourceSpecification;
-import news.dao.specifications.FindByTitleSourceSpecification;
-import news.dto.SourceSerializer;
-import news.model.Source;
-import news.service.SourceService;
+import news.dao.specifications.FindAllUserSpecification;
+import news.dao.specifications.FindByIdUserSpecification;
+import news.dao.specifications.FindByFirstnameUserSpecification;
+import news.dto.UserSerializer;
+import news.model.User;
+import news.service.UserService;
 import news.web.http.HttpRequest;
 import news.web.http.HttpResponse;
 
@@ -14,13 +14,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SourceController implements Controller {
+@Deprecated
+public class OldUserController implements Controller {
     HttpResponse response = new HttpResponse();
-    SourceService sourceService;
-    SourceSerializer sourceSerializer;
+    UserService userService;
+    UserSerializer userSerializer;
 
-    public SourceController(SourceService sourceService) {
-        this.sourceService = sourceService;
+    public OldUserController(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
@@ -32,13 +33,13 @@ public class SourceController implements Controller {
 
         switch (request.getMethod()) {
             case ("GET"): {
-                p = Pattern.compile("^/source/$");
+                p = Pattern.compile("^/user/$");
                 m = p.matcher(fullUrl);
-                // получение списка всех источников
+                // получение списка всех пользователей
                 if (m.find()) {
-                    FindAllSourceSpecification findAll = new FindAllSourceSpecification();
-                    List<Source> findAllSourceList = sourceService.query(findAll);
-                    if (findAllSourceList.isEmpty()) {
+                    FindAllUserSpecification findAll = new FindAllUserSpecification();
+                    List<User> findAllUserList = userService.query(findAll);
+                    if (findAllUserList.isEmpty()) {
                         response.setStatusCode(200);
                         response.setStatusText("OK");
                         response.setVersion("HTTP/1.1");
@@ -55,10 +56,10 @@ public class SourceController implements Controller {
                         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                         response.setHeader("Pragma", "no-cache");
                         StringBuilder body = new StringBuilder();
-                        for (int i = 0; i < findAllSourceList.size(); i++) {
-                            sourceSerializer = new SourceSerializer(findAllSourceList.get(i));
-                            body.append(sourceSerializer.toJSON());
-                            if (i != findAllSourceList.size() - 1) {
+                        for (int i = 0; i < findAllUserList.size(); i++) {
+                            userSerializer = new UserSerializer(findAllUserList.get(i));
+                            body.append(userSerializer.toJSON());
+                            if (i != findAllUserList.size() - 1) {
                                 body.append(",\n");
                             } else {
                                 body.append("\n");
@@ -69,13 +70,13 @@ public class SourceController implements Controller {
                         break;
                     }
                 }
-                // получение списка источников отобранных по параметру title
-                p = Pattern.compile("^/source\\?title=(?<title>(\\w+))$", Pattern.UNICODE_CHARACTER_CLASS);
+                // получение списка пользователей отобранных по параметру firstname
+                p = Pattern.compile("^/user\\?firstname=(?<firstname>([\\w\\d]+))$", Pattern.UNICODE_CHARACTER_CLASS);
                 m = p.matcher(fullUrl);
                 if (m.find()) {
-                    FindByTitleSourceSpecification findByTitle = new FindByTitleSourceSpecification(m.group("title"));
-                    List<Source> findByTitleSourceList = sourceService.query(findByTitle);
-                    if (findByTitleSourceList.isEmpty()) {
+                    FindByFirstnameUserSpecification findByFirstname = new FindByFirstnameUserSpecification(m.group("firstname"));
+                    List<User> findByFirstnameUserList = userService.query(findByFirstname);
+                    if (findByFirstnameUserList.isEmpty()) {
                         response.setStatusCode(200);
                         response.setStatusText("OK");
                         response.setVersion("HTTP/1.1");
@@ -92,10 +93,10 @@ public class SourceController implements Controller {
                         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                         response.setHeader("Pragma", "no-cache");
                         StringBuilder body = new StringBuilder();
-                        for (int i = 0; i < findByTitleSourceList.size(); i++) {
-                            sourceSerializer = new SourceSerializer(findByTitleSourceList.get(i));
-                            body.append(sourceSerializer.toJSON());
-                            if (i != findByTitleSourceList.size() - 1) {
+                        for (int i = 0; i < findByFirstnameUserList.size(); i++) {
+                            userSerializer = new UserSerializer(findByFirstnameUserList.get(i));
+                            body.append(userSerializer.toJSON());
+                            if (i != findByFirstnameUserList.size() - 1) {
                                 body.append(",\n");
                             } else {
                                 body.append("\n");
@@ -106,15 +107,15 @@ public class SourceController implements Controller {
                         break;
                     }
                 }
-                // получение источники по id
-                p = Pattern.compile("^/source/(?<id>(\\d+))/$");
+                // получение пользователя по id
+                p = Pattern.compile("^/user/(?<id>(\\d+))/$");
                 m = p.matcher(fullUrl);
                 if (m.find()) {
-                    FindByIdSourceSpecification findById = new FindByIdSourceSpecification(Integer.parseInt(m.group("id")));
-                    List<Source> findByIdSourceList = sourceService.query(findById);
-                    if (findByIdSourceList.isEmpty()) {
+                    FindByIdUserSpecification findById = new FindByIdUserSpecification(Integer.parseInt(m.group("id")));
+                    List<User> findByIdUserList = userService.query(findById);
+                    if (findByIdUserList.isEmpty()) {
                         response.setStatusCode(404);
-                        response.setStatusText("Источник не найден");
+                        response.setStatusText("Пользователь не найден");
                         response.setVersion("HTTP/1.1");
                         response.setHeader("Content-Type", "application/json; charset=UTF-8");
                         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
@@ -122,15 +123,15 @@ public class SourceController implements Controller {
                         response.setBody("[]");
                         break;
                     } else {
-                        Source source = findByIdSourceList.get(0);
-                        sourceSerializer = new SourceSerializer(source);
+                        User user = findByIdUserList.get(0);
+                        userSerializer = new UserSerializer(user);
                         response.setStatusCode(200);
                         response.setStatusText("OK");
                         response.setVersion("HTTP/1.1");
                         response.setHeader("Content-Type", "application/json; charset=UTF-8");
                         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
                         response.setHeader("Pragma", "no-cache");
-                        response.setBody(sourceSerializer.toJSON());
+                        response.setBody(userSerializer.toJSON());
                         break;
                     }
                 } else {
@@ -144,15 +145,15 @@ public class SourceController implements Controller {
             }
             case ("POST"): {
                 // создание записи
-                p = Pattern.compile("^/source/$");
+                p = Pattern.compile("^/user/$");
                 m = p.matcher(url);
                 if (m.find()) {
-                    sourceSerializer = new SourceSerializer(request.getBody());
-                    int id = sourceService.create(sourceSerializer.toObject());
+                    userSerializer = new UserSerializer(request.getBody());
+                    int id = userService.create(userSerializer.toObject());
                     response.setStatusCode(201);
-                    response.setStatusText("Источник создан");
+                    response.setStatusText("Пользователь создан");
                     response.setVersion("HTTP/1.1");
-                    response.setHeader("Location", String.format("/source/%s/", id));
+                    response.setHeader("Location", String.format("/user/%s/", id));
                 } else {
                     response.setStatusCode(400);
                     response.setVersion("HTTP/1.1");
@@ -163,27 +164,27 @@ public class SourceController implements Controller {
                 break;
             }
             case ("PUT"): {
-                p = Pattern.compile("^/source/(?<id>(\\d+))/$");
+                p = Pattern.compile("^/user/(?<id>(\\d+))/$");
                 m = p.matcher(url);
                 // если status=0 - не было выполнено обновление, если не 0 - выполнено
                 int statusUpdate;
                 if (m.find()) {
-                    sourceSerializer = new SourceSerializer(request.getBody());
+                    userSerializer = new UserSerializer(request.getBody());
                     // нужно сравнить id из fullUrl и id из body. Если не совпадают то вернуть ответ с "Некорректный запрос"
-                    Source source = sourceSerializer.toObject();
-                    int idSourceFromBody = (int) source.getObjects()[0];
-                    if (Integer.parseInt(m.group("id")) != idSourceFromBody) {
+                    User user = userSerializer.toObject();
+                    int idUserFromBody = (int) user.getObjects()[0];
+                    if (Integer.parseInt(m.group("id")) != idUserFromBody) {
                         response.setStatusCode(400);
                         response.setVersion("HTTP/1.1");
                         response.setStatusText("Некорректный запрос");
                     } else {
-                        statusUpdate = sourceService.update(sourceSerializer.toObject());
+                        statusUpdate = userService.update(userSerializer.toObject());
                         if (statusUpdate != 0) {
                             response.setStatusCode(204);
                             response.setStatusText("Нет данных");
                         } else {
                             response.setStatusCode(404);
-                            response.setStatusText("Источник для обновления не найден");
+                            response.setStatusText("Пользователь для обновления не найден");
                         }
                     }
                     response.setVersion("HTTP/1.1");
@@ -197,18 +198,18 @@ public class SourceController implements Controller {
                 break;
             }
             case ("DELETE"): {
-                p = Pattern.compile("^/source/(?<id>(\\d+))/$");
+                p = Pattern.compile("^/user/(?<id>(\\d+))/$");
                 m = p.matcher(url);
                 if (m.find()) {
                     int id = Integer.parseInt(m.group("id"));
                     int statusDelete;
-                    statusDelete = sourceService.delete(id);
+                    statusDelete = userService.delete(id);
                     if (statusDelete != 0) {
                         response.setStatusCode(204);
                         response.setStatusText("Нет данных");
                     } else {
                         response.setStatusCode(404);
-                        response.setStatusText("Источник для удаления не найден");
+                        response.setStatusText("Пользователь для удаления не найден");
                     }
                 } else {
                     response.setStatusCode(400);

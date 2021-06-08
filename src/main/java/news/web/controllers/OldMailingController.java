@@ -14,12 +14,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MailingController implements Controller {
+@Deprecated
+public class OldMailingController implements Controller {
     HttpResponse response = new HttpResponse();
     MailingService mailingService;
     MailingSerializer mailingSerializer;
 
-    public MailingController(MailingService mailingService) {
+    public OldMailingController(MailingService mailingService) {
         this.mailingService = mailingService;
     }
 

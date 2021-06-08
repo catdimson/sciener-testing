@@ -1,5 +1,6 @@
 package news.web.http;
 
+@Deprecated
 public interface Response {
 
     void setStatusCode(int statusCode);

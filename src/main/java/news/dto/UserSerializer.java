@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 /**
  * Класс сериализации пользователя в JSON
  */
+@Deprecated
 public class UserSerializer implements Serializer<User> {
     private String json;
     private User user;

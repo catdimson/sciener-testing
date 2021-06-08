@@ -4,6 +4,7 @@ package news.web.http;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class HttpResponse implements Response {
     int statusCode;
     String statusText;

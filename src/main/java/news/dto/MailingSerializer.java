@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 /**
  * Класс сериализации рассылки в JSON
  */
+@Deprecated
 public class MailingSerializer implements Serializer<Mailing> {
     private String json;
     private Mailing mailing;

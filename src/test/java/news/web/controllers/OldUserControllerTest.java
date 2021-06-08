@@ -18,7 +18,7 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UserControllerTest {
+class OldUserControllerTest {
     private PostgreSQLContainer container;
     private DBPool poolConnection;
     private static LocalDate lastLogin;
