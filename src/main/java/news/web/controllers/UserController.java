@@ -1,8 +1,5 @@
 package news.web.controllers;
 
-import news.dao.specifications.FindAllUserSpecification;
-import news.dao.specifications.FindByFirstnameUserSpecification;
-import news.dao.specifications.FindByIdUserSpecification;
 import news.model.User;
 import news.service.UserService;
 import news.web.controllers.exceptions.InstanceNotFoundException;
@@ -13,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -30,38 +27,35 @@ public class UserController {
     }
 
     @GetMapping(value = "")
-    public List<User> findAllUsers(HttpServletResponse response) throws SQLException {
+    public List<User> findAllUsers(HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindAllUserSpecification findAll = new FindAllUserSpecification();
-        return userService.query(findAll);
+        return userService.findAll();
     }
 
     @GetMapping(value = "", params = {"firstname"})
-    public List<User> findUsersByFirstname(HttpServletRequest request, HttpServletResponse response) throws SQLException {
+    public List<User> findUsersByFirstname(HttpServletRequest request, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindByFirstnameUserSpecification findByFirstname = new FindByFirstnameUserSpecification(request.getParameter("firstname"));
-        return userService.query(findByFirstname);
+        return userService.findByFirstName(request.getParameter("firstname"));
     }
 
     @GetMapping(value = "/{id}")
-    public User findUserById(@PathVariable int id, HttpServletResponse response) throws SQLException {
+    public Optional<User> findUserById(@PathVariable int id, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindByIdUserSpecification findById = new FindByIdUserSpecification(id);
-        List<User> findByIdUserList = userService.query(findById);
-        if (findByIdUserList.isEmpty()) {
+        Optional<User> user = userService.findById(id);
+        if (user.isEmpty()) {
             throw new InstanceNotFoundException();
         }
-        return findByIdUserList.get(0);
+        return user;
     }
 
     @PostMapping(value = "")
     public void createUser(@RequestBody User user, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            userService.create(user);
+            userService.createUser(user);
             response.setStatus(HttpStatus.CREATED.value());
         } catch (Exception e) {
             throw new ServerErrorException();
@@ -72,7 +66,7 @@ public class UserController {
     public void updateUser(@RequestBody User user, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            userService.update(user);
+            userService.updateUser(user);
             response.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             throw new ServerErrorException();
@@ -83,7 +77,7 @@ public class UserController {
     public void deleteUser(@PathVariable int id, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
-            userService.delete(id);
+            userService.deleteUser(id);
             response.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             throw new ServerErrorException();
