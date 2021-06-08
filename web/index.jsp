@@ -13,7 +13,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Добро пожаловать, JSP!</title>
+    <title>Добро пожаловать, JSP! SPRING!</title>
 </head>
 <body>
 <h1>Добро пожаловать!</h1>

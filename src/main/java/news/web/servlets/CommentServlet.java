@@ -1,3 +1,4 @@
+/*
 package news.web.servlets;
 
 import news.HibernateUtil;
@@ -207,3 +208,4 @@ public class CommentServlet extends HttpServlet {
         }
     }
 }
+*/

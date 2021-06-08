@@ -10,6 +10,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Properties;
 
+@Deprecated
 public class DBPool implements ConnectionPool {
     private String dbUser;
     private String dbPassword;
