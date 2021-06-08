@@ -1,10 +1,11 @@
 package news.web.servlets;
 
 import news.HibernateUtil;
-import news.di.container.BeanFactory;
 import news.web.controllers.AfishaController;
+import news.web.controllers.ArticleController;
 import news.web.http.HttpRequest;
 import news.web.http.HttpResponse;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Enumeration;
@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 @WebServlet(name="AfishaServlet", urlPatterns={"/afisha/*", "/afisha/"})
 public class AfishaServlet extends HttpServlet {
 
-    protected BeanFactory beanFactory;
+    protected ClassPathXmlApplicationContext context;
 
     private String extractPath(HttpServletRequest request) {
         String requestURI = request.getRequestURI();
@@ -74,9 +74,8 @@ public class AfishaServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding("UTF-8");
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
+        context = new ClassPathXmlApplicationContext("springApplicationContext.xml");
 
-        URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        BeanFactory.setSettings(customHttpRequest, path.getPath());
         if (request.getHeader("UnitTest") != null) {
             try {
                 HibernateUtil.setConnectionProperties(
@@ -87,12 +86,11 @@ public class AfishaServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
-        beanFactory = BeanFactory.getInstance();
 
         try {
-            AfishaController afishaController = beanFactory.getBean(AfishaController.class);
-            afishaController.buildResponse();
+            AfishaController afishaController = context.getBean("afishaController", AfishaController.class);
             HttpResponse customHttpResponse = afishaController.getResponse();
+            afishaController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -103,7 +101,7 @@ public class AfishaServlet extends HttpServlet {
             // устанавливаем тело
             PrintWriter pr = response.getWriter();
             pr.write(customHttpResponse.getBody());
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -112,9 +110,8 @@ public class AfishaServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding("UTF-8");
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
+        context = new ClassPathXmlApplicationContext("springApplicationContext.xml");
 
-        URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        BeanFactory.setSettings(customHttpRequest, path.getPath());
         if (request.getHeader("UnitTest") != null) {
             try {
                 HibernateUtil.setConnectionProperties(
@@ -125,12 +122,11 @@ public class AfishaServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
-        beanFactory = BeanFactory.getInstance();
 
         try {
-            AfishaController afishaController = beanFactory.getBean(AfishaController.class);
-            afishaController.buildResponse();
+            AfishaController afishaController = context.getBean("afishaController", AfishaController.class);
             HttpResponse customHttpResponse = afishaController.getResponse();
+            afishaController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -138,7 +134,7 @@ public class AfishaServlet extends HttpServlet {
             for (Map.Entry<String, String> pair: customHeaders.entrySet()) {
                 response.setHeader(pair.getKey(), pair.getValue());
             }
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -147,9 +143,8 @@ public class AfishaServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding("UTF-8");
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
+        context = new ClassPathXmlApplicationContext("springApplicationContext.xml");
 
-        URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        BeanFactory.setSettings(customHttpRequest, path.getPath());
         if (request.getHeader("UnitTest") != null) {
             try {
                 HibernateUtil.setConnectionProperties(
@@ -160,12 +155,11 @@ public class AfishaServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
-        beanFactory = BeanFactory.getInstance();
 
         try {
-            AfishaController afishaController = beanFactory.getBean(AfishaController.class);
-            afishaController.buildResponse();
+            AfishaController afishaController = context.getBean("afishaController", AfishaController.class);
             HttpResponse customHttpResponse = afishaController.getResponse();
+            afishaController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -173,7 +167,7 @@ public class AfishaServlet extends HttpServlet {
             for (Map.Entry<String, String> pair: customHeaders.entrySet()) {
                 response.setHeader(pair.getKey(), pair.getValue());
             }
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -182,9 +176,8 @@ public class AfishaServlet extends HttpServlet {
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding("UTF-8");
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
+        context = new ClassPathXmlApplicationContext("springApplicationContext.xml");
 
-        URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        BeanFactory.setSettings(customHttpRequest, path.getPath());
         if (request.getHeader("UnitTest") != null) {
             try {
                 HibernateUtil.setConnectionProperties(
@@ -195,12 +188,11 @@ public class AfishaServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
-        beanFactory = BeanFactory.getInstance();
 
         try {
-            AfishaController afishaController = beanFactory.getBean(AfishaController.class);
-            afishaController.buildResponse();
+            AfishaController afishaController = context.getBean("afishaController", AfishaController.class);
             HttpResponse customHttpResponse = afishaController.getResponse();
+            afishaController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -208,7 +200,7 @@ public class AfishaServlet extends HttpServlet {
             for (Map.Entry<String, String> pair: customHeaders.entrySet()) {
                 response.setHeader(pair.getKey(), pair.getValue());
             }
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

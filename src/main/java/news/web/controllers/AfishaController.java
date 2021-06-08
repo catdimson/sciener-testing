@@ -15,18 +15,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AfishaController implements Controller {
-    HttpRequest request;
     HttpResponse response = new HttpResponse();
     AfishaService afishaService;
     AfishaSerializer afishaSerializer;
 
-    public AfishaController(AfishaService afishaService, HttpRequest request) {
+    public AfishaController(AfishaService afishaService) {
         this.afishaService = afishaService;
-        this.request = request;
     }
 
     @Override
-    public void buildResponse() throws SQLException {
+    public void buildResponse(HttpRequest request) throws SQLException {
         String fullUrl = request.getPath(true);
         String url = request.getPath(false);
         Pattern p;

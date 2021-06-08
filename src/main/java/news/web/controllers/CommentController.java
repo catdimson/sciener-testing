@@ -15,18 +15,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CommentController implements Controller {
-    HttpRequest request;
     HttpResponse response = new HttpResponse();
     CommentService commentService;
     CommentSerializer commentSerializer;
 
-    public CommentController(CommentService commentService, HttpRequest request) {
+    public CommentController(CommentService commentService) {
         this.commentService = commentService;
-        this.request = request;
     }
 
     @Override
-    public void buildResponse() throws SQLException {
+    public void buildResponse(HttpRequest request) throws SQLException {
         String fullUrl = request.getPath(true);
         String url = request.getPath(false);
         Pattern p;

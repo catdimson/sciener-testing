@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <!--Afisha-->
     <bean id="afishaRepository" class="news.dao.repositories.AfishaRepository">
-        <constructor-arg value="instanceDBPool"/>
     </bean>
 
     <bean id="afishaService" class="news.service.AfishaService">
@@ -11,12 +11,11 @@
     </bean>
 
     <bean id="afishaController" class="news.web.controllers.AfishaController">
-        <constructor-arg ref="afishaService" value="instanceHTTPRequest" />
+        <constructor-arg ref="afishaService" />
     </bean>
 
     <!--Article-->
     <bean id="articleRepository" class="news.dao.repositories.ArticleRepository">
-        <constructor-arg value="instanceDBPool"/>
     </bean>
 
     <bean id="articleService" class="news.service.ArticleService">
@@ -24,12 +23,11 @@
     </bean>
 
     <bean id="articleController" class="news.web.controllers.ArticleController">
-        <constructor-arg ref="articleService" value="instanceHTTPRequest" />
+        <constructor-arg ref="articleService" />
     </bean>
 
     <!--Category-->
     <bean id="categoryRepository" class="news.dao.repositories.CategoryRepository">
-        <constructor-arg value="instanceDBPool"/>
     </bean>
 
     <bean id="categoryService" class="news.service.CategoryService">
@@ -37,12 +35,11 @@
     </bean>
 
     <bean id="categoryController" class="news.web.controllers.CategoryController">
-        <constructor-arg ref="categoryService" value="instanceHTTPRequest" />
+        <constructor-arg ref="categoryService" />
     </bean>
 
     <!--Comment-->
     <bean id="commentRepository" class="news.dao.repositories.CommentRepository">
-        <constructor-arg value="instanceDBPool"/>
     </bean>
 
     <bean id="commentService" class="news.service.CommentService">
@@ -50,12 +47,11 @@
     </bean>
 
     <bean id="commentController" class="news.web.controllers.CommentController">
-        <constructor-arg ref="commentService" value="instanceHTTPRequest" />
+        <constructor-arg ref="commentService" />
     </bean>
 
     <!--Group-->
     <bean id="groupRepository" class="news.dao.repositories.GroupRepository">
-        <constructor-arg value="instanceDBPool"/>
     </bean>
 
     <bean id="groupService" class="news.service.GroupService">
@@ -63,12 +59,11 @@
     </bean>
 
     <bean id="groupController" class="news.web.controllers.GroupController">
-        <constructor-arg ref="groupService" value="instanceHTTPRequest" />
+        <constructor-arg ref="groupService" />
     </bean>
 
     <!--Mailing-->
     <bean id="mailingRepository" class="news.dao.repositories.MailingRepository">
-        <constructor-arg value="instanceDBPool"/>
     </bean>
 
     <bean id="mailingService" class="news.service.MailingService">
@@ -76,12 +71,11 @@
     </bean>
 
     <bean id="mailingController" class="news.web.controllers.MailingController">
-        <constructor-arg ref="mailingService" value="instanceHTTPRequest" />
+        <constructor-arg ref="mailingService" />
     </bean>
 
     <!--Source-->
     <bean id="sourceRepository" class="news.dao.repositories.SourceRepository">
-        <constructor-arg value="instanceDBPool"/>
     </bean>
 
     <bean id="sourceService" class="news.service.SourceService">
@@ -89,12 +83,11 @@
     </bean>
 
     <bean id="sourceController" class="news.web.controllers.SourceController">
-        <constructor-arg ref="sourceService" value="instanceHTTPRequest" />
+        <constructor-arg ref="sourceService" />
     </bean>
 
     <!--Tag-->
     <bean id="tagRepository" class="news.dao.repositories.TagRepository">
-        <constructor-arg value="instanceDBPool"/>
     </bean>
 
     <bean id="tagService" class="news.service.TagService">
@@ -102,12 +95,11 @@
     </bean>
 
     <bean id="tagController" class="news.web.controllers.TagController">
-        <constructor-arg ref="tagService" value="instanceHTTPRequest" />
+        <constructor-arg ref="tagService" />
     </bean>
 
     <!--User-->
     <bean id="userRepository" class="news.dao.repositories.UserRepository">
-        <constructor-arg value="instanceDBPool"/>
     </bean>
 
     <bean id="userService" class="news.service.UserService">
@@ -115,7 +107,7 @@
     </bean>
 
     <bean id="userController" class="news.web.controllers.UserController">
-        <constructor-arg ref="userService" value="instanceHTTPRequest" />
+        <constructor-arg ref="userService" />
     </bean>
 
 </beans>

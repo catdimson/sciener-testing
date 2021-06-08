@@ -5,6 +5,7 @@ import news.web.http.HttpRequest;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+@Deprecated
 public class BeanFactory {
 
     private static BeanFactory BEAN_FACTORY;

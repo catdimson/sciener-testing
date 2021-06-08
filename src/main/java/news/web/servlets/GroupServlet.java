@@ -2,9 +2,11 @@ package news.web.servlets;
 
 import news.HibernateUtil;
 import news.di.container.BeanFactory;
+import news.web.controllers.CommentController;
 import news.web.controllers.GroupController;
 import news.web.http.HttpRequest;
 import news.web.http.HttpResponse;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -24,7 +26,7 @@ import java.util.regex.Pattern;
 @WebServlet(name="GroupServlet", urlPatterns={"/group/*", "/group/"})
 public class GroupServlet extends HttpServlet {
 
-    protected BeanFactory beanFactory;
+    protected ClassPathXmlApplicationContext context;
 
     private String extractPath(HttpServletRequest request) {
         String requestURI = request.getRequestURI();
@@ -74,9 +76,8 @@ public class GroupServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding("UTF-8");
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
+        context = new ClassPathXmlApplicationContext("springApplicationContext.xml");
 
-        URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        BeanFactory.setSettings(customHttpRequest, path.getPath());
         if (request.getHeader("UnitTest") != null) {
             try {
                 HibernateUtil.setConnectionProperties(
@@ -87,12 +88,11 @@ public class GroupServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
-        beanFactory = BeanFactory.getInstance();
-
+        
         try {
-            GroupController groupController = beanFactory.getBean(GroupController.class);
-            groupController.buildResponse();
+            GroupController groupController = context.getBean("groupController", GroupController.class);
             HttpResponse customHttpResponse = groupController.getResponse();
+            groupController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -103,7 +103,7 @@ public class GroupServlet extends HttpServlet {
             // устанавливаем тело
             PrintWriter pr = response.getWriter();
             pr.write(customHttpResponse.getBody());
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -112,9 +112,8 @@ public class GroupServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding("UTF-8");
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
+        context = new ClassPathXmlApplicationContext("springApplicationContext.xml");
 
-        URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        BeanFactory.setSettings(customHttpRequest, path.getPath());
         if (request.getHeader("UnitTest") != null) {
             try {
                 HibernateUtil.setConnectionProperties(
@@ -125,12 +124,11 @@ public class GroupServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
-        beanFactory = BeanFactory.getInstance();
-
+        
         try {
-            GroupController groupController = beanFactory.getBean(GroupController.class);
-            groupController.buildResponse();
+            GroupController groupController = context.getBean("groupController", GroupController.class);
             HttpResponse customHttpResponse = groupController.getResponse();
+            groupController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -138,7 +136,7 @@ public class GroupServlet extends HttpServlet {
             for (Map.Entry<String, String> pair: customHeaders.entrySet()) {
                 response.setHeader(pair.getKey(), pair.getValue());
             }
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -147,9 +145,8 @@ public class GroupServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding("UTF-8");
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
+        context = new ClassPathXmlApplicationContext("springApplicationContext.xml");
 
-        URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        BeanFactory.setSettings(customHttpRequest, path.getPath());
         if (request.getHeader("UnitTest") != null) {
             try {
                 HibernateUtil.setConnectionProperties(
@@ -160,12 +157,11 @@ public class GroupServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
-        beanFactory = BeanFactory.getInstance();
-
+        
         try {
-            GroupController groupController = beanFactory.getBean(GroupController.class);
-            groupController.buildResponse();
+            GroupController groupController = context.getBean("groupController", GroupController.class);
             HttpResponse customHttpResponse = groupController.getResponse();
+            groupController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -173,7 +169,7 @@ public class GroupServlet extends HttpServlet {
             for (Map.Entry<String, String> pair: customHeaders.entrySet()) {
                 response.setHeader(pair.getKey(), pair.getValue());
             }
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -182,9 +178,8 @@ public class GroupServlet extends HttpServlet {
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setCharacterEncoding("UTF-8");
         HttpRequest customHttpRequest = convertToCustomHttpRequest(request);
+        context = new ClassPathXmlApplicationContext("springApplicationContext.xml");
 
-        URL path = getClass().getClassLoader().getResource("applicationContext.xml");
-        BeanFactory.setSettings(customHttpRequest, path.getPath());
         if (request.getHeader("UnitTest") != null) {
             try {
                 HibernateUtil.setConnectionProperties(
@@ -195,12 +190,11 @@ public class GroupServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
-        beanFactory = BeanFactory.getInstance();
-
+        
         try {
-            GroupController groupController = beanFactory.getBean(GroupController.class);
-            groupController.buildResponse();
+            GroupController groupController = context.getBean("groupController", GroupController.class);
             HttpResponse customHttpResponse = groupController.getResponse();
+            groupController.buildResponse(customHttpRequest);
             // устанавливает код статуса
             response.setStatus(customHttpResponse.getStatusCode());
             // устанавливаем заголовки
@@ -208,7 +202,7 @@ public class GroupServlet extends HttpServlet {
             for (Map.Entry<String, String> pair: customHeaders.entrySet()) {
                 response.setHeader(pair.getKey(), pair.getValue());
             }
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException | InvocationTargetException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
