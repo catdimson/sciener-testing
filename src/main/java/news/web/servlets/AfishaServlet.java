@@ -1,3 +1,4 @@
+/*
 package news.web.servlets;
 
 import news.HibernateUtil;
@@ -205,3 +206,4 @@ public class AfishaServlet extends HttpServlet {
         }
     }
 }
+*/

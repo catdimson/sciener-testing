@@ -19,7 +19,7 @@ import java.sql.Statement;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class GroupControllerTest {
+class OldGroupControllerTest {
     private PostgreSQLContainer container;
     private DBPool poolConnection;
     // для клиента

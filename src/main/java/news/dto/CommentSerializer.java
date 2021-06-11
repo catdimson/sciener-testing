@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 /**
  * Класс сериализации комментария в JSON
  */
+@Deprecated
 public class CommentSerializer implements Serializer<Comment> {
     private String json;
     private Comment comment;

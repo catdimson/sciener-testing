@@ -1,36 +1,22 @@
 package news.service;
 
-import news.dao.repositories.GroupRepository;
-import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Group;
 
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
-public class GroupService implements Service<Group> {
-    final private GroupRepository groupRepository;
+public interface GroupService {
 
-    public GroupService(GroupRepository groupRepository) {
-        this.groupRepository = groupRepository;
-    }
+    List<Group> findAll();
 
-    @Override
-    public List<Group> query(ExtendSqlSpecification<Group> specification) throws SQLException {
-        return groupRepository.query(specification);
-    }
+    List<Group> findByTitle(String title);
 
-    @Override
-    public int create(Group instance) throws SQLException {
-        return groupRepository.create(instance);
-    }
+    Optional<Group> findById(int id);
 
-    @Override
-    public int delete(int id) throws SQLException {
-        return groupRepository.delete(id);
-    }
+    Group createGroup(Group group);
 
-    @Override
-    public int update(Group instance) throws SQLException {
-        return groupRepository.update(instance);
-    }
+    Group updateGroup(Group group);
+
+    void deleteGroup(int id);
+
 }

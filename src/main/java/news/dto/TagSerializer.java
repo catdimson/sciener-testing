@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 /**
  * Класс сериализации тега в JSON
  */
+@Deprecated
 public class TagSerializer implements Serializer<Tag> {
     private String json;
     private Tag tag;

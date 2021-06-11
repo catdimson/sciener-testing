@@ -1,5 +1,8 @@
 package news.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -18,50 +21,62 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JsonProperty
     private int id;
 
     @Basic
     @Column(name = "password")
+    @JsonProperty
     private String password;
 
     @Basic
     @Column(name = "username")
+    @JsonProperty
     private String username;
 
     @Basic
     @Column(name = "first_name")
+    @JsonProperty
     private String firstName;
 
     @Basic
     @Column(name = "last_name")
+    @JsonProperty
     private String lastName;
 
     @Basic
     @Column(name = "email")
+    @JsonProperty
     private String email;
 
     @Basic
     @Column(name = "last_login")
+    @JsonProperty
     private Timestamp lastLogin;
 
     @Basic
     @Column(name = "date_joined")
+    @JsonProperty
     private Timestamp dateJoined;
 
     @Basic
     @Column(name = "is_superuser")
+    @JsonProperty
     private boolean isSuperuser;
 
     @Basic
     @Column(name = "is_staff")
+    @JsonProperty
     private boolean isStaff;
 
     @Basic
     @Column(name = "is_active")
+    @JsonProperty
     private boolean isActive;
 
     @Basic
     @Column(name = "group_id")
+    @JsonProperty
     private int groupId;
 
     public User() {};
@@ -97,6 +112,7 @@ public class User {
         this.groupId = groupId;
     }
 
+    @JsonIgnore
     public int getUserId() {
         return this.id;
     }
@@ -113,6 +129,7 @@ public class User {
         this.lastName = newLastName.trim();
     }
 
+    @JsonIgnore
     public String getFullName() {
         return this.firstName + " " + this.lastName;
     }
@@ -177,6 +194,7 @@ public class User {
     /**
      * Проверка, обалает ли пользователь правами админа и активен ли он
      */
+    @JsonIgnore
     public boolean isPermissionOfSuperuser() {
         return this.isActive && this.isSuperuser;
     }
@@ -184,6 +202,7 @@ public class User {
     /**
      * Проверка, обалает ли пользователь правами персонала и активен ли он
      */
+    @JsonIgnore
     public boolean isPermissionOfStaff() {
         return this.isStaff && this.isActive;
     }
@@ -196,6 +215,7 @@ public class User {
         return this.firstName.equals(firstName);
     }
 
+    @JsonIgnore
     public Object[] getObjects() {
         return new Object[] {
                 id,

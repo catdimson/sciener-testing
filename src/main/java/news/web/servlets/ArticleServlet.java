@@ -1,3 +1,4 @@
+/*
 package news.web.servlets;
 
 import news.HibernateUtil;
@@ -204,3 +205,4 @@ public class ArticleServlet extends HttpServlet {
         }
     }
 }
+*/

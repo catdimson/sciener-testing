@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 /**
  * Класс сериализации группы в JSON
  */
+@Deprecated
 public class GroupSerializer implements Serializer<Group> {
     private String json;
     private Group group;

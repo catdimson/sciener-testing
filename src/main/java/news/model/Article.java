@@ -1,5 +1,8 @@
 package news.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -16,42 +19,52 @@ public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JsonProperty
     private int id;
 
     @Basic
     @Column(name = "create_date")
+    @JsonProperty
     private Timestamp createDate;
 
     @Basic
     @Column(name = "title")
+    @JsonProperty
     private String title;
 
     @Basic
     @Column(name = "lead")
+    @JsonProperty
     private String lead;
 
     @Basic
     @Column(name = "edit_date")
+    @JsonProperty
     private Timestamp editDate;
 
     @Basic
     @Column(name = "text")
+    @JsonProperty
     private String text;
 
     @Basic
     @Column(name = "is_published")
+    @JsonProperty
     private boolean isPublished;
 
     @Basic
     @Column(name = "category_id")
+    @JsonProperty
     private int categoryId;
 
     @Basic
     @Column(name = "user_id")
+    @JsonProperty
     private int userId;
 
     @Basic
     @Column(name = "source_id")
+    @JsonProperty
     private int sourceId;
 
     @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -92,6 +105,7 @@ public class Article {
         this.sourceId = sourceId;
     }
 
+    @JsonIgnore
     public int getArticleId() {
         return this.id;
     }
@@ -174,6 +188,7 @@ public class Article {
         this.isPublished = false;
     }
 
+    @JsonIgnore
     public boolean getStatusPublished() {
         return this.isPublished;
     }
@@ -186,6 +201,7 @@ public class Article {
         return this.title.equals(title);
     }
 
+    @JsonIgnore
     public Object[] getObjects() {
         return new Object[] {
                 id,

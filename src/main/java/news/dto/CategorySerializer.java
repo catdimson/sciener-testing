@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 /**
  * Класс сериализации категории в JSON
  */
+@Deprecated
 public class CategorySerializer implements Serializer<Category> {
     private String json;
     private Category category;

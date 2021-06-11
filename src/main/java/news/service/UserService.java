@@ -1,36 +1,22 @@
 package news.service;
 
-import news.dao.repositories.UserRepository;
-import news.dao.specifications.ExtendSqlSpecification;
 import news.model.User;
 
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
-public class UserService implements Service<User> {
-    final private UserRepository userRepository;
+public interface UserService {
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    List<User> findAll();
 
-    @Override
-    public List<User> query(ExtendSqlSpecification<User> specification) throws SQLException {
-        return userRepository.query(specification);
-    }
+    List<User> findByFirstName(String title);
 
-    @Override
-    public int create(User instance) throws SQLException {
-        return userRepository.create(instance);
-    }
+    Optional<User> findById(int id);
 
-    @Override
-    public int delete(int id) throws SQLException {
-        return userRepository.delete(id);
-    }
+    User createUser(User user);
 
-    @Override
-    public int update(User instance) throws SQLException {
-        return userRepository.update(instance);
-    }
+    User updateUser(User user);
+
+    void deleteUser(int id);
+
 }

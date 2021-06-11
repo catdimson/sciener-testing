@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 /**
  * Класс сериализации афиши в JSON
  */
+@Deprecated
 public class AfishaSerializer implements Serializer<Afisha> {
     private String json;
     private Afisha afisha;

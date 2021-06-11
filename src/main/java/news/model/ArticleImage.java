@@ -1,5 +1,8 @@
 package news.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -13,14 +16,17 @@ public class ArticleImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @JsonProperty
     private int id;
 
     @Basic
     @Column(name = "title")
+    @JsonProperty
     private String title;
 
     @Basic
     @Column(name = "path")
+    @JsonProperty
     private String path;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,6 +50,7 @@ public class ArticleImage {
         this.article = article;
     }
 
+    @JsonIgnore
     public Object[] getObjects() {
         return new Object[] {
                 id,

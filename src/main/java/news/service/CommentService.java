@@ -1,36 +1,22 @@
 package news.service;
 
-import news.dao.repositories.CommentRepository;
-import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Comment;
 
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
-public class CommentService implements Service<Comment> {
-    final private CommentRepository commentRepository;
+public interface CommentService {
 
-    public CommentService(CommentRepository commentRepository) {
-        this.commentRepository = commentRepository;
-    }
+    List<Comment> findAll();
 
-    @Override
-    public List<Comment> query(ExtendSqlSpecification<Comment> specification) throws SQLException {
-        return commentRepository.query(specification);
-    }
+    List<Comment> findByUserId(int userId);
 
-    @Override
-    public int create(Comment instance) throws SQLException {
-        return commentRepository.create(instance);
-    }
+    Optional<Comment> findById(int id);
 
-    @Override
-    public int delete(int id) throws SQLException {
-        return commentRepository.delete(id);
-    }
+    Comment createComment(Comment comment);
 
-    @Override
-    public int update(Comment instance) throws SQLException {
-        return commentRepository.update(instance);
-    }
+    Comment updateComment(Comment comment);
+
+    void deleteComment(int id);
+
 }

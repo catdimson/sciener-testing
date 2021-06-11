@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 /**
  * Класс сериализации статьи в JSON
  */
+@Deprecated
 public class ArticleSerializer implements Serializer<Article> {
     private String json;
     private Article article;

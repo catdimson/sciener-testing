@@ -1,36 +1,22 @@
 package news.service;
 
-import news.dao.repositories.MailingRepository;
-import news.dao.specifications.ExtendSqlSpecification;
 import news.model.Mailing;
 
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
-public class MailingService implements Service<Mailing> {
-    final private MailingRepository mailingRepository;
+public interface MailingService {
 
-    public MailingService(MailingRepository mailingRepository) {
-        this.mailingRepository = mailingRepository;
-    }
+    List<Mailing> findAll();
 
-    @Override
-    public List<Mailing> query(ExtendSqlSpecification<Mailing> specification) throws SQLException {
-        return mailingRepository.query(specification);
-    }
+    List<Mailing> findByEmail(String title);
 
-    @Override
-    public int create(Mailing instance) throws SQLException {
-        return mailingRepository.create(instance);
-    }
+    Optional<Mailing> findById(int id);
 
-    @Override
-    public int delete(int id) throws SQLException {
-        return mailingRepository.delete(id);
-    }
+    Mailing createMailing(Mailing mailing);
 
-    @Override
-    public int update(Mailing instance) throws SQLException {
-        return mailingRepository.update(instance);
-    }
+    Mailing updateMailing(Mailing mailing);
+
+    void deleteMailing(int id);
+
 }
