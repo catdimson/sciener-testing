@@ -25,24 +25,19 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("Тестирование репозитория для Article")
+@DisplayName("Тестировани" +
+        "е репозитория для Article")
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(initializers = ArticleRepositoryTest.Initializer.class)
 class ArticleRepositoryTest {
-    private static Timestamp lastLogin;
-    private static Timestamp dateJoined;
     private static Timestamp createDateArticle;
     private static Timestamp editDateArticle;
-    private static Timestamp date;
 
     @BeforeAll
     static void setUp() {
-        lastLogin = new Timestamp(1589922000000L);
-        dateJoined = new Timestamp(1558299600000L);
         createDateArticle = new Timestamp(1561410000000L);
         editDateArticle = new Timestamp(1561410000000L);
-        date = new Timestamp(1589922000000L);
     }
 
     @Autowired
@@ -268,87 +263,124 @@ class ArticleRepositoryTest {
         assertThat(resultTag2).hasFieldOrPropertyWithValue("title", tag2.getObjects()[1]);
     }
 
-    /*@DisplayName("Получение всех записей")
+    @DisplayName("Сохранение сущности")
     @Test
-    @Sql(scripts = "classpath:repository-scripts/deployment/tag.sql")
-    @Sql(statements = "INSERT INTO tag(title) values ('Балет'), ('Политика');")
-    void findAll() {
+    @Sql(scripts = "classpath:repository-scripts/deployment/article.sql")
+    void saveArticle() {
         SoftAssertions soft = new SoftAssertions();
-        Tag tag1 = new Tag(1, "Балет");
-        Tag tag2 = new Tag(2, "Политика");
+        // статьи
+        Article article1 = new Article(1, "Заголовок 1", "Лид 1", createDateArticle,
+                editDateArticle, "Текст 1", true, 1, 1, 1);
+        // изображения
+        ArticleImage articleImage1 = new ArticleImage(1, "Изображение 1", "/static/images/image1.png");
+        article1.addNewImage(articleImage1);
+        articleImage1.setArticle(article1);
+        // тэги
+        Tag tag1 = new Tag(1, "Тег 1");
+        article1.addNewTag(tag1);
+        tag1.addNewArticle(article1);
 
-        List<Tag> result = tagRepository.findAll();
+        Article result = articleRepository.save(article1);
+        // получаем изображения
+        ArticleImage resultArticleImage1 = (ArticleImage) result.getImages().toArray()[0];
+        // получаем теги
+        Tag resultTag1 = (Tag) result.getTags().toArray()[0];
 
-        soft.assertThat(result.get(0))
+        // сравниваем полученный результат и ожидаемый
+        soft.assertThat(result)
+                .hasFieldOrPropertyWithValue("id", article1.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", article1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("lead", article1.getObjects()[2])
+                .hasFieldOrPropertyWithValue("createDate", article1.getObjects()[3])
+                .hasFieldOrPropertyWithValue("editDate", article1.getObjects()[4])
+                .hasFieldOrPropertyWithValue("text", article1.getObjects()[5])
+                .hasFieldOrPropertyWithValue("isPublished", article1.getObjects()[6])
+                .hasFieldOrPropertyWithValue("userId", article1.getObjects()[7])
+                .hasFieldOrPropertyWithValue("sourceId", article1.getObjects()[8]);
+        soft.assertAll();
+        soft.assertThat(resultArticleImage1)
+                .hasFieldOrPropertyWithValue("id", articleImage1.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", articleImage1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("path", articleImage1.getObjects()[2]);
+        soft.assertAll();
+        soft.assertThat(resultTag1)
                 .hasFieldOrPropertyWithValue("id", tag1.getObjects()[0])
                 .hasFieldOrPropertyWithValue("title", tag1.getObjects()[1]);
         soft.assertAll();
-        soft.assertThat(result.get(1))
-                .hasFieldOrPropertyWithValue("id", tag2.getObjects()[0])
-                .hasFieldOrPropertyWithValue("title", tag2.getObjects()[1]);
-        soft.assertAll();
-    }*/
+    }
 
-    /*@DisplayName("Получение записей по title")
+    @DisplayName("Обновление сущности")
     @Test
-    @Sql(scripts = "classpath:repository-scripts/deployment/tag.sql")
-    @Sql(statements = "INSERT INTO tag(title) values ('Балет'), ('Балет');")
-    void findByTitle() {
+    @Sql(scripts = "classpath:repository-scripts/deployment/article.sql")
+    @Sql(scripts = "classpath:repository-scripts/generate-data/article.sql")
+    void updateArticle() {
         SoftAssertions soft = new SoftAssertions();
-        Tag tag1 = new Tag(1, "Балет");
-        Tag tag2 = new Tag(2, "Балет");
+        // статьи
+        Article article1 = new Article(1, "Заголовок 10", "Лид 10", createDateArticle,
+                editDateArticle, "Текст 10", false, 1, 1, 1);
+        // изображения
+        ArticleImage articleImage1 = new ArticleImage("Изображение 10", "/static/images/image10.png");
+        ArticleImage articleImage2 = new ArticleImage(1, "Изображение 11", "/static/images/image11.png");
+        article1.addNewImage(articleImage1);
+        article1.addNewImage(articleImage2);
+        articleImage1.setArticle(article1);
+        articleImage2.setArticle(article1);
+        // тэги
+        Tag tag1 = new Tag("Тег 10");
+        Tag tag2 = new Tag(1, "Тег 11");
+        article1.addNewTag(tag1);
+        article1.addNewTag(tag2);
+        tag1.addNewArticle(article1);
+        tag2.addNewArticle(article1);
 
-        List<Tag> result = tagRepository.findByTitle("Балет");
+        Article result = articleRepository.save(article1);
+        // получаем изображения
+        ArticleImage resultArticleImage1 = (ArticleImage) result.getImages().toArray()[0];
+        ArticleImage resultArticleImage2 = (ArticleImage) result.getImages().toArray()[1];
+        // получаем теги
+        Tag resultTag1 = (Tag) result.getTags().toArray()[0];
+        Tag resultTag2 = (Tag) result.getTags().toArray()[1];
 
-        soft.assertThat(result.get(0))
-                .hasFieldOrPropertyWithValue("id", tag1.getObjects()[0])
+        // сравниваем полученный результат и ожидаемый
+        soft.assertThat(result)
+                .hasFieldOrPropertyWithValue("id", article1.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", article1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("lead", article1.getObjects()[2])
+                .hasFieldOrPropertyWithValue("createDate", article1.getObjects()[3])
+                .hasFieldOrPropertyWithValue("editDate", article1.getObjects()[4])
+                .hasFieldOrPropertyWithValue("text", article1.getObjects()[5])
+                .hasFieldOrPropertyWithValue("isPublished", article1.getObjects()[6])
+                .hasFieldOrPropertyWithValue("userId", article1.getObjects()[7])
+                .hasFieldOrPropertyWithValue("sourceId", article1.getObjects()[8]);
+        soft.assertAll();
+        soft.assertThat(resultArticleImage1)
+                .hasFieldOrPropertyWithValue("id", 3)
+                .hasFieldOrPropertyWithValue("title", articleImage1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("path", articleImage1.getObjects()[2]);
+        soft.assertAll();
+        soft.assertThat(resultArticleImage2)
+                .hasFieldOrPropertyWithValue("id", articleImage2.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", articleImage2.getObjects()[1])
+                .hasFieldOrPropertyWithValue("path", articleImage2.getObjects()[2]);
+        soft.assertAll();
+        soft.assertThat(resultTag1)
+                .hasFieldOrPropertyWithValue("id", 3)
                 .hasFieldOrPropertyWithValue("title", tag1.getObjects()[1]);
         soft.assertAll();
-        soft.assertThat(result.get(1))
+        soft.assertThat(resultTag2)
                 .hasFieldOrPropertyWithValue("id", tag2.getObjects()[0])
                 .hasFieldOrPropertyWithValue("title", tag2.getObjects()[1]);
         soft.assertAll();
-    }*/
+    }
 
-    /*@DisplayName("Сохранение сущности")
+    @DisplayName("Удаление сущности")
     @Test
-    @Sql(scripts = "classpath:repository-scripts/deployment/tag.sql")
-    void saveTag() {
-        SoftAssertions soft = new SoftAssertions();
-        Tag tag = new Tag("Новый тег");
+    @Sql(scripts = "classpath:repository-scripts/deployment/article.sql")
+    @Sql(scripts = "classpath:repository-scripts/generate-data/article.sql")
+    void deleteArticle() {
 
-        Tag result = tagRepository.save(tag);
+        articleRepository.deleteById(1);
 
-        soft.assertThat(result)
-                .hasFieldOrPropertyWithValue("id", 1)
-                .hasFieldOrPropertyWithValue("title", tag.getObjects()[1]);
-        soft.assertAll();
-    }*/
-
-    /*@DisplayName("Обновление сущности")
-    @Test
-    @Sql(scripts = "classpath:repository-scripts/deployment/tag.sql")
-    @Sql(statements = "INSERT INTO tag(title) VALUES ('Политика');")
-    void updateTag() {
-        SoftAssertions soft = new SoftAssertions();
-        Tag tag = new Tag(1, "Балет");
-
-        Tag result = tagRepository.save(tag);
-
-        soft.assertThat(result)
-                .hasFieldOrPropertyWithValue("title", tag.getTitle());
-        soft.assertAll();
-    }*/
-
-    /*@DisplayName("Удаление сущности")
-    @Test
-    @Sql(scripts = "classpath:repository-scripts/deployment/tag.sql")
-    @Sql(statements = "INSERT INTO tag(title) VALUES ('Политика');")
-    void deleteTag() {
-        SoftAssertions soft = new SoftAssertions();
-
-        tagRepository.deleteById(1);
-
-        assertThat(tagRepository.existsById(1)).as("Запись типа Tag не была удалена").isFalse();
-    }*/
+        assertThat(articleRepository.existsById(1)).as("Запись типа Article не была удалена").isFalse();
+    }
 }

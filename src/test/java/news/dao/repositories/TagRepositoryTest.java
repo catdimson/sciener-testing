@@ -140,7 +140,6 @@ class TagRepositoryTest {
     @Sql(scripts = "classpath:repository-scripts/deployment/tag.sql")
     @Sql(statements = "INSERT INTO tag(title) VALUES ('Политика');")
     void deleteTag() {
-        SoftAssertions soft = new SoftAssertions();
 
         tagRepository.deleteById(1);
 
