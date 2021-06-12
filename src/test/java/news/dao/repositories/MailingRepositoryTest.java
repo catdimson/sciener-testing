@@ -1,191 +1,144 @@
-//package news.dao.repositories;
-//
-//import news.HibernateUtil;
-//import news.dao.connection.DBPool;
-//import news.dao.specifications.FindAllMailingSpecification;
-//import news.dao.specifications.FindByEmailMailingSpecification;
-//import news.dao.specifications.FindByIdMailingSpecification;
-//import news.model.Mailing;
-//import org.assertj.core.api.SoftAssertions;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.testcontainers.containers.PostgreSQLContainer;
-//
-//import java.sql.Connection;
-//import java.sql.ResultSet;
-//import java.sql.SQLException;
-//import java.sql.Statement;
-//import java.util.List;
-//
-//import static org.assertj.core.api.Assertions.assertThat;
-//
-//class MailingRepositoryTest {
-//    private PostgreSQLContainer container;
-//    private DBPool poolConnection;
-//
-//    @BeforeEach
-//    void setUp() throws SQLException {
-//        this.container = new PostgreSQLContainer("postgres")
-//                .withUsername("admin")
-//                .withPassword("qwerty")
-//                .withDatabaseName("news");
-//        this.container.start();
-//
-//        this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
-//
-//        HibernateUtil.setConnectionProperties(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
-//
-//        Statement statement = this.poolConnection.getConnection().createStatement();
-//
-//        String sqlCreateTableMailing = "CREATE TABLE IF NOT EXISTS mailing (" +
-//                "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
-//                "email character varying(80) NOT NULL," +
-//                "CONSTRAINT mailing_pk PRIMARY KEY (id)," +
-//                "CONSTRAINT email_unique UNIQUE (email)" +
-//                ");";
-//
-//        statement.executeUpdate(sqlCreateTableMailing);
-//    }
-//
-//    @Test
-//    void findById() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            MailingRepository mailingRepository = new MailingRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            String sqlInsertInstance = "INSERT INTO mailing (email) VALUES('test@mail.ru');";
-//            statement.executeUpdate(sqlInsertInstance);
-//            Mailing mailing = new Mailing(1,"test@mail.ru");
-//
-//            FindByIdMailingSpecification findById = new FindByIdMailingSpecification(1);
-//            List<Mailing> resultFindByIdMailing = mailingRepository.query(findById);
-//
-//            soft.assertThat(mailing)
-//                    .hasFieldOrPropertyWithValue("id", resultFindByIdMailing.get(0).getObjects()[0])
-//                    .hasFieldOrPropertyWithValue("email", resultFindByIdMailing.get(0).getObjects()[1]);
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void findByEmail() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            MailingRepository mailingRepository = new MailingRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            String sqlInsertInstance = "INSERT INTO mailing (email) VALUES('test@mail.ru');";
-//            statement.executeUpdate(sqlInsertInstance);
-//            Mailing mailing = new Mailing(1,"test@mail.ru");
-//
-//            FindByEmailMailingSpecification findByEmail = new FindByEmailMailingSpecification("test@mail.ru");
-//            List<Mailing> resultFindByIdMailing = mailingRepository.query(findByEmail);
-//
-//            soft.assertThat(mailing)
-//                    .hasFieldOrPropertyWithValue("id", resultFindByIdMailing.get(0).getObjects()[0])
-//                    .hasFieldOrPropertyWithValue("email", resultFindByIdMailing.get(0).getObjects()[1]);
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void findAll() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            MailingRepository mailingRepository = new MailingRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            String sqlInsertInstance = "INSERT INTO mailing (email) VALUES ('test@mail.ru'), ('test2@mail.ru');";
-//            statement.executeUpdate(sqlInsertInstance);
-//            Mailing mailing1 = new Mailing(1,"test@mail.ru");
-//            Mailing mailing2 = new Mailing(2,"test2@mail.ru");
-//
-//            FindAllMailingSpecification findAll = new FindAllMailingSpecification();
-//            List<Mailing> resultFindAllMailing = mailingRepository.query(findAll);
-//
-//            soft.assertThat(mailing1)
-//                    .hasFieldOrPropertyWithValue("id", resultFindAllMailing.get(0).getObjects()[0])
-//                    .hasFieldOrPropertyWithValue("email", resultFindAllMailing.get(0).getObjects()[1]);
-//            soft.assertAll();
-//            soft.assertThat(mailing2)
-//                    .hasFieldOrPropertyWithValue("id", resultFindAllMailing.get(1).getObjects()[0])
-//                    .hasFieldOrPropertyWithValue("email", resultFindAllMailing.get(1).getObjects()[1]);
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void createMailing() {
-//        try {
-//            MailingRepository mailingRepository = new MailingRepository();
-//            Mailing mailing = new Mailing("test@mail.ru");
-//
-//            mailingRepository.create(mailing);
-//
-//            Connection connection = this.poolConnection.getConnection();
-//            String sqlQueryInstanceFromTableMailing = "SELECT id, email FROM mailing WHERE email='test@mail.ru'";
-//            Statement statement = connection.createStatement();
-//            ResultSet result = statement.executeQuery(sqlQueryInstanceFromTableMailing);
-//            result.next();
-//            assertThat(mailing).hasFieldOrPropertyWithValue("email", result.getString(2));
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void deleteMailing() {
-//        try {
-//            MailingRepository mailingRepository = new MailingRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            String sqlInsertInstance = "INSERT INTO mailing (email) VALUES('test@mail.ru');";
-//            statement.executeUpdate(sqlInsertInstance, Statement.RETURN_GENERATED_KEYS);
-//            ResultSet generatedKeys = statement.getGeneratedKeys();
-//            generatedKeys.next();
-//
-//            mailingRepository.delete(generatedKeys.getInt(1));
-//
-//            String sqlQueryInstance = String.format("SELECT id, email FROM mailing WHERE id=%d;", generatedKeys.getInt(1));
-//            ResultSet result = statement.executeQuery(sqlQueryInstance);
-//            assertThat(result.next()).as("Запись класса Mailing не была удалена").isFalse();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void updateMailing() {
-//        try {
-//            MailingRepository mailingRepository = new MailingRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            String sqlInsertInstance = "INSERT INTO mailing (email) VALUES('test@mail.ru');";
-//            statement.executeUpdate(sqlInsertInstance);
-//            Mailing mailing = new Mailing(1, "test2@yandex.ru");
-//            Object[] instance = mailing.getObjects();
-//
-//            mailingRepository.update(mailing);
-//
-//            String sqlQueryInstance = String.format("SELECT id, email FROM mailing WHERE id=%s;", instance[0]);
-//            ResultSet result = statement.executeQuery(sqlQueryInstance);
-//            result.next();
-//            assertThat(mailing).hasFieldOrPropertyWithValue("email", result.getString(2));
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//}
+package news.dao.repositories;
+
+import news.model.Mailing;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@DisplayName("Тестирование репозитория для Mailing")
+@Testcontainers
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ContextConfiguration(initializers = MailingRepositoryTest.Initializer.class)
+class MailingRepositoryTest {
+
+    @Autowired
+    private MailingRepository mailingRepository;
+
+    @Container
+    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:13.2")
+            .withPassword("testrootroot")
+            .withUsername("testroot")
+            .withDatabaseName("testnewdb");
+
+    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+        @Override
+        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+            TestPropertyValues values = TestPropertyValues.of(
+                    "spring.datamailing.url=" + postgreSQLContainer.getJdbcUrl(),
+                    "spring.datamailing.password=" + postgreSQLContainer.getPassword(),
+                    "spring.datamailing.username=" + postgreSQLContainer.getUsername()
+            );
+            values.applyTo(configurableApplicationContext);
+        }
+    }
+
+    @DisplayName("Поиск по ID")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/mailing.sql")
+    @Sql(statements = "INSERT INTO mailing (email) VALUES ('test111@mail.ru'), ('test222@mail.ru');")
+    void findById() {
+        SoftAssertions soft = new SoftAssertions();
+        Mailing mailing = new Mailing(1, "test111@mail.ru");
+
+        Mailing result = mailingRepository.findById(1).get();
+
+        soft.assertThat(result)
+                .hasFieldOrPropertyWithValue("id", mailing.getObjects()[0])
+                .hasFieldOrPropertyWithValue("email", mailing.getObjects()[1]);
+        soft.assertAll();
+    }
+
+    @DisplayName("Получение всех записей")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/mailing.sql")
+    @Sql(statements = "INSERT INTO mailing (email) VALUES ('test111@mail.ru'), ('test222@mail.ru');")
+    void findAll() {
+        SoftAssertions soft = new SoftAssertions();
+        Mailing mailing1 = new Mailing(1, "test111@mail.ru");
+        Mailing mailing2 = new Mailing(2, "test222@mail.ru");
+
+        List<Mailing> result = mailingRepository.findAll();
+
+        soft.assertThat(result.get(0))
+                .hasFieldOrPropertyWithValue("id", mailing1.getObjects()[0])
+                .hasFieldOrPropertyWithValue("email", mailing1.getObjects()[1]);
+        soft.assertAll();
+        soft.assertThat(result.get(1))
+                .hasFieldOrPropertyWithValue("id", mailing2.getObjects()[0])
+                .hasFieldOrPropertyWithValue("email", mailing2.getObjects()[1]);
+        soft.assertAll();
+    }
+
+    @DisplayName("Получение записей по email")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/mailing.sql")
+    @Sql(statements = "INSERT INTO mailing (email) VALUES ('test111@mail.ru'), ('test222@mail.ru'), ('test333@mail.ru');")
+    void findByEmail() {
+        SoftAssertions soft = new SoftAssertions();
+        Mailing mailing1 = new Mailing(1, "test111@mail.ru");
+
+        List<Mailing> result = mailingRepository.findByEmail("test111@mail.ru");
+
+        soft.assertThat(result.get(0))
+                .hasFieldOrPropertyWithValue("id", mailing1.getObjects()[0])
+                .hasFieldOrPropertyWithValue("email", mailing1.getObjects()[1]);
+        soft.assertAll();
+    }
+
+    @DisplayName("Сохранение сущности")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/mailing.sql")
+    void saveMailing() {
+        SoftAssertions soft = new SoftAssertions();
+        Mailing mailing = new Mailing("test111@mail.ru");
+
+        Mailing result = mailingRepository.save(mailing);
+
+        soft.assertThat(result)
+                .hasFieldOrPropertyWithValue("id", 1)
+                .hasFieldOrPropertyWithValue("email", mailing.getObjects()[1]);
+        soft.assertAll();
+    }
+
+    @DisplayName("Обновление сущности")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/mailing.sql")
+    @Sql(statements = "INSERT INTO mailing (email) VALUES ('test111@mail.ru'), ('test222@mail.ru');")
+    void updateMailing() {
+        SoftAssertions soft = new SoftAssertions();
+        Mailing mailing = new Mailing(1, "test111_update@mail.ru");
+
+        Mailing result = mailingRepository.save(mailing);
+
+        soft.assertThat(result)
+                .hasFieldOrPropertyWithValue("id", 1)
+                .hasFieldOrPropertyWithValue("email", mailing.getObjects()[1]);
+        soft.assertAll();
+    }
+
+    @DisplayName("Удаление сущности")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/mailing.sql")
+    @Sql(statements = "INSERT INTO mailing (email) VALUES ('test111@mail.ru');")
+    void deleteMailing() {
+
+        mailingRepository.deleteById(1);
+
+        assertThat(mailingRepository.existsById(1)).as("Запись типа Mailing не была удалена").isFalse();
+    }
+}
