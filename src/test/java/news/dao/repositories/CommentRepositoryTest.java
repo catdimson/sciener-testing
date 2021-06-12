@@ -219,6 +219,7 @@ class CommentRepositoryTest {
 
         // сравниваем полученный результат и ожидаемый
         soft.assertThat(result)
+                .hasFieldOrPropertyWithValue("id", 1)
                 .hasFieldOrPropertyWithValue("text", comment1.getObjects()[1])
                 .hasFieldOrPropertyWithValue("createDate", comment1.getObjects()[2])
                 .hasFieldOrPropertyWithValue("editDate", comment1.getObjects()[3])
@@ -226,10 +227,12 @@ class CommentRepositoryTest {
                 .hasFieldOrPropertyWithValue("articleId", comment1.getObjects()[5]);
         soft.assertAll();
         soft.assertThat(resultCommentAttachment1)
+                .hasFieldOrPropertyWithValue("id", 1)
                 .hasFieldOrPropertyWithValue("title", commentAttachment1.getObjects()[1])
                 .hasFieldOrPropertyWithValue("path", commentAttachment1.getObjects()[2]);
         soft.assertAll();
         soft.assertThat(resultCommentAttachment2)
+                .hasFieldOrPropertyWithValue("id", 2)
                 .hasFieldOrPropertyWithValue("title", commentAttachment2.getObjects()[1])
                 .hasFieldOrPropertyWithValue("path", commentAttachment2.getObjects()[2]);
         soft.assertAll();

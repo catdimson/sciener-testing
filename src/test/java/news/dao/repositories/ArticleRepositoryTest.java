@@ -268,14 +268,14 @@ class ArticleRepositoryTest {
     void saveArticle() {
         SoftAssertions soft = new SoftAssertions();
         // статьи
-        Article article1 = new Article(1, "Заголовок 1", "Лид 1", createDateArticle,
+        Article article1 = new Article("Заголовок 1", "Лид 1", createDateArticle,
                 editDateArticle, "Текст 1", true, 1, 1, 1);
         // изображения
-        ArticleImage articleImage1 = new ArticleImage(1, "Изображение 1", "/static/images/image1.png");
+        ArticleImage articleImage1 = new ArticleImage("Изображение 1", "/static/images/image1.png");
         article1.addNewImage(articleImage1);
         articleImage1.setArticle(article1);
         // тэги
-        Tag tag1 = new Tag(1, "Тег 1");
+        Tag tag1 = new Tag("Тег 1");
         article1.addNewTag(tag1);
         tag1.addNewArticle(article1);
 
@@ -287,7 +287,7 @@ class ArticleRepositoryTest {
 
         // сравниваем полученный результат и ожидаемый
         soft.assertThat(result)
-                .hasFieldOrPropertyWithValue("id", article1.getObjects()[0])
+                .hasFieldOrPropertyWithValue("id", 1)
                 .hasFieldOrPropertyWithValue("title", article1.getObjects()[1])
                 .hasFieldOrPropertyWithValue("lead", article1.getObjects()[2])
                 .hasFieldOrPropertyWithValue("createDate", article1.getObjects()[3])
@@ -298,12 +298,12 @@ class ArticleRepositoryTest {
                 .hasFieldOrPropertyWithValue("sourceId", article1.getObjects()[8]);
         soft.assertAll();
         soft.assertThat(resultArticleImage1)
-                .hasFieldOrPropertyWithValue("id", articleImage1.getObjects()[0])
+                .hasFieldOrPropertyWithValue("id", 1)
                 .hasFieldOrPropertyWithValue("title", articleImage1.getObjects()[1])
                 .hasFieldOrPropertyWithValue("path", articleImage1.getObjects()[2]);
         soft.assertAll();
         soft.assertThat(resultTag1)
-                .hasFieldOrPropertyWithValue("id", tag1.getObjects()[0])
+                .hasFieldOrPropertyWithValue("id", 1)
                 .hasFieldOrPropertyWithValue("title", tag1.getObjects()[1]);
         soft.assertAll();
     }
