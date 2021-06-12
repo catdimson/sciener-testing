@@ -1,379 +1,356 @@
-//package news.dao.repositories;
-//
-//import news.HibernateUtil;
-//import news.dao.connection.DBPool;
-//import news.dao.specifications.FindAllUserSpecification;
-//import news.dao.specifications.FindByFirstnameUserSpecification;
-//import news.dao.specifications.FindByIdUserSpecification;
-//import news.model.User;
-//import org.assertj.core.api.SoftAssertions;
-//import org.junit.jupiter.api.BeforeAll;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.testcontainers.containers.PostgreSQLContainer;
-//
-//import java.sql.*;
-//import java.time.LocalDate;
-//import java.util.List;
-//
-//import static org.assertj.core.api.Assertions.assertThat;
-//
-//class UserRepositoryTest {
-//    private PostgreSQLContainer container;
-//    private DBPool poolConnection;
-//    private static LocalDate lastLogin;
-//    private static LocalDate dateJoined;
-//    private static int groupId;
-//
-//    @BeforeAll
-//    static void beforeAll() {
-//        lastLogin = LocalDate.of(2020, 5, 20);
-//        dateJoined = LocalDate.of(2019, 5, 20);
-//        groupId = 1;
-//    }
-//
-//    @BeforeEach
-//    void setUp() throws SQLException {
-//        this.container = new PostgreSQLContainer("postgres")
-//                .withUsername("admin")
-//                .withPassword("qwerty")
-//                .withDatabaseName("news");
-//        this.container.start();
-//
-//        this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
-//
-//        HibernateUtil.setConnectionProperties(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
-//
-//        Statement statement = this.poolConnection.getConnection().createStatement();
-//
-//        String sqlCreateTableGroup = "CREATE TABLE IF NOT EXISTS \"group\" (" +
-//                "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
-//                "title character varying(40) NOT NULL," +
-//                "CONSTRAINT group_pk PRIMARY KEY (id)," +
-//                "CONSTRAINT title_unique UNIQUE (title)" +
-//                ");";
-//        statement.executeUpdate(sqlCreateTableGroup);
-//
-//        String sqlInsertInstanceTableGroup = "INSERT INTO \"group\"(title)" +
-//                "SELECT" +
-//                "(array['admin', 'editor', 'seo', 'guest'])[iter]" +
-//                "FROM generate_series(1, 4) as iter;";
-//        statement.executeUpdate(sqlInsertInstanceTableGroup);
-//
-//        String sqlCreateTableUser = "CREATE TABLE IF NOT EXISTS \"user\"  (" +
-//                "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
-//                "password character varying(128) NOT NULL," +
-//                "username character varying(150) NOT NULL," +
-//                "first_name character varying(150) NOT NULL," +
-//                "last_name character varying(150)," +
-//                "email character varying(254) NOT NULL," +
-//                "last_login timestamp NOT NULL," +
-//                "date_joined timestamp NOT NULL," +
-//                "is_superuser boolean NOT NULL DEFAULT false," +
-//                "is_staff boolean NOT NULL DEFAULT false," +
-//                "is_active boolean NOT NULL DEFAULT true," +
-//                "group_id integer NOT NULL," +
-//                "CONSTRAINT user_pk PRIMARY KEY (id)," +
-//                "CONSTRAINT username_unique UNIQUE (username)," +
-//                "CONSTRAINT fk_user_group_id FOREIGN KEY (group_id)" +
-//                "    REFERENCES \"group\" (id) MATCH SIMPLE" +
-//                "    ON UPDATE CASCADE" +
-//                "    ON DELETE RESTRICT" +
-//                ");";
-//        statement.executeUpdate(sqlCreateTableUser);
-//    }
-//
-//    @Test
-//    void findById() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            UserRepository userRepository = new UserRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//
-//            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
-//                    true, true, true, 1);
-//            Object[] userInstance = user.getObjects();
-//
-//            String sqlCreateInstance = "INSERT INTO \"user\"" +
-//                    "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
-//                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-//            PreparedStatement statement = connection.prepareStatement(sqlCreateInstance);
-//            statement.setString(1, (String) userInstance[1]);
-//            statement.setString(2, (String) userInstance[2]);
-//            statement.setString(3, (String) userInstance[3]);
-//            statement.setString(4, (String) userInstance[4]);
-//            statement.setString(5, (String) userInstance[5]);
-//            statement.setTimestamp(6, (Timestamp) userInstance[6]);
-//            statement.setTimestamp(7, (Timestamp) userInstance[7]);
-//            statement.setBoolean(8, (boolean) userInstance[8]);
-//            statement.setBoolean(9, (boolean) userInstance[9]);
-//            statement.setBoolean(10, (boolean) userInstance[10]);
-//            statement.setInt(11, (int) userInstance[11]);
-//            statement.executeUpdate();
-//
-//            FindByIdUserSpecification findById = new FindByIdUserSpecification(1);
-//            List<User> resultFindByIdUserList = userRepository.query(findById);
-//            Object[] resultFindByIdUserInstance = resultFindByIdUserList.get(0).getObjects();
-//
-//            soft.assertThat(user)
-//                    .hasFieldOrPropertyWithValue("id", resultFindByIdUserInstance[0])
-//                    .hasFieldOrPropertyWithValue("password", resultFindByIdUserInstance[1])
-//                    .hasFieldOrPropertyWithValue("username", resultFindByIdUserInstance[2])
-//                    .hasFieldOrPropertyWithValue("firstName", resultFindByIdUserInstance[3])
-//                    .hasFieldOrPropertyWithValue("lastName", resultFindByIdUserInstance[4])
-//                    .hasFieldOrPropertyWithValue("email", resultFindByIdUserInstance[5])
-//                    .hasFieldOrPropertyWithValue("lastLogin", resultFindByIdUserInstance[6])
-//                    .hasFieldOrPropertyWithValue("dateJoined", resultFindByIdUserInstance[7])
-//                    .hasFieldOrPropertyWithValue("isSuperuser", resultFindByIdUserInstance[8])
-//                    .hasFieldOrPropertyWithValue("isStaff", resultFindByIdUserInstance[9])
-//                    .hasFieldOrPropertyWithValue("isActive", resultFindByIdUserInstance[10])
-//                    .hasFieldOrPropertyWithValue("groupId", resultFindByIdUserInstance[11]);
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void findByFirstname() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            UserRepository userRepository = new UserRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//
-//            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
-//                    true, true, true, 1);
-//            User user2 = new User(4, "ytrewq321", "cyber777", "Александр", "Жбанов", "jban1990@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
-//                    false, false, true, 2);
-//            Object[] userInstance = user.getObjects();
-//            Object[] userInstance2 = user2.getObjects();
-//            Timestamp localDateLogin = (Timestamp) userInstance[6];
-//            Timestamp localDateJoined = (Timestamp) userInstance[7];
-//            Timestamp localDateLogin2 = (Timestamp) userInstance2[6];
-//            Timestamp localDateJoined2 = (Timestamp) userInstance2[7];
-//
-//            String sqlCreateUser1 = String.format("INSERT INTO \"user\"" +
-//                    "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
-//                    "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance[1], userInstance[2], userInstance[3], userInstance[4], userInstance[5],
-//                    localDateLogin, localDateJoined, userInstance[8], userInstance[9], userInstance[10], userInstance[11]);
-//            String sqlCreateUser2 = String.format("INSERT INTO \"user\"" +
-//                    "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
-//                    "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance2[1], userInstance2[2], userInstance2[3], userInstance2[4], userInstance2[5],
-//                    localDateLogin2, localDateJoined2, userInstance2[8], userInstance2[9], userInstance2[10], userInstance2[11]);
-//
-//            Statement statement = connection.createStatement();
-//            statement.executeUpdate(sqlCreateUser1);
-//            statement.executeUpdate(sqlCreateUser2);
-//
-//            FindByFirstnameUserSpecification findByFirstname = new FindByFirstnameUserSpecification("Александр");
-//            List<User> resultFindByFirstnameUserList = userRepository.query(findByFirstname);
-//            Object[] resultFindByFirstnameUserInstance = resultFindByFirstnameUserList.get(0).getObjects();
-//            Object[] resultFindByFirstnameUserInstance2 = resultFindByFirstnameUserList.get(1).getObjects();
-//
-//            soft.assertThat(user)
-//                    .hasFieldOrPropertyWithValue("password", resultFindByFirstnameUserInstance[1])
-//                    .hasFieldOrPropertyWithValue("username", resultFindByFirstnameUserInstance[2])
-//                    .hasFieldOrPropertyWithValue("firstName", resultFindByFirstnameUserInstance[3])
-//                    .hasFieldOrPropertyWithValue("lastName", resultFindByFirstnameUserInstance[4])
-//                    .hasFieldOrPropertyWithValue("email", resultFindByFirstnameUserInstance[5])
-//                    .hasFieldOrPropertyWithValue("lastLogin", resultFindByFirstnameUserInstance[6])
-//                    .hasFieldOrPropertyWithValue("dateJoined", resultFindByFirstnameUserInstance[7])
-//                    .hasFieldOrPropertyWithValue("isSuperuser", resultFindByFirstnameUserInstance[8])
-//                    .hasFieldOrPropertyWithValue("isStaff", resultFindByFirstnameUserInstance[9])
-//                    .hasFieldOrPropertyWithValue("isActive", resultFindByFirstnameUserInstance[10])
-//                    .hasFieldOrPropertyWithValue("groupId", resultFindByFirstnameUserInstance[11]);
-//            soft.assertAll();
-//            soft.assertThat(user2)
-//                    .hasFieldOrPropertyWithValue("password", resultFindByFirstnameUserInstance2[1])
-//                    .hasFieldOrPropertyWithValue("username", resultFindByFirstnameUserInstance2[2])
-//                    .hasFieldOrPropertyWithValue("firstName", resultFindByFirstnameUserInstance2[3])
-//                    .hasFieldOrPropertyWithValue("lastName", resultFindByFirstnameUserInstance2[4])
-//                    .hasFieldOrPropertyWithValue("email", resultFindByFirstnameUserInstance2[5])
-//                    .hasFieldOrPropertyWithValue("lastLogin", resultFindByFirstnameUserInstance2[6])
-//                    .hasFieldOrPropertyWithValue("dateJoined", resultFindByFirstnameUserInstance2[7])
-//                    .hasFieldOrPropertyWithValue("isSuperuser", resultFindByFirstnameUserInstance2[8])
-//                    .hasFieldOrPropertyWithValue("isStaff", resultFindByFirstnameUserInstance2[9])
-//                    .hasFieldOrPropertyWithValue("isActive", resultFindByFirstnameUserInstance2[10])
-//                    .hasFieldOrPropertyWithValue("groupId", resultFindByFirstnameUserInstance2[11]);
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void findAll() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            UserRepository userRepository = new UserRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//
-//            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
-//                    true, true, true, 1);
-//            User user2 = new User(4, "ytrewq321", "cyber777", "Александр", "Жбанов", "jban1990@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
-//                    false, false, true, 2);
-//            Object[] userInstance = user.getObjects();
-//            Object[] userInstance2 = user2.getObjects();
-//            Timestamp localDateLogin = (Timestamp) userInstance[6];
-//            Timestamp localDateJoined = (Timestamp) userInstance[7];
-//            Timestamp localDateLogin2 = (Timestamp) userInstance2[6];
-//            Timestamp localDateJoined2 = (Timestamp) userInstance2[7];
-//
-//            String sqlCreateUser1 = String.format("INSERT INTO \"user\"" +
-//                    "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
-//                    "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance[1], userInstance[2], userInstance[3], userInstance[4], userInstance[5],
-//                    localDateLogin, localDateJoined, userInstance[8], userInstance[9], userInstance[10], userInstance[11]);
-//            String sqlCreateUser2 = String.format("INSERT INTO \"user\"" +
-//                    "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
-//                    "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance2[1], userInstance2[2], userInstance2[3], userInstance2[4], userInstance2[5],
-//                    localDateLogin2, localDateJoined2, userInstance2[8], userInstance2[9], userInstance2[10], userInstance2[11]);
-//
-//            Statement statement = connection.createStatement();
-//            statement.executeUpdate(sqlCreateUser1);
-//            statement.executeUpdate(sqlCreateUser2);
-//
-//            FindAllUserSpecification findAll = new FindAllUserSpecification();
-//            List<User> resultFindAllUserList = userRepository.query(findAll);
-//            Object[] resultFindAllUserInstance = resultFindAllUserList.get(0).getObjects();
-//            Object[] resultFindAllUserInstance2 = resultFindAllUserList.get(1).getObjects();
-//
-//            soft.assertThat(user)
-//                    .hasFieldOrPropertyWithValue("password", resultFindAllUserInstance[1])
-//                    .hasFieldOrPropertyWithValue("username", resultFindAllUserInstance[2])
-//                    .hasFieldOrPropertyWithValue("firstName", resultFindAllUserInstance[3])
-//                    .hasFieldOrPropertyWithValue("lastName", resultFindAllUserInstance[4])
-//                    .hasFieldOrPropertyWithValue("email", resultFindAllUserInstance[5])
-//                    .hasFieldOrPropertyWithValue("lastLogin", resultFindAllUserInstance[6])
-//                    .hasFieldOrPropertyWithValue("dateJoined", resultFindAllUserInstance[7])
-//                    .hasFieldOrPropertyWithValue("isSuperuser", resultFindAllUserInstance[8])
-//                    .hasFieldOrPropertyWithValue("isStaff", resultFindAllUserInstance[9])
-//                    .hasFieldOrPropertyWithValue("isActive", resultFindAllUserInstance[10])
-//                    .hasFieldOrPropertyWithValue("groupId", resultFindAllUserInstance[11]);
-//            soft.assertAll();
-//            soft.assertThat(user2)
-//                    .hasFieldOrPropertyWithValue("password", resultFindAllUserInstance2[1])
-//                    .hasFieldOrPropertyWithValue("username", resultFindAllUserInstance2[2])
-//                    .hasFieldOrPropertyWithValue("firstName", resultFindAllUserInstance2[3])
-//                    .hasFieldOrPropertyWithValue("lastName", resultFindAllUserInstance2[4])
-//                    .hasFieldOrPropertyWithValue("email", resultFindAllUserInstance2[5])
-//                    .hasFieldOrPropertyWithValue("lastLogin", resultFindAllUserInstance2[6])
-//                    .hasFieldOrPropertyWithValue("dateJoined", resultFindAllUserInstance2[7])
-//                    .hasFieldOrPropertyWithValue("isSuperuser", resultFindAllUserInstance2[8])
-//                    .hasFieldOrPropertyWithValue("isStaff", resultFindAllUserInstance2[9])
-//                    .hasFieldOrPropertyWithValue("isActive", resultFindAllUserInstance2[10])
-//                    .hasFieldOrPropertyWithValue("groupId", resultFindAllUserInstance2[11]);
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void createUser() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            UserRepository userRepository = new UserRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            User user = new User("qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
-//                    true, true, true, 1);
-//
-//            userRepository.create(user);
-//
-//            String sqlQueryInstance = String.format("SELECT * FROM \"user\" WHERE id=%d;", 1);
-//            ResultSet result = statement.executeQuery(sqlQueryInstance);
-//            result.next();
-//            soft.assertThat(user)
-//                    .hasFieldOrPropertyWithValue("username", result.getString(3))
-//                    .hasFieldOrPropertyWithValue("firstName", result.getString(4))
-//                    .hasFieldOrPropertyWithValue("lastName", result.getString(5))
-//                    .hasFieldOrPropertyWithValue("email", result.getString(6))
-//                    .hasFieldOrPropertyWithValue("lastLogin", result.getTimestamp(7))
-//                    .hasFieldOrPropertyWithValue("dateJoined", result.getTimestamp(8))
-//                    .hasFieldOrPropertyWithValue("isSuperuser", result.getBoolean(9))
-//                    .hasFieldOrPropertyWithValue("isStaff", result.getBoolean(10))
-//                    .hasFieldOrPropertyWithValue("isActive", result.getBoolean(11))
-//                    .hasFieldOrPropertyWithValue("groupId", result.getInt(12));
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void deleteUser() {
-//        try {
-//            UserRepository userRepository = new UserRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            User user = new User(1, "qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
-//                    true, true, true, 1);
-//            Object[] userInstance = user.getObjects();
-//            Timestamp localDateLogin = (Timestamp) userInstance[6];
-//            Timestamp localDateJoined = (Timestamp) userInstance[7];
-//            String sqlCreateUser = String.format("INSERT INTO \"user\"" +
-//                            "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
-//                            "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance[1], userInstance[2], userInstance[3], userInstance[4], userInstance[5],
-//                    localDateLogin, localDateJoined, userInstance[8], userInstance[9], userInstance[10], userInstance[11]);
-//            statement.executeUpdate(sqlCreateUser, Statement.RETURN_GENERATED_KEYS);
-//            ResultSet generatedKeys = statement.getGeneratedKeys();
-//            generatedKeys.next();
-//
-//            userRepository.delete(generatedKeys.getInt(1));
-//
-//            String sqlQueryInstance = String.format("SELECT * FROM \"user\" WHERE id=%d;", generatedKeys.getInt(1));
-//            ResultSet result = statement.executeQuery(sqlQueryInstance);
-//            assertThat(result.next()).as("Запись класса User не была удалена").isFalse();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void updateUser() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            UserRepository userRepository = new UserRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            User user = new User("qwerty123", "alex1992", "Александр", "Колесников", "alex1993@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
-//                    true, true, true, 1);
-//            User user2 = new User(1, "ytrewq321", "cyber777", "Александр", "Жбанов", "jban1990@mail.ru", Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()),
-//                    false, false, true, 2);
-//            Object[] userInstance = user.getObjects();
-//            Timestamp localDateLogin = (Timestamp) userInstance[6];
-//            Timestamp localDateJoined = (Timestamp) userInstance[7];
-//            String sqlCreateUser1 = String.format("INSERT INTO \"user\"" +
-//                            "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
-//                            "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", userInstance[1], userInstance[2], userInstance[3], userInstance[4], userInstance[5],
-//                    localDateLogin, localDateJoined, userInstance[8], userInstance[9], userInstance[10], userInstance[11]);
-//            statement.executeUpdate(sqlCreateUser1);
-//
-//            userRepository.update(user2);
-//
-//            String sqlQueryInstance = String.format("SELECT * FROM \"user\" WHERE id=%d;", 1);
-//            ResultSet result = statement.executeQuery(sqlQueryInstance);
-//            result.next();
-//            soft.assertThat(user2)
-//                    .hasFieldOrPropertyWithValue("username", result.getString(3))
-//                    .hasFieldOrPropertyWithValue("firstName", result.getString(4))
-//                    .hasFieldOrPropertyWithValue("lastName", result.getString(5))
-//                    .hasFieldOrPropertyWithValue("email", result.getString(6))
-//                    .hasFieldOrPropertyWithValue("lastLogin", result.getTimestamp(7))
-//                    .hasFieldOrPropertyWithValue("dateJoined", result.getTimestamp(8))
-//                    .hasFieldOrPropertyWithValue("isSuperuser", result.getBoolean(9))
-//                    .hasFieldOrPropertyWithValue("isStaff", result.getBoolean(10))
-//                    .hasFieldOrPropertyWithValue("isActive", result.getBoolean(11))
-//                    .hasFieldOrPropertyWithValue("groupId", result.getInt(12));
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//}
+package news.dao.repositories;
+
+import news.model.User;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.sql.Timestamp;
+import java.util.List;
+
+@DisplayName("Тестирование репозитория для User")
+@Testcontainers
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ContextConfiguration(initializers = UserRepositoryTest.Initializer.class)
+class UserRepositoryTest {
+    private static Timestamp dateJoined;
+    private static Timestamp lastLogin;
+
+    @BeforeAll
+    static void setUp() {
+        dateJoined = new Timestamp(1560000000000L);
+        lastLogin = new Timestamp(1563000000000L);
+    }
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Container
+    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:13.2")
+            .withPassword("testrootroot")
+            .withUsername("testroot")
+            .withDatabaseName("testnewdb");
+
+    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+        @Override
+        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+            TestPropertyValues values = TestPropertyValues.of(
+                    "spring.datasource.url=" + postgreSQLContainer.getJdbcUrl(),
+                    "spring.datasource.password=" + postgreSQLContainer.getPassword(),
+                    "spring.datasource.username=" + postgreSQLContainer.getUsername()
+            );
+            values.applyTo(configurableApplicationContext);
+        }
+    }
+
+    /*@DisplayName("Получение по ID")
+    @Test
+    @Transactional
+    @Sql(scripts = "classpath:repository-scripts/deployment/user.sql")
+    @Sql(scripts = "classpath:repository-scripts/generate-data/user.sql")
+    void findById() {
+        SoftAssertions soft = new SoftAssertions();
+        // статьи
+        User user1 = new User(1, "Заголовок 1", "Лид 1", createDateUser,
+                editDateUser, "Текст 1", true, 1, 1, 1);
+        // изображения
+        UserImage userImage1 = new UserImage("Изображение 1", "/static/images/image1.png");
+        user1.addNewImage(userImage1);
+        userImage1.setUser(user1);
+        // тэги
+        Tag tag1 = new Tag("Тег 1");
+        user1.addNewTag(tag1);
+        tag1.addNewUser(user1);
+
+        // получаем список статей
+        Optional<User> resultUser = userRepository.findById(1);
+        User resultUser1 = resultUser.get();
+        // получаем изображения
+        UserImage resultUserImage1 = (UserImage) resultUser1.getImages().toArray()[0];
+        // получаем теги
+        Tag resultTag1 = (Tag) resultUser1.getTags().toArray()[0];
+
+        // сравниваем полученный результат и ожидаемый
+        soft.assertThat(resultUser1)
+                .hasFieldOrPropertyWithValue("title", user1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("lead", user1.getObjects()[2])
+                .hasFieldOrPropertyWithValue("createDate", user1.getObjects()[3])
+                .hasFieldOrPropertyWithValue("editDate", user1.getObjects()[4])
+                .hasFieldOrPropertyWithValue("text", user1.getObjects()[5])
+                .hasFieldOrPropertyWithValue("isPublished", user1.getObjects()[6])
+                .hasFieldOrPropertyWithValue("userId", user1.getObjects()[7])
+                .hasFieldOrPropertyWithValue("sourceId", user1.getObjects()[8]);
+        soft.assertAll();
+        soft.assertThat(resultUserImage1)
+                .hasFieldOrPropertyWithValue("title", userImage1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("path", userImage1.getObjects()[2]);
+        soft.assertAll();
+        assertThat(resultTag1).hasFieldOrPropertyWithValue("title", tag1.getObjects()[1]);
+    }*/
+
+    /*@DisplayName("Получение всех записей")
+    @Test
+    @Transactional
+    @Sql(scripts = "classpath:repository-scripts/deployment/user.sql")
+    @Sql(scripts = "classpath:repository-scripts/generate-data/user.sql")
+    void findAll() {
+        SoftAssertions soft = new SoftAssertions();
+        // статьи
+        User user1 = new User("Заголовок 1", "Лид 1", createDateUser,
+                editDateUser, "Текст 1", true, 1, 1, 1);
+        User user2 = new User("Заголовок 1", "Лид 2", createDateUser,
+                editDateUser, "Текст 2", true, 2, 2, 2);
+        User user3 = new User("Заголовок 3", "Лид 3", createDateUser,
+                editDateUser, "Текст 3", true, 2, 2, 2);
+
+        // изображения
+        UserImage userImage1 = new UserImage("Изображение 1", "/static/images/image1.png");
+        UserImage userImage2 = new UserImage("Изображение 2", "/static/images/image2.png");
+        user1.addNewImage(userImage1);
+        user2.addNewImage(userImage2);
+        userImage1.setUser(user1);
+        userImage2.setUser(user2);
+        // тэги
+        Tag tag1 = new Tag("Тег 1");
+        Tag tag2 = new Tag("Тег 2");
+        user1.addNewTag(tag1);
+        user2.addNewTag(tag2);
+        tag1.addNewUser(user1);
+        tag2.addNewUser(user2);
+
+        // получаем список статей
+        List<User> resultUser = userRepository.findAll();
+        User resultUser1 = resultUser.get(0);
+        User resultUser2 = resultUser.get(1);
+        User resultUser3 = resultUser.get(2);
+        // получаем изображения
+        UserImage resultUserImage1 = (UserImage) resultUser1.getImages().toArray()[0];
+        UserImage resultUserImage2 = (UserImage) resultUser2.getImages().toArray()[0];
+        // получаем теги
+        Tag resultTag1 = (Tag) resultUser1.getTags().toArray()[0];
+        Tag resultTag2 = (Tag) resultUser2.getTags().toArray()[0];
+
+        // сравниваем полученный результат и ожидаемый
+        soft.assertThat(resultUser1)
+                .hasFieldOrPropertyWithValue("title", user1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("lead", user1.getObjects()[2])
+                .hasFieldOrPropertyWithValue("createDate", user1.getObjects()[3])
+                .hasFieldOrPropertyWithValue("editDate", user1.getObjects()[4])
+                .hasFieldOrPropertyWithValue("text", user1.getObjects()[5])
+                .hasFieldOrPropertyWithValue("isPublished", user1.getObjects()[6])
+                .hasFieldOrPropertyWithValue("userId", user1.getObjects()[7])
+                .hasFieldOrPropertyWithValue("sourceId", user1.getObjects()[8]);
+        soft.assertAll();
+        soft.assertThat(resultUser2)
+                .hasFieldOrPropertyWithValue("title", user2.getObjects()[1])
+                .hasFieldOrPropertyWithValue("lead", user2.getObjects()[2])
+                .hasFieldOrPropertyWithValue("createDate", user2.getObjects()[3])
+                .hasFieldOrPropertyWithValue("editDate", user2.getObjects()[4])
+                .hasFieldOrPropertyWithValue("text", user2.getObjects()[5])
+                .hasFieldOrPropertyWithValue("isPublished", user2.getObjects()[6])
+                .hasFieldOrPropertyWithValue("userId", user2.getObjects()[7])
+                .hasFieldOrPropertyWithValue("sourceId", user2.getObjects()[8]);
+        soft.assertAll();
+        soft.assertThat(resultUser3)
+                .hasFieldOrPropertyWithValue("title", user3.getObjects()[1])
+                .hasFieldOrPropertyWithValue("lead", user3.getObjects()[2])
+                .hasFieldOrPropertyWithValue("createDate", user3.getObjects()[3])
+                .hasFieldOrPropertyWithValue("editDate", user3.getObjects()[4])
+                .hasFieldOrPropertyWithValue("text", user3.getObjects()[5])
+                .hasFieldOrPropertyWithValue("isPublished", user3.getObjects()[6])
+                .hasFieldOrPropertyWithValue("userId", user3.getObjects()[7])
+                .hasFieldOrPropertyWithValue("sourceId", user3.getObjects()[8]);
+        soft.assertAll();
+        soft.assertThat(resultUserImage1)
+                .hasFieldOrPropertyWithValue("title", userImage1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("path", userImage1.getObjects()[2]);
+        soft.assertAll();
+        soft.assertThat(resultUserImage2)
+                .hasFieldOrPropertyWithValue("title", userImage2.getObjects()[1])
+                .hasFieldOrPropertyWithValue("path", userImage2.getObjects()[2]);
+        soft.assertAll();
+        assertThat(resultTag1).hasFieldOrPropertyWithValue("title", tag1.getObjects()[1]);
+        assertThat(resultTag2).hasFieldOrPropertyWithValue("title", tag2.getObjects()[1]);
+    }*/
+
+    @DisplayName("Поиск по имени")
+    @Test
+    @Transactional
+    @Sql(scripts = "classpath:repository-scripts/deployment/user.sql")
+    @Sql(scripts = "classpath:repository-scripts/generate-data/user.sql")
+    void findByFirstname() {
+        SoftAssertions soft = new SoftAssertions();
+        // статьи
+        User user1 = new User("password111", "user111", "Александр", "Колесников",
+                "mail111@mail.ru", lastLogin, dateJoined, true, true, true, 1);
+        User user2 = new User("password222", "user222", "Александр", "Вениаминов",
+                "mail222@mail.ru", lastLogin, dateJoined, true, true, false, 1);
+
+        // получаем список пользователей
+        List<User> resultUser = userRepository.findByFirstName("Александр");
+        User resultUser1 = resultUser.get(0);
+        User resultUser2 = resultUser.get(1);
+
+        // сравниваем полученный результат и ожидаемый
+        soft.assertThat(resultUser1)
+                .hasFieldOrPropertyWithValue("password", user1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("username", user1.getObjects()[2])
+                .hasFieldOrPropertyWithValue("firstName", user1.getObjects()[3])
+                .hasFieldOrPropertyWithValue("lastName", user1.getObjects()[4])
+                .hasFieldOrPropertyWithValue("email", user1.getObjects()[5])
+                .hasFieldOrPropertyWithValue("lastLogin", user1.getObjects()[6])
+                .hasFieldOrPropertyWithValue("dateJoined", user1.getObjects()[7])
+                .hasFieldOrPropertyWithValue("isSuperuser", user1.getObjects()[8])
+                .hasFieldOrPropertyWithValue("isStaff", user1.getObjects()[9])
+                .hasFieldOrPropertyWithValue("isActive", user1.getObjects()[10])
+                .hasFieldOrPropertyWithValue("groupId", user1.getObjects()[11]);
+        soft.assertAll();
+        soft.assertThat(resultUser2)
+                .hasFieldOrPropertyWithValue("password", user2.getObjects()[1])
+                .hasFieldOrPropertyWithValue("username", user2.getObjects()[2])
+                .hasFieldOrPropertyWithValue("firstName", user2.getObjects()[3])
+                .hasFieldOrPropertyWithValue("lastName", user2.getObjects()[4])
+                .hasFieldOrPropertyWithValue("email", user2.getObjects()[5])
+                .hasFieldOrPropertyWithValue("lastLogin", user2.getObjects()[6])
+                .hasFieldOrPropertyWithValue("dateJoined", user2.getObjects()[7])
+                .hasFieldOrPropertyWithValue("isSuperuser", user2.getObjects()[8])
+                .hasFieldOrPropertyWithValue("isStaff", user2.getObjects()[9])
+                .hasFieldOrPropertyWithValue("isActive", user2.getObjects()[10])
+                .hasFieldOrPropertyWithValue("groupId", user2.getObjects()[11]);
+        soft.assertAll();
+    }
+
+    /*@DisplayName("Сохранение сущности")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/user.sql")
+    void saveUser() {
+        SoftAssertions soft = new SoftAssertions();
+        // статьи
+        User user1 = new User(1, "Заголовок 1", "Лид 1", createDateUser,
+                editDateUser, "Текст 1", true, 1, 1, 1);
+        // изображения
+        UserImage userImage1 = new UserImage(1, "Изображение 1", "/static/images/image1.png");
+        user1.addNewImage(userImage1);
+        userImage1.setUser(user1);
+        // тэги
+        Tag tag1 = new Tag(1, "Тег 1");
+        user1.addNewTag(tag1);
+        tag1.addNewUser(user1);
+
+        User result = userRepository.save(user1);
+        // получаем изображения
+        UserImage resultUserImage1 = (UserImage) result.getImages().toArray()[0];
+        // получаем теги
+        Tag resultTag1 = (Tag) result.getTags().toArray()[0];
+
+        // сравниваем полученный результат и ожидаемый
+        soft.assertThat(result)
+                .hasFieldOrPropertyWithValue("id", user1.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", user1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("lead", user1.getObjects()[2])
+                .hasFieldOrPropertyWithValue("createDate", user1.getObjects()[3])
+                .hasFieldOrPropertyWithValue("editDate", user1.getObjects()[4])
+                .hasFieldOrPropertyWithValue("text", user1.getObjects()[5])
+                .hasFieldOrPropertyWithValue("isPublished", user1.getObjects()[6])
+                .hasFieldOrPropertyWithValue("userId", user1.getObjects()[7])
+                .hasFieldOrPropertyWithValue("sourceId", user1.getObjects()[8]);
+        soft.assertAll();
+        soft.assertThat(resultUserImage1)
+                .hasFieldOrPropertyWithValue("id", userImage1.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", userImage1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("path", userImage1.getObjects()[2]);
+        soft.assertAll();
+        soft.assertThat(resultTag1)
+                .hasFieldOrPropertyWithValue("id", tag1.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", tag1.getObjects()[1]);
+        soft.assertAll();
+    }*/
+
+    /*@DisplayName("Обновление сущности")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/user.sql")
+    @Sql(scripts = "classpath:repository-scripts/generate-data/user.sql")
+    void updateUser() {
+        SoftAssertions soft = new SoftAssertions();
+        // статьи
+        User user1 = new User(1, "Заголовок 10", "Лид 10", createDateUser,
+                editDateUser, "Текст 10", false, 1, 1, 1);
+        // изображения
+        UserImage userImage1 = new UserImage("Изображение 10", "/static/images/image10.png");
+        UserImage userImage2 = new UserImage(1, "Изображение 11", "/static/images/image11.png");
+        user1.addNewImage(userImage1);
+        user1.addNewImage(userImage2);
+        userImage1.setUser(user1);
+        userImage2.setUser(user1);
+        // тэги
+        Tag tag1 = new Tag("Тег 10");
+        Tag tag2 = new Tag(1, "Тег 11");
+        user1.addNewTag(tag1);
+        user1.addNewTag(tag2);
+        tag1.addNewUser(user1);
+        tag2.addNewUser(user1);
+
+        User result = userRepository.save(user1);
+        // получаем изображения
+        UserImage resultUserImage1 = (UserImage) result.getImages().toArray()[0];
+        UserImage resultUserImage2 = (UserImage) result.getImages().toArray()[1];
+        // получаем теги
+        Tag resultTag1 = (Tag) result.getTags().toArray()[0];
+        Tag resultTag2 = (Tag) result.getTags().toArray()[1];
+
+        // сравниваем полученный результат и ожидаемый
+        soft.assertThat(result)
+                .hasFieldOrPropertyWithValue("id", user1.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", user1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("lead", user1.getObjects()[2])
+                .hasFieldOrPropertyWithValue("createDate", user1.getObjects()[3])
+                .hasFieldOrPropertyWithValue("editDate", user1.getObjects()[4])
+                .hasFieldOrPropertyWithValue("text", user1.getObjects()[5])
+                .hasFieldOrPropertyWithValue("isPublished", user1.getObjects()[6])
+                .hasFieldOrPropertyWithValue("userId", user1.getObjects()[7])
+                .hasFieldOrPropertyWithValue("sourceId", user1.getObjects()[8]);
+        soft.assertAll();
+        soft.assertThat(resultUserImage1)
+                .hasFieldOrPropertyWithValue("id", 3)
+                .hasFieldOrPropertyWithValue("title", userImage1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("path", userImage1.getObjects()[2]);
+        soft.assertAll();
+        soft.assertThat(resultUserImage2)
+                .hasFieldOrPropertyWithValue("id", userImage2.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", userImage2.getObjects()[1])
+                .hasFieldOrPropertyWithValue("path", userImage2.getObjects()[2]);
+        soft.assertAll();
+        soft.assertThat(resultTag1)
+                .hasFieldOrPropertyWithValue("id", 3)
+                .hasFieldOrPropertyWithValue("title", tag1.getObjects()[1]);
+        soft.assertAll();
+        soft.assertThat(resultTag2)
+                .hasFieldOrPropertyWithValue("id", tag2.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", tag2.getObjects()[1]);
+        soft.assertAll();
+    }*/
+
+    /*@DisplayName("Удаление сущности")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/user.sql")
+    @Sql(scripts = "classpath:repository-scripts/generate-data/user.sql")
+    void deleteUser() {
+
+        userRepository.deleteById(1);
+
+        assertThat(userRepository.existsById(1)).as("Запись типа User не была удалена").isFalse();
+    }*/
+}
