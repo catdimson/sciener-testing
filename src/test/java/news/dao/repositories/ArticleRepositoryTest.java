@@ -25,8 +25,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("Тестировани" +
-        "е репозитория для Article")
+@DisplayName("Тестирование репозитория для Article")
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(initializers = ArticleRepositoryTest.Initializer.class)
