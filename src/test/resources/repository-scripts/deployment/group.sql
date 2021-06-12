@@ -1,0 +1,7 @@
+DROP TABLE "group" CASCADE;
+CREATE TABLE "group" (
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    title character varying(40) NOT NULL,
+    CONSTRAINT group_pk PRIMARY KEY (id),
+    CONSTRAINT title_unique_group UNIQUE (title)
+);

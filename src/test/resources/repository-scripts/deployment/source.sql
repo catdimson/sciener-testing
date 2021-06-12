@@ -1,0 +1,7 @@
+DROP TABLE source CASCADE;
+CREATE TABLE IF NOT EXISTS source (
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    title character varying(50) NOT NULL,
+    url character varying(500) NOT NULL,
+    CONSTRAINT source_pk PRIMARY KEY (id)
+);
