@@ -1,210 +1,157 @@
-//package news.dao.repositories;
-//
-//import news.HibernateUtil;
-//import news.dao.connection.DBPool;
-//import news.dao.specifications.FindAllSourceSpecification;
-//import news.dao.specifications.FindByIdSourceSpecification;
-//import news.dao.specifications.FindByTitleSourceSpecification;
-//import news.model.Source;
-//import org.assertj.core.api.SoftAssertions;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.testcontainers.containers.PostgreSQLContainer;
-//
-//import java.sql.Connection;
-//import java.sql.ResultSet;
-//import java.sql.SQLException;
-//import java.sql.Statement;
-//import java.util.List;
-//
-//import static org.assertj.core.api.Assertions.assertThat;
-//
-//class SourceRepositoryTest {
-//    private PostgreSQLContainer container;
-//    private DBPool poolConnection;
-//
-//    @BeforeEach
-//    void setUp() throws SQLException {
-//        this.container = new PostgreSQLContainer("postgres")
-//                .withUsername("admin")
-//                .withPassword("qwerty")
-//                .withDatabaseName("news");
-//        this.container.start();
-//
-//        this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
-//
-//        HibernateUtil.setConnectionProperties(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
-//
-//        Statement statement = this.poolConnection.getConnection().createStatement();
-//
-//        String sqlCreateTableSource = "CREATE TABLE IF NOT EXISTS source (" +
-//                "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
-//                "title character varying(50) NOT NULL," +
-//                "url character varying(500) NOT NULL," +
-//                "CONSTRAINT source_pk PRIMARY KEY (id)" +
-//                ");";
-//        statement.executeUpdate(sqlCreateTableSource);
-//    }
-//
-//    @Test
-//    void findById() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            SourceRepository sourceRepository = new SourceRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            String sqlInsertInstance = "INSERT INTO source (title, url) VALUES('Яндекс ДЗЕН', 'https://zen.yandex.ru/');";
-//            statement.executeUpdate(sqlInsertInstance);
-//            Source source = new Source("Яндекс ДЗЕН","https://zen.yandex.ru/");
-//
-//            FindByIdSourceSpecification findById = new FindByIdSourceSpecification(1);
-//            List<Source> resultFindByIdSource = sourceRepository.query(findById);
-//
-//            soft.assertThat(source)
-//                    .hasFieldOrPropertyWithValue("title", resultFindByIdSource.get(0).getObjects()[1])
-//                    .hasFieldOrPropertyWithValue("url", resultFindByIdSource.get(0).getObjects()[2]);
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void findByTitle() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            SourceRepository sourceRepository = new SourceRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            String sqlInsertInstance = "INSERT INTO source (title, url) VALUES('Яндекс ДЗЕН', 'https://zen.yandex.ru/');";
-//            statement.executeUpdate(sqlInsertInstance);
-//            sqlInsertInstance = "INSERT INTO source (title, url) VALUES('Яндекс ДЗЕН', 'https://zen.yandex.ru/1234');";
-//            statement.executeUpdate(sqlInsertInstance);
-//            Source source1 = new Source("Яндекс ДЗЕН", "https://zen.yandex.ru/");
-//            Source source2 = new Source("Яндекс ДЗЕН", "https://zen.yandex.ru/1234");
-//
-//            FindByTitleSourceSpecification findByTitle = new FindByTitleSourceSpecification("Яндекс ДЗЕН");
-//            List<Source> resultFindByIdSource = sourceRepository.query(findByTitle);
-//
-//            soft.assertThat(source1)
-//                    .hasFieldOrPropertyWithValue("title", resultFindByIdSource.get(0).getObjects()[1])
-//                    .hasFieldOrPropertyWithValue("url", resultFindByIdSource.get(0).getObjects()[2]);
-//            soft.assertAll();
-//            soft.assertThat(source2)
-//                    .hasFieldOrPropertyWithValue("title", resultFindByIdSource.get(1).getObjects()[1])
-//                    .hasFieldOrPropertyWithValue("url", resultFindByIdSource.get(1).getObjects()[2]);
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void findAll() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            SourceRepository sourceRepository = new SourceRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            String sqlInsertInstance = "INSERT INTO source (title, url) VALUES('Яндекс ДЗЕН', 'https://zen.yandex.ru/'), " +
-//                    "('РИА Новости', 'https://ria.ru/'), ('Яндекс ДЗЕН', 'https://zen.yandex.ru/1234');";
-//            statement.executeUpdate(sqlInsertInstance);
-//            Source source1 = new Source("Яндекс ДЗЕН", "https://zen.yandex.ru/");
-//            Source source2 = new Source("РИА Новости", "https://ria.ru/");
-//            Source source3 = new Source("Яндекс ДЗЕН", "https://zen.yandex.ru/1234");
-//
-//            FindAllSourceSpecification findAll = new FindAllSourceSpecification();
-//            List<Source> resultFindAllSource = sourceRepository.query(findAll);
-//
-//            soft.assertThat(source1)
-//                    .hasFieldOrPropertyWithValue("title", resultFindAllSource.get(0).getObjects()[1])
-//                    .hasFieldOrPropertyWithValue("url", resultFindAllSource.get(0).getObjects()[2]);
-//            soft.assertAll();
-//            soft.assertThat(source2)
-//                    .hasFieldOrPropertyWithValue("title", resultFindAllSource.get(1).getObjects()[1])
-//                    .hasFieldOrPropertyWithValue("url", resultFindAllSource.get(1).getObjects()[2]);
-//            soft.assertAll();
-//            soft.assertThat(source3)
-//                    .hasFieldOrPropertyWithValue("title", resultFindAllSource.get(2).getObjects()[1])
-//                    .hasFieldOrPropertyWithValue("url", resultFindAllSource.get(2).getObjects()[2]);
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void createSource() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            SourceRepository sourceRepository = new SourceRepository();
-//            Source source = new Source("Яндекс ДЗЕН", "https://zen.yandex.ru/");
-//
-//            sourceRepository.create(source);
-//
-//            Connection connection = this.poolConnection.getConnection();
-//            String sqlQueryInstanceFromTableSource = "SELECT * FROM source WHERE title='Яндекс ДЗЕН' AND url='https://zen.yandex.ru/'";
-//            Statement statement = connection.createStatement();
-//            ResultSet result = statement.executeQuery(sqlQueryInstanceFromTableSource);
-//            result.next();
-//            soft.assertThat(source)
-//                    .hasFieldOrPropertyWithValue("title", result.getString(2))
-//                    .hasFieldOrPropertyWithValue("url", result.getString(3));
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void deleteSource() {
-//        try {
-//            SourceRepository sourceRepository = new SourceRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            String sqlInsertInstance = "INSERT INTO source (title, url) VALUES('Яндекс ДЗЕН', 'https://zen.yandex.ru/');";
-//            statement.executeUpdate(sqlInsertInstance, Statement.RETURN_GENERATED_KEYS);
-//            ResultSet generatedKeys = statement.getGeneratedKeys();
-//            generatedKeys.next();
-//
-//            sourceRepository.delete(generatedKeys.getInt(1));
-//
-//            String sqlQueryInstance = String.format("SELECT * FROM source WHERE id=%d;", generatedKeys.getInt(1));
-//            ResultSet result = statement.executeQuery(sqlQueryInstance);
-//            assertThat(result.next()).as("Запись класса Source не была удалена").isFalse();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void updateSource() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            SourceRepository sourceRepository = new SourceRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            String sqlInsertInstance = "INSERT INTO source (title, url) VALUES('Яндекс ДЗЕН', 'https://zen.yandex.ru/');";
-//            statement.executeUpdate(sqlInsertInstance);
-//            Source source = new Source(1,"РИА", "https://ria.ru/");
-//            Object[] instance = source.getObjects();
-//
-//            sourceRepository.update(source);
-//
-//            String sqlQueryInstance = String.format("SELECT * FROM source WHERE id=%s;", instance[0]);
-//            ResultSet result = statement.executeQuery(sqlQueryInstance);
-//            result.next();
-//            soft.assertThat(source)
-//                    .hasFieldOrPropertyWithValue("title", result.getString(2))
-//                    .hasFieldOrPropertyWithValue("url", result.getString(3));
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//}
+package news.dao.repositories;
+
+import news.model.Source;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@DisplayName("Тестирование репозитория для Source")
+@Testcontainers
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ContextConfiguration(initializers = SourceRepositoryTest.Initializer.class)
+class SourceRepositoryTest {
+
+    @Autowired
+    private SourceRepository sourceRepository;
+
+    @Container
+    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:13.2")
+            .withPassword("testrootroot")
+            .withUsername("testroot")
+            .withDatabaseName("testnewdb");
+
+    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+        @Override
+        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+            TestPropertyValues values = TestPropertyValues.of(
+                    "spring.datasource.url=" + postgreSQLContainer.getJdbcUrl(),
+                    "spring.datasource.password=" + postgreSQLContainer.getPassword(),
+                    "spring.datasource.username=" + postgreSQLContainer.getUsername()
+            );
+            values.applyTo(configurableApplicationContext);
+        }
+    }
+
+    @DisplayName("Поиск по ID")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/source.sql")
+    @Sql(statements = "INSERT INTO source (title, url) VALUES ('Яндекс ДЗЕН', 'https://zen.yandex.ru/'), ('РИА', 'https://ria.ru/');")
+    void findById() {
+        SoftAssertions soft = new SoftAssertions();
+        Source source = new Source(1, "Яндекс ДЗЕН", "https://zen.yandex.ru/");
+
+        Source result = sourceRepository.findById(1).get();
+
+        soft.assertThat(result)
+                .hasFieldOrPropertyWithValue("id", source.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", source.getObjects()[1])
+                .hasFieldOrPropertyWithValue("url", source.getObjects()[2]);
+        soft.assertAll();
+    }
+
+    @DisplayName("Получение всех записей")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/source.sql")
+    @Sql(statements = "INSERT INTO source (title, url) VALUES ('Яндекс ДЗЕН', 'https://zen.yandex.ru/'), ('РИА', 'https://ria.ru/');")
+    void findAll() {
+        SoftAssertions soft = new SoftAssertions();
+        Source source1 = new Source(1, "Яндекс ДЗЕН", "https://zen.yandex.ru/");
+        Source source2 = new Source(2, "РИА", "https://ria.ru/");
+
+        List<Source> result = sourceRepository.findAll();
+
+        soft.assertThat(result.get(0))
+                .hasFieldOrPropertyWithValue("id", source1.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", source1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("url", source1.getObjects()[2]);
+        soft.assertAll();
+        soft.assertThat(result.get(1))
+                .hasFieldOrPropertyWithValue("id", source2.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", source2.getObjects()[1])
+                .hasFieldOrPropertyWithValue("url", source2.getObjects()[2]);
+        soft.assertAll();
+    }
+
+    @DisplayName("Получение записей по title")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/source.sql")
+    @Sql(statements = "INSERT INTO source (title, url) VALUES ('Яндекс ДЗЕН', 'https://zen.yandex.ru/'), ('РИА', 'https://ria.ru/'), " +
+            "('Яндекс ДЗЕН', 'https://zen2.yandex.ru/');")
+    void findByTitle() {
+        SoftAssertions soft = new SoftAssertions();
+        Source source1 = new Source(1, "Яндекс ДЗЕН", "https://zen.yandex.ru/");
+        Source source2 = new Source(3, "Яндекс ДЗЕН", "https://zen2.yandex.ru/");
+
+        List<Source> result = sourceRepository.findByTitle("Яндекс ДЗЕН");
+
+        soft.assertThat(result.get(0))
+                .hasFieldOrPropertyWithValue("id", source1.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", source1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("url", source1.getObjects()[2]);
+        soft.assertAll();
+        soft.assertThat(result.get(1))
+                .hasFieldOrPropertyWithValue("id", source2.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", source2.getObjects()[1])
+                .hasFieldOrPropertyWithValue("url", source2.getObjects()[2]);
+        soft.assertAll();
+    }
+
+    @DisplayName("Сохранение сущности")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/source.sql")
+    void saveSource() {
+        SoftAssertions soft = new SoftAssertions();
+        Source source = new Source("Яндекс ДЗЕН", "https://zen.yandex.ru/");
+
+        Source result = sourceRepository.save(source);
+
+        soft.assertThat(result)
+                .hasFieldOrPropertyWithValue("id", 1)
+                .hasFieldOrPropertyWithValue("title", source.getObjects()[1])
+                .hasFieldOrPropertyWithValue("url", source.getObjects()[2]);
+        soft.assertAll();
+    }
+
+    @DisplayName("Обновление сущности")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/source.sql")
+    @Sql(statements = "INSERT INTO source (title, url) VALUES ('Яндекс ДЗЕН', 'https://zen.yandex.ru/')")
+    void updateSource() {
+        SoftAssertions soft = new SoftAssertions();
+        Source source = new Source(1, "Яндекс ДЗЕН update", "https://zen2.yandex.ru/");
+
+        Source result = sourceRepository.save(source);
+
+        soft.assertThat(result)
+                .hasFieldOrPropertyWithValue("id", 1)
+                .hasFieldOrPropertyWithValue("title", source.getObjects()[1])
+                .hasFieldOrPropertyWithValue("url", source.getObjects()[2]);
+        soft.assertAll();
+    }
+
+    @DisplayName("Удаление сущности")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/source.sql")
+    @Sql(statements = "INSERT INTO source (title, url) VALUES ('Яндекс ДЗЕН', 'https://zen.yandex.ru/')")
+    void deleteSource() {
+
+        sourceRepository.deleteById(1);
+
+        assertThat(sourceRepository.existsById(1)).as("Запись типа Source не была удалена").isFalse();
+    }
+}
