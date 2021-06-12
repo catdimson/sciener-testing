@@ -74,7 +74,7 @@ class CommentRepositoryTest {
         comment1.addNewAttachment(commentAttachment1);
         commentAttachment1.setComment(comment1);
 
-        // получаем список статей
+        // получаем комментарий по id
         Optional<Comment> resultComment = commentRepository.findById(2);
         Comment resultComment1 = resultComment.get();
         // получаем изображения

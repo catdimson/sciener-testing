@@ -70,7 +70,7 @@ class UserRepositoryTest {
         User user1 = new User("password111", "user111", "Александр", "Колесников",
                 "mail111@mail.ru", lastLogin, dateJoined, true, true, true, 1);
 
-        // получаем список статей
+        // получаем пользователя по id
         Optional<User> resultUser = userRepository.findById(1);
         User resultUser1 = resultUser.get();
 

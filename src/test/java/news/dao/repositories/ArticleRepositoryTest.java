@@ -80,7 +80,7 @@ class ArticleRepositoryTest {
         article1.addNewTag(tag1);
         tag1.addNewArticle(article1);
 
-        // получаем список статей
+        // получаем статью по id
         Optional<Article> resultArticle = articleRepository.findById(1);
         Article resultArticle1 = resultArticle.get();
         // получаем изображения

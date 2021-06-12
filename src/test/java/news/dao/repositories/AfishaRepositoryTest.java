@@ -1,451 +1,275 @@
-//package news.dao.repositories;
-//
-//import news.HibernateUtil;
-//import news.dao.connection.DBPool;
-//import news.dao.specifications.FindAllAfishaSpecification;
-//import news.dao.specifications.FindByIdAfishaSpecification;
-//import news.dao.specifications.FindByTitleAfishaSpecification;
-//import news.model.Afisha;
-//import org.assertj.core.api.SoftAssertions;
-//import org.junit.jupiter.api.BeforeAll;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.testcontainers.containers.PostgreSQLContainer;
-//
-//import java.sql.*;
-//import java.time.LocalDate;
-//import java.util.List;
-//
-//import static org.assertj.core.api.Assertions.assertThat;
-//
-//class AfishaRepositoryTest {
-//    private PostgreSQLContainer container;
-//    private DBPool poolConnection;
-//    private static LocalDate lastLogin;
-//    private static LocalDate dateJoined;
-//    private static LocalDate date;
-//    private static int userId;
-//
-//    @BeforeAll
-//    static void beforeAll() {
-//        date = LocalDate.of(2020, 5, 20);
-//        lastLogin = LocalDate.of(2020, 5, 20);
-//        dateJoined = LocalDate.of(2019, 5, 20);
-//        userId = 1;
-//    }
-//
-//    @BeforeEach
-//    void setUp() throws SQLException {
-//        this.container = new PostgreSQLContainer("postgres")
-//                .withUsername("admin")
-//                .withPassword("qwerty")
-//                .withDatabaseName("news");
-//        this.container.start();
-//        this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
-//
-//        HibernateUtil.setConnectionProperties(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
-//
-//        Statement statement = this.poolConnection.getConnection().createStatement();
-//
-//        String sqlCreateTableGroup = "CREATE TABLE IF NOT EXISTS \"group\" (" +
-//                "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
-//                "title character varying(40) NOT NULL," +
-//                "CONSTRAINT group_pk PRIMARY KEY (id)," +
-//                "CONSTRAINT title_unique UNIQUE (title)" +
-//                ");";
-//        statement.executeUpdate(sqlCreateTableGroup);
-//        String sqlInsertInstanceTableGroup = "INSERT INTO \"group\"(title)" +
-//                "SELECT" +
-//                "(array['admin', 'editor', 'seo', 'guest'])[iter]" +
-//                "FROM generate_series(1, 4) as iter;";
-//        statement.executeUpdate(sqlInsertInstanceTableGroup);
-//
-//        String sqlCreateTableUser = "CREATE TABLE IF NOT EXISTS \"user\"  (" +
-//                "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
-//                "password character varying(128) NOT NULL," +
-//                "username character varying(150) NOT NULL," +
-//                "first_name character varying(150) NOT NULL," +
-//                "last_name character varying(150)," +
-//                "email character varying(254) NOT NULL," +
-//                "last_login timestamp NOT NULL," +
-//                "date_joined timestamp NOT NULL," +
-//                "is_superuser boolean NOT NULL DEFAULT false," +
-//                "is_staff boolean NOT NULL DEFAULT false," +
-//                "is_active boolean NOT NULL DEFAULT true," +
-//                "group_id integer NOT NULL," +
-//                "CONSTRAINT user_pk PRIMARY KEY (id)," +
-//                "CONSTRAINT username_unique UNIQUE (username)," +
-//                "CONSTRAINT fk_user_group_id FOREIGN KEY (group_id)" +
-//                "    REFERENCES \"group\" (id) MATCH SIMPLE" +
-//                "    ON UPDATE CASCADE" +
-//                "    ON DELETE RESTRICT" +
-//                ");";
-//        statement.executeUpdate(sqlCreateTableUser);
-//        String sqlCreateUser = String.format("INSERT INTO \"user\"" +
-//                        "(password, username, first_name, last_name, email, last_login, date_joined, is_superuser, is_staff, is_active, group_id) " +
-//                        "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s);", "qwerty123", "alex", "Александр", "Колесников", "alex1993@mail.ru",
-//                Timestamp.valueOf(lastLogin.atStartOfDay()), Timestamp.valueOf(dateJoined.atStartOfDay()), false, true, true, 2);
-//        statement.executeUpdate(sqlCreateUser);
-//
-//        String sqlCreateTableSource = "CREATE TABLE IF NOT EXISTS source (" +
-//                "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
-//                "title character varying(50) NOT NULL," +
-//                "url character varying(500) NOT NULL," +
-//                "CONSTRAINT source_pk PRIMARY KEY (id)" +
-//                ");";
-//        statement.executeUpdate(sqlCreateTableSource);
-//        String sqlCreateSource = "INSERT INTO source (title, url) VALUES('Яндекс ДЗЕН', 'https://zen.yandex.ru/');";
-//        statement.executeUpdate(sqlCreateSource);
-//
-//        String sqlCreateTableAfisha = "CREATE TABLE IF NOT EXISTS afisha (" +
-//                "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
-//                "title character varying(250) NOT NULL," +
-//                "image_url character varying(500)," +
-//                "lead character varying(350) NOT NULL," +
-//                "description text NOT NULL," +
-//                "age_limit character varying(5)," +
-//                "timing character varying(15)," +
-//                "place character varying(300)," +
-//                "phone character varying(20)," +
-//                "date timestamp," +
-//                "is_commercial boolean NOT NULL DEFAULT false," +
-//                "user_id integer NOT NULL," +
-//                "source_id integer," +
-//                "CONSTRAINT afisha_pk PRIMARY KEY (id)," +
-//                "CONSTRAINT fk_source FOREIGN KEY (source_id)" +
-//                "    REFERENCES source (id) MATCH SIMPLE" +
-//                "    ON UPDATE CASCADE" +
-//                "    ON DELETE RESTRICT," +
-//                "CONSTRAINT fk_user FOREIGN KEY (user_id)" +
-//                "    REFERENCES \"user\" (id) MATCH SIMPLE" +
-//                "    ON UPDATE CASCADE" +
-//                "    ON DELETE RESTRICT" +
-//                ");" +
-//                "CREATE INDEX IF NOT EXISTS fk_index_source_id ON afisha (source_id);" +
-//                "CREATE INDEX IF NOT EXISTS fk_index_source_user_id ON afisha (user_id);";
-//        statement.executeUpdate(sqlCreateTableAfisha);
-//    }
-//
-//    @Test
-//    void findById() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            Connection connection = this.poolConnection.getConnection();
-//            AfishaRepository afishaRepository = new AfishaRepository();
-//
-//            Afisha afisha = new Afisha(1, "Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний",
-//                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
-//            Object[] afishaInstance = afisha.getObjects();
-//
-//            String sqlCreateInstance = "INSERT INTO afisha" +
-//                    "(title, image_url, lead, description, age_limit, timing, place, phone, date, is_commercial, user_id, source_id) " +
-//                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-//            PreparedStatement statement = connection.prepareStatement(sqlCreateInstance);
-//            statement.setString(1, (String) afishaInstance[1]);
-//            statement.setString(2, (String) afishaInstance[2]);
-//            statement.setString(3, (String) afishaInstance[3]);
-//            statement.setString(4, (String) afishaInstance[4]);
-//            statement.setString(5, (String) afishaInstance[5]);
-//            statement.setString(6, (String) afishaInstance[6]);
-//            statement.setString(7, (String) afishaInstance[7]);
-//            statement.setString(8, (String) afishaInstance[8]);
-//            statement.setTimestamp(9, Timestamp.valueOf(date.atStartOfDay()));
-//            statement.setBoolean(10, (boolean) afishaInstance[10]);
-//            statement.setInt(11, (int) afishaInstance[11]);
-//            statement.setInt(12, (int) afishaInstance[12]);
-//            statement.executeUpdate();
-//
-//            FindByIdAfishaSpecification findById = new FindByIdAfishaSpecification(1);
-//            List<Afisha> resultFindByIdAfishaList = afishaRepository.query(findById);
-//            Object[] resultFindByIdAfishaInstance = resultFindByIdAfishaList.get(0).getObjects();
-//
-//            soft.assertThat(afisha)
-//                    .hasFieldOrPropertyWithValue("title", resultFindByIdAfishaInstance[1])
-//                    .hasFieldOrPropertyWithValue("imageUrl", resultFindByIdAfishaInstance[2])
-//                    .hasFieldOrPropertyWithValue("lead", resultFindByIdAfishaInstance[3])
-//                    .hasFieldOrPropertyWithValue("description", resultFindByIdAfishaInstance[4])
-//                    .hasFieldOrPropertyWithValue("ageLimit", resultFindByIdAfishaInstance[5])
-//                    .hasFieldOrPropertyWithValue("timing", resultFindByIdAfishaInstance[6])
-//                    .hasFieldOrPropertyWithValue("place", resultFindByIdAfishaInstance[7])
-//                    .hasFieldOrPropertyWithValue("phone", resultFindByIdAfishaInstance[8])
-//                    .hasFieldOrPropertyWithValue("date", resultFindByIdAfishaInstance[9])
-//                    .hasFieldOrPropertyWithValue("isCommercial", resultFindByIdAfishaInstance[10])
-//                    .hasFieldOrPropertyWithValue("userId", resultFindByIdAfishaInstance[11])
-//                    .hasFieldOrPropertyWithValue("sourceId", resultFindByIdAfishaInstance[12]);
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void findByTitle() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            AfishaRepository afishaRepository = new AfishaRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Afisha afisha = new Afisha(1, "Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний",
-//                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
-//            Afisha afisha2 = new Afisha(2, "Масленица", "/media/konkursi.jpg", "Конкурсы", "Описание масленичных конкурсов",
-//                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
-//            Object[] afishaInstance = afisha.getObjects();
-//            Object[] afishaInstance2 = afisha2.getObjects();
-//
-//            String sqlCreateInstance = "INSERT INTO afisha" +
-//                    "(title, image_url, lead, description, age_limit, timing, place, phone, date, is_commercial, user_id, source_id) " +
-//                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-//            PreparedStatement statement = connection.prepareStatement(sqlCreateInstance);
-//            statement.setString(1, (String) afishaInstance[1]);
-//            statement.setString(2, (String) afishaInstance[2]);
-//            statement.setString(3, (String) afishaInstance[3]);
-//            statement.setString(4, (String) afishaInstance[4]);
-//            statement.setString(5, (String) afishaInstance[5]);
-//            statement.setString(6, (String) afishaInstance[6]);
-//            statement.setString(7, (String) afishaInstance[7]);
-//            statement.setString(8, (String) afishaInstance[8]);
-//            statement.setTimestamp(9, Timestamp.valueOf(date.atStartOfDay()));
-//            statement.setBoolean(10, (boolean) afishaInstance[10]);
-//            statement.setInt(11, (int) afishaInstance[11]);
-//            statement.setInt(12, (int) afishaInstance[12]);
-//            statement.executeUpdate();
-//
-//            statement.setString(1, (String) afishaInstance2[1]);
-//            statement.setString(2, (String) afishaInstance2[2]);
-//            statement.setString(3, (String) afishaInstance2[3]);
-//            statement.setString(4, (String) afishaInstance2[4]);
-//            statement.setString(5, (String) afishaInstance2[5]);
-//            statement.setString(6, (String) afishaInstance2[6]);
-//            statement.setString(7, (String) afishaInstance2[7]);
-//            statement.setString(8, (String) afishaInstance2[8]);
-//            statement.setTimestamp(9, Timestamp.valueOf(date.atStartOfDay()));
-//            statement.setBoolean(10, (boolean) afishaInstance2[10]);
-//            statement.setInt(11, (int) afishaInstance2[11]);
-//            statement.setInt(12, (int) afishaInstance2[12]);
-//            statement.executeUpdate();
-//
-//            FindByTitleAfishaSpecification findByTitle = new FindByTitleAfishaSpecification("Масленица");
-//            List<Afisha> resultFindByTitleAfishaList = afishaRepository.query(findByTitle);
-//            Object[] resultFindByTitleAfishaInstance = resultFindByTitleAfishaList.get(0).getObjects();
-//            Object[] resultFindByTitleAfishaInstance2 = resultFindByTitleAfishaList.get(1).getObjects();
-//
-//            soft.assertThat(afisha)
-//                    .hasFieldOrPropertyWithValue("title", resultFindByTitleAfishaInstance[1])
-//                    .hasFieldOrPropertyWithValue("imageUrl", resultFindByTitleAfishaInstance[2])
-//                    .hasFieldOrPropertyWithValue("lead", resultFindByTitleAfishaInstance[3])
-//                    .hasFieldOrPropertyWithValue("description", resultFindByTitleAfishaInstance[4])
-//                    .hasFieldOrPropertyWithValue("ageLimit", resultFindByTitleAfishaInstance[5])
-//                    .hasFieldOrPropertyWithValue("timing", resultFindByTitleAfishaInstance[6])
-//                    .hasFieldOrPropertyWithValue("place", resultFindByTitleAfishaInstance[7])
-//                    .hasFieldOrPropertyWithValue("phone", resultFindByTitleAfishaInstance[8])
-//                    .hasFieldOrPropertyWithValue("date", resultFindByTitleAfishaInstance[9])
-//                    .hasFieldOrPropertyWithValue("isCommercial", resultFindByTitleAfishaInstance[10])
-//                    .hasFieldOrPropertyWithValue("userId", resultFindByTitleAfishaInstance[11])
-//                    .hasFieldOrPropertyWithValue("sourceId", resultFindByTitleAfishaInstance[12]);
-//            soft.assertAll();
-//            soft.assertThat(afisha2)
-//                    .hasFieldOrPropertyWithValue("title", resultFindByTitleAfishaInstance2[1])
-//                    .hasFieldOrPropertyWithValue("imageUrl", resultFindByTitleAfishaInstance2[2])
-//                    .hasFieldOrPropertyWithValue("lead", resultFindByTitleAfishaInstance2[3])
-//                    .hasFieldOrPropertyWithValue("description", resultFindByTitleAfishaInstance2[4])
-//                    .hasFieldOrPropertyWithValue("ageLimit", resultFindByTitleAfishaInstance2[5])
-//                    .hasFieldOrPropertyWithValue("timing", resultFindByTitleAfishaInstance2[6])
-//                    .hasFieldOrPropertyWithValue("place", resultFindByTitleAfishaInstance2[7])
-//                    .hasFieldOrPropertyWithValue("phone", resultFindByTitleAfishaInstance2[8])
-//                    .hasFieldOrPropertyWithValue("date", resultFindByTitleAfishaInstance2[9])
-//                    .hasFieldOrPropertyWithValue("isCommercial", resultFindByTitleAfishaInstance2[10])
-//                    .hasFieldOrPropertyWithValue("userId", resultFindByTitleAfishaInstance2[11])
-//                    .hasFieldOrPropertyWithValue("sourceId", resultFindByTitleAfishaInstance2[12]);
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void findAll() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            AfishaRepository afishaRepository = new AfishaRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Afisha afisha = new Afisha(1, "Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний",
-//                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
-//            Afisha afisha2 = new Afisha(2, "Масленица 2", "/media/konkursi.jpg", "Конкурсы", "Описание масленичных конкурсов",
-//                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
-//            Object[] afishaInstance = afisha.getObjects();
-//            Object[] afishaInstance2 = afisha2.getObjects();
-//
-//            String sqlCreateInstance = "INSERT INTO afisha" +
-//                    "(title, image_url, lead, description, age_limit, timing, place, phone, date, is_commercial, user_id, source_id) " +
-//                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-//            PreparedStatement statement = connection.prepareStatement(sqlCreateInstance);
-//            statement.setString(1, (String) afishaInstance[1]);
-//            statement.setString(2, (String) afishaInstance[2]);
-//            statement.setString(3, (String) afishaInstance[3]);
-//            statement.setString(4, (String) afishaInstance[4]);
-//            statement.setString(5, (String) afishaInstance[5]);
-//            statement.setString(6, (String) afishaInstance[6]);
-//            statement.setString(7, (String) afishaInstance[7]);
-//            statement.setString(8, (String) afishaInstance[8]);
-//            statement.setTimestamp(9, Timestamp.valueOf(date.atStartOfDay()));
-//            statement.setBoolean(10, (boolean) afishaInstance[10]);
-//            statement.setInt(11, (int) afishaInstance[11]);
-//            statement.setInt(12, (int) afishaInstance[12]);
-//            statement.executeUpdate();
-//
-//            statement.setString(1, (String) afishaInstance2[1]);
-//            statement.setString(2, (String) afishaInstance2[2]);
-//            statement.setString(3, (String) afishaInstance2[3]);
-//            statement.setString(4, (String) afishaInstance2[4]);
-//            statement.setString(5, (String) afishaInstance2[5]);
-//            statement.setString(6, (String) afishaInstance2[6]);
-//            statement.setString(7, (String) afishaInstance2[7]);
-//            statement.setString(8, (String) afishaInstance2[8]);
-//            statement.setTimestamp(9, Timestamp.valueOf(date.atStartOfDay()));
-//            statement.setBoolean(10, (boolean) afishaInstance2[10]);
-//            statement.setInt(11, (int) afishaInstance2[11]);
-//            statement.setInt(12, (int) afishaInstance2[12]);
-//            statement.executeUpdate();
-//
-//            FindAllAfishaSpecification findAll = new FindAllAfishaSpecification();
-//            List<Afisha> resultFindAllAfishaList = afishaRepository.query(findAll);
-//            Object[] resultFindAllAfishaInstance = resultFindAllAfishaList.get(0).getObjects();
-//            Object[] resultFindAllAfishaInstance2 = resultFindAllAfishaList.get(1).getObjects();
-//
-//            soft.assertThat(afisha)
-//                    .hasFieldOrPropertyWithValue("title", resultFindAllAfishaInstance[1])
-//                    .hasFieldOrPropertyWithValue("imageUrl", resultFindAllAfishaInstance[2])
-//                    .hasFieldOrPropertyWithValue("lead", resultFindAllAfishaInstance[3])
-//                    .hasFieldOrPropertyWithValue("description", resultFindAllAfishaInstance[4])
-//                    .hasFieldOrPropertyWithValue("ageLimit", resultFindAllAfishaInstance[5])
-//                    .hasFieldOrPropertyWithValue("timing", resultFindAllAfishaInstance[6])
-//                    .hasFieldOrPropertyWithValue("place", resultFindAllAfishaInstance[7])
-//                    .hasFieldOrPropertyWithValue("phone", resultFindAllAfishaInstance[8])
-//                    .hasFieldOrPropertyWithValue("date", resultFindAllAfishaInstance[9])
-//                    .hasFieldOrPropertyWithValue("isCommercial", resultFindAllAfishaInstance[10])
-//                    .hasFieldOrPropertyWithValue("userId", resultFindAllAfishaInstance[11])
-//                    .hasFieldOrPropertyWithValue("sourceId", resultFindAllAfishaInstance[12]);
-//            soft.assertAll();
-//            soft.assertThat(afisha2)
-//                    .hasFieldOrPropertyWithValue("title", resultFindAllAfishaInstance2[1])
-//                    .hasFieldOrPropertyWithValue("imageUrl", resultFindAllAfishaInstance2[2])
-//                    .hasFieldOrPropertyWithValue("lead", resultFindAllAfishaInstance2[3])
-//                    .hasFieldOrPropertyWithValue("description", resultFindAllAfishaInstance2[4])
-//                    .hasFieldOrPropertyWithValue("ageLimit", resultFindAllAfishaInstance2[5])
-//                    .hasFieldOrPropertyWithValue("timing", resultFindAllAfishaInstance2[6])
-//                    .hasFieldOrPropertyWithValue("place", resultFindAllAfishaInstance2[7])
-//                    .hasFieldOrPropertyWithValue("phone", resultFindAllAfishaInstance2[8])
-//                    .hasFieldOrPropertyWithValue("date", resultFindAllAfishaInstance2[9])
-//                    .hasFieldOrPropertyWithValue("isCommercial", resultFindAllAfishaInstance2[10])
-//                    .hasFieldOrPropertyWithValue("userId", resultFindAllAfishaInstance2[11])
-//                    .hasFieldOrPropertyWithValue("sourceId", resultFindAllAfishaInstance2[12]);
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void createAfisha() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            AfishaRepository afishaRepository = new AfishaRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            Afisha afisha = new Afisha("Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний",
-//                    "0", "180", "Центральная площадь, г.Белгород", "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
-//
-//            afishaRepository.create(afisha);
-//
-//            String sqlQueryInstance = String.format("SELECT * FROM afisha WHERE id=%d;", 1);
-//            ResultSet result = statement.executeQuery(sqlQueryInstance);
-//            result.next();
-//            soft.assertThat(afisha)
-//                    .hasFieldOrPropertyWithValue("title", result.getString(2))
-//                    .hasFieldOrPropertyWithValue("imageUrl", result.getString(3))
-//                    .hasFieldOrPropertyWithValue("lead", result.getString(4))
-//                    .hasFieldOrPropertyWithValue("description", result.getString(5))
-//                    .hasFieldOrPropertyWithValue("ageLimit", result.getString(6))
-//                    .hasFieldOrPropertyWithValue("timing", result.getString(7))
-//                    .hasFieldOrPropertyWithValue("place", result.getString(8))
-//                    .hasFieldOrPropertyWithValue("phone", result.getString(9))
-//                    .hasFieldOrPropertyWithValue("date", result.getTimestamp(10))
-//                    .hasFieldOrPropertyWithValue("isCommercial", result.getBoolean(11))
-//                    .hasFieldOrPropertyWithValue("userId", result.getInt(12))
-//                    .hasFieldOrPropertyWithValue("sourceId", result.getInt(13));
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void deleteAfisha() {
-//        try {
-//            AfishaRepository afishaRepository = new AfishaRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            String sqlCreateAfisha = String.format("INSERT INTO afisha" +
-//                            "(title, image_url, lead, description, age_limit, timing, place, phone, date, is_commercial, user_id, source_id) " +
-//                            "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %d, %d);",
-//                    "Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний", "0", "180", "Центральная площадь, г.Белгород",
-//                    "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
-//            statement.executeUpdate(sqlCreateAfisha, Statement.RETURN_GENERATED_KEYS);
-//            ResultSet generatedKeys = statement.getGeneratedKeys();
-//            generatedKeys.next();
-//
-//            afishaRepository.delete(generatedKeys.getInt(1));
-//
-//            String sqlQueryInstance = String.format("SELECT * FROM afisha WHERE id=%d;", generatedKeys.getInt(1));
-//            ResultSet result = statement.executeQuery(sqlQueryInstance);
-//            assertThat(result.next()).as("Запись класса Afisha не была удалена").isFalse();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void updateAfisha() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            AfishaRepository afishaRepository = new AfishaRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            String sqlCreateAfisha = String.format("INSERT INTO afisha" +
-//                            "(title, image_url, lead, description, age_limit, timing, place, phone, date, is_commercial, user_id, source_id) " +
-//                            "VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, %d, %d);",
-//                    "Масленица", "/media/maslenica.jpg", "Празничные гуляния на площади", "Описание масленичных гуляний", "0", "180", "Центральная площадь, г.Белгород",
-//                    "89202005544", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
-//            statement.executeUpdate(sqlCreateAfisha, Statement.RETURN_GENERATED_KEYS);
-//            Afisha afisha2 = new Afisha(1, "Масленица. Конкурсы.", "/media/maslenicaprazdnik.jpg", "Конкурсы на празник", "Красивое описание масленичных конкурсов",
-//                    "3", "120", "Кинотеатр русич", "89208880022", Timestamp.valueOf(date.atStartOfDay()), false, 1, 1);
-//
-//            afishaRepository.update(afisha2);
-//
-//            String sqlQueryInstance = String.format("SELECT * FROM afisha WHERE id=%d;", 1);
-//            ResultSet result = statement.executeQuery(sqlQueryInstance);
-//            result.next();
-//            soft.assertThat(afisha2)
-//                    .hasFieldOrPropertyWithValue("title", result.getString(2))
-//                    .hasFieldOrPropertyWithValue("imageUrl", result.getString(3))
-//                    .hasFieldOrPropertyWithValue("lead", result.getString(4))
-//                    .hasFieldOrPropertyWithValue("description", result.getString(5))
-//                    .hasFieldOrPropertyWithValue("ageLimit", result.getString(6))
-//                    .hasFieldOrPropertyWithValue("timing", result.getString(7))
-//                    .hasFieldOrPropertyWithValue("place", result.getString(8))
-//                    .hasFieldOrPropertyWithValue("phone", result.getString(9))
-//                    .hasFieldOrPropertyWithValue("date", result.getTimestamp(10))
-//                    .hasFieldOrPropertyWithValue("isCommercial", result.getBoolean(11))
-//                    .hasFieldOrPropertyWithValue("userId", result.getInt(12))
-//                    .hasFieldOrPropertyWithValue("sourceId", result.getInt(13));
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//}
+package news.dao.repositories;
+
+import news.model.Afisha;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@DisplayName("Тестирование репозитория для Afisha")
+@Testcontainers
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ContextConfiguration(initializers = AfishaRepositoryTest.Initializer.class)
+class AfishaRepositoryTest {
+    private static Timestamp date;
+
+    @BeforeAll
+    static void setUp() {
+        date = new Timestamp(1563000000000L);
+    }
+
+    @Autowired
+    private AfishaRepository afishaRepository;
+
+    @Container
+    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:13.2")
+            .withPassword("testrootroot")
+            .withUsername("testroot")
+            .withDatabaseName("testnewdb");
+
+    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+        @Override
+        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+            TestPropertyValues values = TestPropertyValues.of(
+                    "spring.datasource.url=" + postgreSQLContainer.getJdbcUrl(),
+                    "spring.datasource.password=" + postgreSQLContainer.getPassword(),
+                    "spring.datasource.username=" + postgreSQLContainer.getUsername()
+            );
+            values.applyTo(configurableApplicationContext);
+        }
+    }
+
+    @DisplayName("Получение по ID")
+    @Test
+    @Transactional
+    @Sql(scripts = "classpath:repository-scripts/deployment/afisha.sql")
+    @Sql(scripts = "classpath:repository-scripts/generate-data/afisha.sql")
+    void findById() {
+        SoftAssertions soft = new SoftAssertions();
+        // пользователи
+        Afisha afisha1 = new Afisha("title111", "image_url111", "lead111", "desc111", "3", "180",
+                "place111", "89205558866", date, false, 1, 1);
+
+        // получение афиши по id
+        Optional<Afisha> resultAfisha = afishaRepository.findById(1);
+        Afisha resultAfisha1 = resultAfisha.get();
+
+        // сравниваем полученный результат и ожидаемый
+        soft.assertThat(resultAfisha1)
+                .hasFieldOrPropertyWithValue("title", afisha1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("imageUrl", afisha1.getObjects()[2])
+                .hasFieldOrPropertyWithValue("lead", afisha1.getObjects()[3])
+                .hasFieldOrPropertyWithValue("description", afisha1.getObjects()[4])
+                .hasFieldOrPropertyWithValue("ageLimit", afisha1.getObjects()[5])
+                .hasFieldOrPropertyWithValue("timing", afisha1.getObjects()[6])
+                .hasFieldOrPropertyWithValue("place", afisha1.getObjects()[7])
+                .hasFieldOrPropertyWithValue("phone", afisha1.getObjects()[8])
+                .hasFieldOrPropertyWithValue("date", afisha1.getObjects()[9])
+                .hasFieldOrPropertyWithValue("isCommercial", afisha1.getObjects()[10])
+                .hasFieldOrPropertyWithValue("userId", afisha1.getObjects()[11])
+                .hasFieldOrPropertyWithValue("sourceId", afisha1.getObjects()[12]);
+        soft.assertAll();
+    }
+
+    @DisplayName("Получение всех записей")
+    @Test
+    @Transactional
+    @Sql(scripts = "classpath:repository-scripts/deployment/afisha.sql")
+    @Sql(scripts = "classpath:repository-scripts/generate-data/afisha.sql")
+    void findAll() {
+        SoftAssertions soft = new SoftAssertions();
+        // афиши
+        Afisha afisha1 = new Afisha("title111", "image_url111", "lead111", "desc111", "3", "180",
+                "place111", "89205558866", date, false, 1, 1);
+        Afisha afisha2 = new Afisha("title111", "image_url222", "lead222", "desc222", "6", "200",
+                "place222", "89205550000", date, false, 2, 1);
+        Afisha afisha3 = new Afisha("title333", "image_url333", "lead333", "desc333", "12", "220",
+                "place333", "293400", date, false, 2, 1);
+
+        // получаем список афиш
+        List<Afisha> resultAfisha = afishaRepository.findAll();
+        Afisha resultAfisha1 = resultAfisha.get(0);
+        Afisha resultAfisha2 = resultAfisha.get(1);
+        Afisha resultAfisha3 = resultAfisha.get(2);
+
+        // сравниваем полученный результат и ожидаемый
+        soft.assertThat(resultAfisha1)
+                .hasFieldOrPropertyWithValue("title", afisha1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("imageUrl", afisha1.getObjects()[2])
+                .hasFieldOrPropertyWithValue("lead", afisha1.getObjects()[3])
+                .hasFieldOrPropertyWithValue("description", afisha1.getObjects()[4])
+                .hasFieldOrPropertyWithValue("ageLimit", afisha1.getObjects()[5])
+                .hasFieldOrPropertyWithValue("timing", afisha1.getObjects()[6])
+                .hasFieldOrPropertyWithValue("place", afisha1.getObjects()[7])
+                .hasFieldOrPropertyWithValue("phone", afisha1.getObjects()[8])
+                .hasFieldOrPropertyWithValue("date", afisha1.getObjects()[9])
+                .hasFieldOrPropertyWithValue("isCommercial", afisha1.getObjects()[10])
+                .hasFieldOrPropertyWithValue("userId", afisha1.getObjects()[11])
+                .hasFieldOrPropertyWithValue("sourceId", afisha1.getObjects()[12]);
+        soft.assertAll();
+        soft.assertThat(resultAfisha2)
+                .hasFieldOrPropertyWithValue("title", afisha2.getObjects()[1])
+                .hasFieldOrPropertyWithValue("imageUrl", afisha2.getObjects()[2])
+                .hasFieldOrPropertyWithValue("lead", afisha2.getObjects()[3])
+                .hasFieldOrPropertyWithValue("description", afisha2.getObjects()[4])
+                .hasFieldOrPropertyWithValue("ageLimit", afisha2.getObjects()[5])
+                .hasFieldOrPropertyWithValue("timing", afisha2.getObjects()[6])
+                .hasFieldOrPropertyWithValue("place", afisha2.getObjects()[7])
+                .hasFieldOrPropertyWithValue("phone", afisha2.getObjects()[8])
+                .hasFieldOrPropertyWithValue("date", afisha2.getObjects()[9])
+                .hasFieldOrPropertyWithValue("isCommercial", afisha2.getObjects()[10])
+                .hasFieldOrPropertyWithValue("userId", afisha2.getObjects()[11])
+                .hasFieldOrPropertyWithValue("sourceId", afisha2.getObjects()[12]);
+        soft.assertAll();
+        soft.assertThat(resultAfisha3)
+                .hasFieldOrPropertyWithValue("title", afisha3.getObjects()[1])
+                .hasFieldOrPropertyWithValue("imageUrl", afisha3.getObjects()[2])
+                .hasFieldOrPropertyWithValue("lead", afisha3.getObjects()[3])
+                .hasFieldOrPropertyWithValue("description", afisha3.getObjects()[4])
+                .hasFieldOrPropertyWithValue("ageLimit", afisha3.getObjects()[5])
+                .hasFieldOrPropertyWithValue("timing", afisha3.getObjects()[6])
+                .hasFieldOrPropertyWithValue("place", afisha3.getObjects()[7])
+                .hasFieldOrPropertyWithValue("phone", afisha3.getObjects()[8])
+                .hasFieldOrPropertyWithValue("date", afisha3.getObjects()[9])
+                .hasFieldOrPropertyWithValue("isCommercial", afisha3.getObjects()[10])
+                .hasFieldOrPropertyWithValue("userId", afisha3.getObjects()[11])
+                .hasFieldOrPropertyWithValue("sourceId", afisha3.getObjects()[12]);
+        soft.assertAll();
+    }
+
+    @DisplayName("Поиск по имени")
+    @Test
+    @Transactional
+    @Sql(scripts = "classpath:repository-scripts/deployment/afisha.sql")
+    @Sql(scripts = "classpath:repository-scripts/generate-data/afisha.sql")
+    void findByFirstname() {
+        SoftAssertions soft = new SoftAssertions();
+        // афиши
+        Afisha afisha1 = new Afisha("title111", "image_url111", "lead111", "desc111", "3", "180",
+                "place111", "89205558866", date, false, 1, 1);
+        Afisha afisha2 = new Afisha("title111", "image_url222", "lead222", "desc222", "6", "200",
+                "place222", "89205550000", date, false, 2, 1);
+
+        // получаем список афиш
+        List<Afisha> resultAfisha = afishaRepository.findByTitle("title111");
+        Afisha resultAfisha1 = resultAfisha.get(0);
+        Afisha resultAfisha2 = resultAfisha.get(1);
+
+        // сравниваем полученный результат и ожидаемый
+        soft.assertThat(resultAfisha1)
+                .hasFieldOrPropertyWithValue("title", afisha1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("imageUrl", afisha1.getObjects()[2])
+                .hasFieldOrPropertyWithValue("lead", afisha1.getObjects()[3])
+                .hasFieldOrPropertyWithValue("description", afisha1.getObjects()[4])
+                .hasFieldOrPropertyWithValue("ageLimit", afisha1.getObjects()[5])
+                .hasFieldOrPropertyWithValue("timing", afisha1.getObjects()[6])
+                .hasFieldOrPropertyWithValue("place", afisha1.getObjects()[7])
+                .hasFieldOrPropertyWithValue("phone", afisha1.getObjects()[8])
+                .hasFieldOrPropertyWithValue("date", afisha1.getObjects()[9])
+                .hasFieldOrPropertyWithValue("isCommercial", afisha1.getObjects()[10])
+                .hasFieldOrPropertyWithValue("userId", afisha1.getObjects()[11])
+                .hasFieldOrPropertyWithValue("sourceId", afisha1.getObjects()[12]);
+        soft.assertAll();
+        soft.assertThat(resultAfisha2)
+                .hasFieldOrPropertyWithValue("title", afisha2.getObjects()[1])
+                .hasFieldOrPropertyWithValue("imageUrl", afisha2.getObjects()[2])
+                .hasFieldOrPropertyWithValue("lead", afisha2.getObjects()[3])
+                .hasFieldOrPropertyWithValue("description", afisha2.getObjects()[4])
+                .hasFieldOrPropertyWithValue("ageLimit", afisha2.getObjects()[5])
+                .hasFieldOrPropertyWithValue("timing", afisha2.getObjects()[6])
+                .hasFieldOrPropertyWithValue("place", afisha2.getObjects()[7])
+                .hasFieldOrPropertyWithValue("phone", afisha2.getObjects()[8])
+                .hasFieldOrPropertyWithValue("date", afisha2.getObjects()[9])
+                .hasFieldOrPropertyWithValue("isCommercial", afisha2.getObjects()[10])
+                .hasFieldOrPropertyWithValue("userId", afisha2.getObjects()[11])
+                .hasFieldOrPropertyWithValue("sourceId", afisha2.getObjects()[12]);
+        soft.assertAll();
+    }
+
+    @DisplayName("Сохранение сущности")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/afisha.sql")
+    void saveAfisha() {
+        SoftAssertions soft = new SoftAssertions();
+        // афиши
+        Afisha afisha1 = new Afisha("title111", "image_url111", "lead111", "desc111", "3", "180",
+                "place111", "89205558866", date, false, 1, 1);
+
+        Afisha result = afishaRepository.save(afisha1);
+
+        // сравниваем полученный результат и ожидаемый
+        soft.assertThat(result)
+                .hasFieldOrPropertyWithValue("title", afisha1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("imageUrl", afisha1.getObjects()[2])
+                .hasFieldOrPropertyWithValue("lead", afisha1.getObjects()[3])
+                .hasFieldOrPropertyWithValue("description", afisha1.getObjects()[4])
+                .hasFieldOrPropertyWithValue("ageLimit", afisha1.getObjects()[5])
+                .hasFieldOrPropertyWithValue("timing", afisha1.getObjects()[6])
+                .hasFieldOrPropertyWithValue("place", afisha1.getObjects()[7])
+                .hasFieldOrPropertyWithValue("phone", afisha1.getObjects()[8])
+                .hasFieldOrPropertyWithValue("date", afisha1.getObjects()[9])
+                .hasFieldOrPropertyWithValue("isCommercial", afisha1.getObjects()[10])
+                .hasFieldOrPropertyWithValue("userId", afisha1.getObjects()[11])
+                .hasFieldOrPropertyWithValue("sourceId", afisha1.getObjects()[12]);
+        soft.assertAll();
+    }
+
+    @DisplayName("Обновление сущности")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/afisha.sql")
+    @Sql(scripts = "classpath:repository-scripts/generate-data/afisha.sql")
+    void updateAfisha() {
+        SoftAssertions soft = new SoftAssertions();
+        // афиши
+        Afisha afisha1 = new Afisha(1, "title111_new", "image_url111_new", "lead111_new",
+                "desc111_new", "18", "240",
+                "place111_new", "89205558866", date, false, 1, 1);
+
+        Afisha result = afishaRepository.save(afisha1);
+
+        // сравниваем полученный результат и ожидаемый
+        soft.assertThat(result)
+                .hasFieldOrPropertyWithValue("title", afisha1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("imageUrl", afisha1.getObjects()[2])
+                .hasFieldOrPropertyWithValue("lead", afisha1.getObjects()[3])
+                .hasFieldOrPropertyWithValue("description", afisha1.getObjects()[4])
+                .hasFieldOrPropertyWithValue("ageLimit", afisha1.getObjects()[5])
+                .hasFieldOrPropertyWithValue("timing", afisha1.getObjects()[6])
+                .hasFieldOrPropertyWithValue("place", afisha1.getObjects()[7])
+                .hasFieldOrPropertyWithValue("phone", afisha1.getObjects()[8])
+                .hasFieldOrPropertyWithValue("date", afisha1.getObjects()[9])
+                .hasFieldOrPropertyWithValue("isCommercial", afisha1.getObjects()[10])
+                .hasFieldOrPropertyWithValue("userId", afisha1.getObjects()[11])
+                .hasFieldOrPropertyWithValue("sourceId", afisha1.getObjects()[12]);
+        soft.assertAll();
+    }
+
+    @DisplayName("Удаление сущности")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/afisha.sql")
+    @Sql(scripts = "classpath:repository-scripts/generate-data/afisha.sql")
+    void deleteAfisha() {
+
+        afishaRepository.deleteById(1);
+
+        assertThat(afishaRepository.existsById(1)).as("Запись типа Afisha не была удалена").isFalse();
+    }
+}
