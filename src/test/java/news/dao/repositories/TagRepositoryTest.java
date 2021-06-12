@@ -1,189 +1,98 @@
-//package news.dao.repositories;
-//
-//import news.HibernateUtil;
-//import news.dao.connection.DBPool;
-//import news.dao.specifications.FindAllTagSpecification;
-//import news.dao.specifications.FindByIdTagSpecification;
-//import news.dao.specifications.FindByTitleTagSpecification;
-//import news.model.Tag;
-//import org.assertj.core.api.SoftAssertions;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.testcontainers.containers.PostgreSQLContainer;
-//
-//import java.sql.Connection;
-//import java.sql.ResultSet;
-//import java.sql.SQLException;
-//import java.sql.Statement;
-//import java.util.List;
-//
-//import static org.assertj.core.api.Assertions.assertThat;
-//
-//class TagRepositoryTest {
-//    private PostgreSQLContainer container;
-//    private DBPool poolConnection;
-//
-//    @BeforeEach
-//    void setUp() throws SQLException {
-//        this.container = new PostgreSQLContainer("postgres")
-//                .withUsername("admin")
-//                .withPassword("qwerty")
-//                .withDatabaseName("news");
-//        this.container.start();
-//
-//        this.poolConnection = new DBPool(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
-//
-//        HibernateUtil.setConnectionProperties(this.container.getJdbcUrl(), this.container.getUsername(), this.container.getPassword());
-//
-//        Statement statement = this.poolConnection.getConnection().createStatement();
-//
-//        String sqlCreateTableTag = "CREATE TABLE IF NOT EXISTS tag (" +
-//                "id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 )," +
-//                "title character varying(50) NOT NULL," +
-//                "CONSTRAINT tag_pk PRIMARY KEY (id)" +
-//                ");";
-//        statement.executeUpdate(sqlCreateTableTag);
-//    }
-//
-//    @Test
-//    void findById() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            TagRepository tagRepository = new TagRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            String sqlInsertInstance = "INSERT INTO tag (title) VALUES('ufc');";
-//            statement.executeUpdate(sqlInsertInstance);
-//            Tag tag = new Tag(1,"ufc");
-//
-//            FindByIdTagSpecification findById = new FindByIdTagSpecification(1);
-//            List<Tag> resultFindByIdTag = tagRepository.query(findById);
-//
-//            soft.assertThat(tag)
-//                    .hasFieldOrPropertyWithValue("id", resultFindByIdTag.get(0).getObjects()[0])
-//                    .hasFieldOrPropertyWithValue("title", resultFindByIdTag.get(0).getObjects()[1]);
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void findByTitle() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            TagRepository tagRepository = new TagRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            String sqlInsertInstance = "INSERT INTO tag (title) VALUES('ufc');";
-//            statement.executeUpdate(sqlInsertInstance);
-//            Tag tag = new Tag(1,"ufc");
-//
-//            FindByTitleTagSpecification findByTitle = new FindByTitleTagSpecification("ufc");
-//            List<Tag> resultFindByIdTag = tagRepository.query(findByTitle);
-//
-//            soft.assertThat(tag)
-//                    .hasFieldOrPropertyWithValue("id", resultFindByIdTag.get(0).getObjects()[0])
-//                    .hasFieldOrPropertyWithValue("title", resultFindByIdTag.get(0).getObjects()[1]);
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void findAll() {
-//        try {
-//            SoftAssertions soft = new SoftAssertions();
-//            TagRepository tagRepository = new TagRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            String sqlInsertInstance = "INSERT INTO tag (title) VALUES('ufc'), ('балет');";
-//            statement.executeUpdate(sqlInsertInstance);
-//            Tag tag1 = new Tag(1,"ufc");
-//            Tag tag2 = new Tag(2,"балет");
-//
-//            FindAllTagSpecification findAll = new FindAllTagSpecification();
-//            List<Tag> resultFindAllTag = tagRepository.query(findAll);
-//
-//            soft.assertThat(tag1)
-//                    .hasFieldOrPropertyWithValue("id", resultFindAllTag.get(0).getObjects()[0])
-//                    .hasFieldOrPropertyWithValue("title", resultFindAllTag.get(0).getObjects()[1]);
-//            soft.assertAll();
-//            soft.assertThat(tag2)
-//                    .hasFieldOrPropertyWithValue("id", resultFindAllTag.get(1).getObjects()[0])
-//                    .hasFieldOrPropertyWithValue("title", resultFindAllTag.get(1).getObjects()[1]);
-//            soft.assertAll();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void createTag() {
-//        try {
-//            TagRepository tagRepository = new TagRepository();
-//            Tag tag = new Tag("ufc");
-//
-//            tagRepository.create(tag);
-//
-//            Connection connection = this.poolConnection.getConnection();
-//            String sqlQueryInstanceFromTableTag = "SELECT id, title FROM tag WHERE title='ufc'";
-//            Statement statement = connection.createStatement();
-//            ResultSet result = statement.executeQuery(sqlQueryInstanceFromTableTag);
-//            result.next();
-//            assertThat(tag).hasFieldOrPropertyWithValue("title", result.getString(2));
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void deleteTag() {
-//        try {
-//            TagRepository tagRepository = new TagRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            String sqlInsertInstance = "INSERT INTO tag (title) VALUES('ufc');";
-//            statement.executeUpdate(sqlInsertInstance, Statement.RETURN_GENERATED_KEYS);
-//            ResultSet generatedKeys = statement.getGeneratedKeys();
-//            generatedKeys.next();
-//
-//            tagRepository.delete(generatedKeys.getInt(1));
-//
-//            String sqlQueryInstance = String.format("SELECT id, title FROM tag WHERE id=%d;", generatedKeys.getInt(1));
-//            ResultSet result = statement.executeQuery(sqlQueryInstance);
-//            assertThat(result.next()).as("Запись класса Tag не была удалена").isFalse();
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    void updateTag() {
-//        try {
-//            TagRepository tagRepository = new TagRepository();
-//            Connection connection = this.poolConnection.getConnection();
-//            Statement statement = connection.createStatement();
-//            String sqlInsertInstance = "INSERT INTO tag (title) VALUES('ufc');";
-//            statement.executeUpdate(sqlInsertInstance);
-//            Tag tag = new Tag(1, "балет");
-//            Object[] instance = tag.getObjects();
-//
-//            tagRepository.update(tag);
-//
-//            String sqlQueryInstance = String.format("SELECT id, title FROM tag WHERE id=%s;", instance[0]);
-//            ResultSet result = statement.executeQuery(sqlQueryInstance);
-//            result.next();
-//            assertThat(tag).hasFieldOrPropertyWithValue("title", result.getString(2));
-//            this.poolConnection.pullConnection(connection);
-//        } catch (SQLException exception) {
-//            exception.printStackTrace();
-//        }
-//    }
-//}
+package news.dao.repositories;
+
+import news.model.Tag;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.util.List;
+
+@DisplayName("Тестирование репозитория для Tag")
+@Testcontainers
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ContextConfiguration(initializers = TagRepositoryTest.Initializer.class)
+class TagRepositoryTest {
+
+    @Autowired
+    private TagRepository tagRepository;
+
+    @Sql(scripts = "classpath:repository-scripts/deployment/tag.sql")
+    @BeforeAll
+    static void setUp() {
+
+    }
+
+    @Container
+    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:13.2")
+            .withPassword("testrootroot")
+            .withUsername("testroot")
+            .withDatabaseName("testnewdb");
+
+    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+        @Override
+        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+            TestPropertyValues values = TestPropertyValues.of(
+                    "spring.datasource.url=" + postgreSQLContainer.getJdbcUrl(),
+                    "spring.datasource.password=" + postgreSQLContainer.getPassword(),
+                    "spring.datasource.username=" + postgreSQLContainer.getUsername()
+            );
+            values.applyTo(configurableApplicationContext);
+        }
+    }
+
+    @DisplayName("Поиск по ID")
+    @Test
+    @Sql(statements = "INSERT INTO tag(title) values ('Политика');")
+    void findById() {
+        SoftAssertions soft = new SoftAssertions();
+        Tag tag = new Tag(1, "Политика");
+
+        Tag result = tagRepository.findById(tag.getTagId()).get();
+
+        soft.assertThat(result)
+                .hasFieldOrPropertyWithValue("id", tag.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", tag.getObjects()[1]);
+        soft.assertAll();
+    }
+
+    @DisplayName("Получение всех записей")
+    @Test
+    @Sql(statements = "INSERT INTO tag(title) values ('Балет'),('Политика');")
+    void findAll() {
+        SoftAssertions soft = new SoftAssertions();
+        Tag tag1 = new Tag(1, "Балет");
+        Tag tag2 = new Tag(2, "Политика");
+
+        List<Tag> result = tagRepository.findAll();
+        soft.assertThat(result.get(0))
+                .hasFieldOrPropertyWithValue("id", tag1.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", tag1.getObjects()[1]);
+        soft.assertAll();
+        soft.assertThat(result.get(1))
+                .hasFieldOrPropertyWithValue("id", tag2.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", tag2.getObjects()[1]);
+        soft.assertAll();
+    }
+
+    /*@DisplayName("Сохранение сущности")
+    @Test
+    void saveTag() {
+        Tag tag = new Tag("Еще один новый тег");
+
+        tagRepository.save(tag);
+
+        assertNotNull(tag.getTagId());
+    }*/
+}
