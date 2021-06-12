@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<beankovskis>
-
-    <!--Afisha-->
-    <bean id="afishaRepository" class="news.dao.repositories.AfishaRepository">
-        <constructor-arg value="instanceDBPool"/>
-    </bean>
-
-</beankovskis>
