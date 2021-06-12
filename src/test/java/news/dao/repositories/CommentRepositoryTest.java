@@ -22,6 +22,8 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @DisplayName("Тестирование репозитория для Comment")
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -195,117 +197,84 @@ class CommentRepositoryTest {
         soft.assertAll();
     }
 
-    /*@DisplayName("Сохранение сущности")
+    @DisplayName("Сохранение сущности")
     @Test
     @Sql(scripts = "classpath:repository-scripts/deployment/comment.sql")
     void saveComment() {
         SoftAssertions soft = new SoftAssertions();
         // статьи
-        Comment comment1 = new Comment(1, "Заголовок 1", "Лид 1", createDateComment,
-                editDateComment, "Текст 1", true, 1, 1, 1);
-        // изображения
-        CommentAttachment commentAttachment1 = new CommentAttachment(1, "Изображение 1", "/static/images/image1.png");
+        Comment comment1 = new Comment("Текст 1", createDateComment, editDateComment, 1, 1);
+        // прикрепления
+        CommentAttachment commentAttachment1 = new CommentAttachment("Прикрепление 1", "/static/attachments/attachment1.png");
+        CommentAttachment commentAttachment2 = new CommentAttachment("Прикрепление 2", "/static/attachments/attachment2.png");
         comment1.addNewAttachment(commentAttachment1);
+        comment1.addNewAttachment(commentAttachment2);
         commentAttachment1.setComment(comment1);
-        // тэги
-        Tag tag1 = new Tag(1, "Тег 1");
-        comment1.addNewTag(tag1);
-        tag1.addNewComment(comment1);
+        commentAttachment2.setComment(comment1);
 
         Comment result = commentRepository.save(comment1);
-        // получаем изображения
+        // получаем прикрепления
         CommentAttachment resultCommentAttachment1 = (CommentAttachment) result.getAttachments().toArray()[0];
-        // получаем теги
-        Tag resultTag1 = (Tag) result.getTags().toArray()[0];
+        CommentAttachment resultCommentAttachment2 = (CommentAttachment) result.getAttachments().toArray()[1];
 
         // сравниваем полученный результат и ожидаемый
         soft.assertThat(result)
-                .hasFieldOrPropertyWithValue("id", comment1.getObjects()[0])
-                .hasFieldOrPropertyWithValue("title", comment1.getObjects()[1])
-                .hasFieldOrPropertyWithValue("lead", comment1.getObjects()[2])
-                .hasFieldOrPropertyWithValue("createDate", comment1.getObjects()[3])
-                .hasFieldOrPropertyWithValue("editDate", comment1.getObjects()[4])
-                .hasFieldOrPropertyWithValue("text", comment1.getObjects()[5])
-                .hasFieldOrPropertyWithValue("isPublished", comment1.getObjects()[6])
-                .hasFieldOrPropertyWithValue("userId", comment1.getObjects()[7])
-                .hasFieldOrPropertyWithValue("sourceId", comment1.getObjects()[8]);
+                .hasFieldOrPropertyWithValue("text", comment1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("createDate", comment1.getObjects()[2])
+                .hasFieldOrPropertyWithValue("editDate", comment1.getObjects()[3])
+                .hasFieldOrPropertyWithValue("userId", comment1.getObjects()[4])
+                .hasFieldOrPropertyWithValue("articleId", comment1.getObjects()[5]);
         soft.assertAll();
         soft.assertThat(resultCommentAttachment1)
-                .hasFieldOrPropertyWithValue("id", commentAttachment1.getObjects()[0])
                 .hasFieldOrPropertyWithValue("title", commentAttachment1.getObjects()[1])
                 .hasFieldOrPropertyWithValue("path", commentAttachment1.getObjects()[2]);
         soft.assertAll();
-        soft.assertThat(resultTag1)
-                .hasFieldOrPropertyWithValue("id", tag1.getObjects()[0])
-                .hasFieldOrPropertyWithValue("title", tag1.getObjects()[1]);
+        soft.assertThat(resultCommentAttachment2)
+                .hasFieldOrPropertyWithValue("title", commentAttachment2.getObjects()[1])
+                .hasFieldOrPropertyWithValue("path", commentAttachment2.getObjects()[2]);
         soft.assertAll();
-    }*/
+    }
 
-    /*@DisplayName("Обновление сущности")
+    @DisplayName("Обновление сущности")
     @Test
     @Sql(scripts = "classpath:repository-scripts/deployment/comment.sql")
     @Sql(scripts = "classpath:repository-scripts/generate-data/comment.sql")
     void updateComment() {
         SoftAssertions soft = new SoftAssertions();
         // статьи
-        Comment comment1 = new Comment(1, "Заголовок 10", "Лид 10", createDateComment,
-                editDateComment, "Текст 10", false, 1, 1, 1);
-        // изображения
-        CommentAttachment commentAttachment1 = new CommentAttachment("Изображение 10", "/static/images/image10.png");
-        CommentAttachment commentAttachment2 = new CommentAttachment(1, "Изображение 11", "/static/images/image11.png");
+        Comment comment1 = new Comment(2,"Текст 20", createDateComment, editDateComment, 1, 1);
+        // прикрепления
+        CommentAttachment commentAttachment1 = new CommentAttachment(2, "Прикрепление 20", "/static/attachments/attachment20.png");
+        CommentAttachment commentAttachment2 = new CommentAttachment("Прикрепление 3", "/static/attachments/attachment3.png");
         comment1.addNewAttachment(commentAttachment1);
         comment1.addNewAttachment(commentAttachment2);
         commentAttachment1.setComment(comment1);
         commentAttachment2.setComment(comment1);
-        // тэги
-        Tag tag1 = new Tag("Тег 10");
-        Tag tag2 = new Tag(1, "Тег 11");
-        comment1.addNewTag(tag1);
-        comment1.addNewTag(tag2);
-        tag1.addNewComment(comment1);
-        tag2.addNewComment(comment1);
 
         Comment result = commentRepository.save(comment1);
         // получаем изображения
         CommentAttachment resultCommentAttachment1 = (CommentAttachment) result.getAttachments().toArray()[0];
         CommentAttachment resultCommentAttachment2 = (CommentAttachment) result.getAttachments().toArray()[1];
-        // получаем теги
-        Tag resultTag1 = (Tag) result.getTags().toArray()[0];
-        Tag resultTag2 = (Tag) result.getTags().toArray()[1];
 
         // сравниваем полученный результат и ожидаемый
         soft.assertThat(result)
-                .hasFieldOrPropertyWithValue("id", comment1.getObjects()[0])
-                .hasFieldOrPropertyWithValue("title", comment1.getObjects()[1])
-                .hasFieldOrPropertyWithValue("lead", comment1.getObjects()[2])
-                .hasFieldOrPropertyWithValue("createDate", comment1.getObjects()[3])
-                .hasFieldOrPropertyWithValue("editDate", comment1.getObjects()[4])
-                .hasFieldOrPropertyWithValue("text", comment1.getObjects()[5])
-                .hasFieldOrPropertyWithValue("isPublished", comment1.getObjects()[6])
-                .hasFieldOrPropertyWithValue("userId", comment1.getObjects()[7])
-                .hasFieldOrPropertyWithValue("sourceId", comment1.getObjects()[8]);
+                .hasFieldOrPropertyWithValue("text", comment1.getObjects()[1])
+                .hasFieldOrPropertyWithValue("createDate", comment1.getObjects()[2])
+                .hasFieldOrPropertyWithValue("editDate", comment1.getObjects()[3])
+                .hasFieldOrPropertyWithValue("userId", comment1.getObjects()[4])
+                .hasFieldOrPropertyWithValue("articleId", comment1.getObjects()[5]);
         soft.assertAll();
         soft.assertThat(resultCommentAttachment1)
-                .hasFieldOrPropertyWithValue("id", 3)
                 .hasFieldOrPropertyWithValue("title", commentAttachment1.getObjects()[1])
                 .hasFieldOrPropertyWithValue("path", commentAttachment1.getObjects()[2]);
         soft.assertAll();
         soft.assertThat(resultCommentAttachment2)
-                .hasFieldOrPropertyWithValue("id", commentAttachment2.getObjects()[0])
                 .hasFieldOrPropertyWithValue("title", commentAttachment2.getObjects()[1])
                 .hasFieldOrPropertyWithValue("path", commentAttachment2.getObjects()[2]);
         soft.assertAll();
-        soft.assertThat(resultTag1)
-                .hasFieldOrPropertyWithValue("id", 3)
-                .hasFieldOrPropertyWithValue("title", tag1.getObjects()[1]);
-        soft.assertAll();
-        soft.assertThat(resultTag2)
-                .hasFieldOrPropertyWithValue("id", tag2.getObjects()[0])
-                .hasFieldOrPropertyWithValue("title", tag2.getObjects()[1]);
-        soft.assertAll();
-    }*/
+    }
 
-    /*@DisplayName("Удаление сущности")
+    @DisplayName("Удаление сущности")
     @Test
     @Sql(scripts = "classpath:repository-scripts/deployment/comment.sql")
     @Sql(scripts = "classpath:repository-scripts/generate-data/comment.sql")
@@ -314,5 +283,5 @@ class CommentRepositoryTest {
         commentRepository.deleteById(1);
 
         assertThat(commentRepository.existsById(1)).as("Запись типа Comment не была удалена").isFalse();
-    }*/
+    }
 }
