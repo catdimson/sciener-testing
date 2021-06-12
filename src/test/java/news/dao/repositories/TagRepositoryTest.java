@@ -2,7 +2,6 @@ package news.dao.repositories;
 
 import news.model.Tag;
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +17,16 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @DisplayName("Тестирование репозитория для Tag")
 @Testcontainers
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @ContextConfiguration(initializers = TagRepositoryTest.Initializer.class)
 class TagRepositoryTest {
 
     @Autowired
     private TagRepository tagRepository;
-
-    @Sql(scripts = "classpath:repository-scripts/deployment/tag.sql")
-    @BeforeAll
-    static void setUp() {
-
-    }
 
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:13.2")
@@ -54,6 +49,7 @@ class TagRepositoryTest {
 
     @DisplayName("Поиск по ID")
     @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/tag.sql")
     @Sql(statements = "INSERT INTO tag(title) values ('Политика');")
     void findById() {
         SoftAssertions soft = new SoftAssertions();
@@ -69,13 +65,15 @@ class TagRepositoryTest {
 
     @DisplayName("Получение всех записей")
     @Test
-    @Sql(statements = "INSERT INTO tag(title) values ('Балет'),('Политика');")
+    @Sql(scripts = "classpath:repository-scripts/deployment/tag.sql")
+    @Sql(statements = "INSERT INTO tag(title) values ('Балет'), ('Политика');")
     void findAll() {
         SoftAssertions soft = new SoftAssertions();
         Tag tag1 = new Tag(1, "Балет");
         Tag tag2 = new Tag(2, "Политика");
 
         List<Tag> result = tagRepository.findAll();
+
         soft.assertThat(result.get(0))
                 .hasFieldOrPropertyWithValue("id", tag1.getObjects()[0])
                 .hasFieldOrPropertyWithValue("title", tag1.getObjects()[1]);
@@ -86,13 +84,66 @@ class TagRepositoryTest {
         soft.assertAll();
     }
 
-    /*@DisplayName("Сохранение сущности")
+    @DisplayName("Получение записей по title")
     @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/tag.sql")
+    @Sql(statements = "INSERT INTO tag(title) values ('Балет'), ('Балет');")
+    void findByTitle() {
+        SoftAssertions soft = new SoftAssertions();
+        Tag tag1 = new Tag(1, "Балет");
+        Tag tag2 = new Tag(2, "Балет");
+
+        List<Tag> result = tagRepository.findByTitle("Балет");
+
+        soft.assertThat(result.get(0))
+                .hasFieldOrPropertyWithValue("id", tag1.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", tag1.getObjects()[1]);
+        soft.assertAll();
+        soft.assertThat(result.get(1))
+                .hasFieldOrPropertyWithValue("id", tag2.getObjects()[0])
+                .hasFieldOrPropertyWithValue("title", tag2.getObjects()[1]);
+        soft.assertAll();
+    }
+
+    @DisplayName("Сохранение сущности")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/tag.sql")
     void saveTag() {
-        Tag tag = new Tag("Еще один новый тег");
+        SoftAssertions soft = new SoftAssertions();
+        Tag tag = new Tag("Новый тег");
 
-        tagRepository.save(tag);
+        Tag result = tagRepository.save(tag);
 
-        assertNotNull(tag.getTagId());
-    }*/
+        soft.assertThat(result)
+                .hasFieldOrPropertyWithValue("id", 1)
+                .hasFieldOrPropertyWithValue("title", tag.getObjects()[1]);
+        soft.assertAll();
+    }
+
+    @DisplayName("Обновление сущности")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/tag.sql")
+    @Sql(statements = "INSERT INTO tag(title) VALUES ('Политика');")
+    void updateTag() {
+        SoftAssertions soft = new SoftAssertions();
+        Tag tag = new Tag(1, "Балет");
+
+        Tag result = tagRepository.save(tag);
+
+        soft.assertThat(result)
+                .hasFieldOrPropertyWithValue("title", tag.getTitle());
+        soft.assertAll();
+    }
+
+    @DisplayName("Удаление сущности")
+    @Test
+    @Sql(scripts = "classpath:repository-scripts/deployment/tag.sql")
+    @Sql(statements = "INSERT INTO tag(title) VALUES ('Политика');")
+    void deleteTag() {
+        SoftAssertions soft = new SoftAssertions();
+
+        tagRepository.deleteById(1);
+
+        assertThat(tagRepository.existsById(1)).as("Запись типа Tag не была удалена").isFalse();
+    }
 }
