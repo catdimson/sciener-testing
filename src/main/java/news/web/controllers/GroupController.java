@@ -26,21 +26,21 @@ public class GroupController {
         this.groupService = groupService;
     }
 
-    @GetMapping(value = "")
+    @GetMapping(value = "/")
     public List<Group> findAllGroups(HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         return groupService.findAll();
     }
 
-    @GetMapping(value = "", params = {"title"})
+    @GetMapping(value = "/", params = {"title"})
     public List<Group> findGroupsByTitle(HttpServletRequest request, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         return groupService.findByTitle(request.getParameter("title"));
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}/")
     public Optional<Group> findGroupById(@PathVariable int id, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
@@ -51,7 +51,7 @@ public class GroupController {
         return group;
     }
 
-    @PostMapping(value = "")
+    @PostMapping(value = "/")
     public void createGroup(@RequestBody Group group, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
@@ -62,7 +62,7 @@ public class GroupController {
         }
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping(value = "/{id}/")
     public void updateGroup(@RequestBody Group group, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
@@ -73,7 +73,7 @@ public class GroupController {
         }
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}/")
     public void deleteGroup(@PathVariable int id, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {

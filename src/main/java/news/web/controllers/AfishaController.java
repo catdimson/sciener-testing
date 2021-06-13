@@ -26,21 +26,21 @@ public class AfishaController {
         this.afishaService = afishaService;
     }
 
-    @GetMapping(value = "")
+    @GetMapping(value = "/")
     public List<Afisha> findAllAfishas(HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         return afishaService.findAll();
     }
 
-    @GetMapping(value = "", params = {"title"})
+    @GetMapping(value = "/", params = {"title"})
     public List<Afisha> findAfishasByTitle(HttpServletRequest request, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         return afishaService.findByTitle(request.getParameter("title"));
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}/")
     public Optional<Afisha> findAfishaById(@PathVariable int id, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
@@ -51,7 +51,7 @@ public class AfishaController {
         return afisha;
     }
 
-    @PostMapping(value = "")
+    @PostMapping(value = "/")
     public void createAfisha(@RequestBody Afisha afisha, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
@@ -62,7 +62,7 @@ public class AfishaController {
         }
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping(value = "/{id}/")
     public void updateAfisha(@RequestBody Afisha afisha, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
@@ -73,7 +73,7 @@ public class AfishaController {
         }
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}/")
     public void deleteAfisha(@PathVariable int id, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {

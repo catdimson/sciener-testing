@@ -26,21 +26,21 @@ public class ArticleController {
         this.articleService = articleService;
     }
 
-    @GetMapping(value = "")
+    @GetMapping(value = "/")
     public List<Article> findAllArticles(HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         return articleService.findAll();
     }
 
-    @GetMapping(value = "", params = {"title"})
+    @GetMapping(value = "/", params = {"title"})
     public List<Article> findArticlesByTitle(HttpServletRequest request, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         return articleService.findByTitle(request.getParameter("title"));
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}/")
     public Optional<Article> findArticleById(@PathVariable int id, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
@@ -51,7 +51,7 @@ public class ArticleController {
         return article;
     }
 
-    @PostMapping(value = "")
+    @PostMapping(value = "/")
     public void createArticle(@RequestBody Article article, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
@@ -62,7 +62,7 @@ public class ArticleController {
         }
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping(value = "/{id}/")
     public void updateArticle(@RequestBody Article article, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
@@ -73,7 +73,7 @@ public class ArticleController {
         }
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}/")
     public void deleteArticle(@PathVariable int id, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {

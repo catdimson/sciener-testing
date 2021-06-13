@@ -26,21 +26,21 @@ public class SourceController {
         this.sourceService = sourceService;
     }
 
-    @GetMapping(value = "")
+    @GetMapping(value = "/")
     public List<Source> findAllSources(HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         return sourceService.findAll();
     }
 
-    @GetMapping(value = "", params = {"title"})
+    @GetMapping(value = "/", params = {"title"})
     public List<Source> findSourcesByTitle(HttpServletRequest request, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         return sourceService.findByTitle(request.getParameter("title"));
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}/")
     public Optional<Source> findSourceById(@PathVariable int id, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
@@ -51,7 +51,7 @@ public class SourceController {
         return source;
     }
 
-    @PostMapping(value = "")
+    @PostMapping(value = "/")
     public void createSource(@RequestBody Source source, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
@@ -62,7 +62,7 @@ public class SourceController {
         }
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping(value = "/{id}/")
     public void updateSource(@RequestBody Source source, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
@@ -73,7 +73,7 @@ public class SourceController {
         }
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}/")
     public void deleteSource(@PathVariable int id, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {

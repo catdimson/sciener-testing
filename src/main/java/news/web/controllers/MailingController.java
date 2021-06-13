@@ -26,21 +26,21 @@ public class MailingController {
         this.mailingService = mailingService;
     }
 
-    @GetMapping(value = "")
+    @GetMapping(value = "/")
     public List<Mailing> findAllMailings(HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         return mailingService.findAll();
     }
 
-    @GetMapping(value = "", params = {"email"})
+    @GetMapping(value = "/", params = {"email"})
     public List<Mailing> findMailingsByTitle(HttpServletRequest request, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         return mailingService.findByEmail(request.getParameter("email"));
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}/")
     public Optional<Mailing> findMailingById(@PathVariable int id, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
@@ -51,7 +51,7 @@ public class MailingController {
         return mailing;
     }
 
-    @PostMapping(value = "")
+    @PostMapping(value = "/")
     public void createMailing(@RequestBody Mailing mailing, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
@@ -62,7 +62,7 @@ public class MailingController {
         }
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping(value = "/{id}/")
     public void updateMailing(@RequestBody Mailing mailing, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
@@ -73,7 +73,7 @@ public class MailingController {
         }
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}/")
     public void deleteMailing(@PathVariable int id, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {

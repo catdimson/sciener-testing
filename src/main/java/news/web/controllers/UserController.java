@@ -26,21 +26,21 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping(value = "")
+    @GetMapping(value = "/")
     public List<User> findAllUsers(HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         return userService.findAll();
     }
 
-    @GetMapping(value = "", params = {"firstname"})
+    @GetMapping(value = "/", params = {"firstname"})
     public List<User> findUsersByFirstname(HttpServletRequest request, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         return userService.findByFirstName(request.getParameter("firstname"));
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}/")
     public Optional<User> findUserById(@PathVariable int id, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
@@ -51,7 +51,7 @@ public class UserController {
         return user;
     }
 
-    @PostMapping(value = "")
+    @PostMapping(value = "/")
     public void createUser(@RequestBody User user, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
@@ -62,7 +62,7 @@ public class UserController {
         }
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping(value = "/{id}/")
     public void updateUser(@RequestBody User user, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
@@ -73,7 +73,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}/")
     public void deleteUser(@PathVariable int id, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {

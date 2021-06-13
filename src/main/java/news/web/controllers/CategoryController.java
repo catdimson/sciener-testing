@@ -26,21 +26,21 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping(value = "")
+    @GetMapping(value = "/")
     public List<Category> findAllCategorys(HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         return categoryService.findAll();
     }
 
-    @GetMapping(value = "", params = {"title"})
+    @GetMapping(value = "/", params = {"title"})
     public List<Category> findCategorysByTitle(HttpServletRequest request, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         return categoryService.findByTitle(request.getParameter("title"));
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}/")
     public Optional<Category> findCategoryById(@PathVariable int id, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
@@ -51,7 +51,7 @@ public class CategoryController {
         return category;
     }
 
-    @PostMapping(value = "")
+    @PostMapping(value = "/")
     public void createCategory(@RequestBody Category category, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
@@ -62,7 +62,7 @@ public class CategoryController {
         }
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping(value = "/{id}/")
     public void updateCategory(@RequestBody Category category, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
@@ -73,7 +73,7 @@ public class CategoryController {
         }
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{id}/")
     public void deleteCategory(@PathVariable int id, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
         try {
