@@ -1,6 +1,5 @@
 package news.web.controllers;
 
-import news.dao.specifications.FindAllArticleSpecification;
 import news.model.Article;
 import news.service.ArticleService;
 import news.web.controllers.exceptions.InstanceNotFoundException;
@@ -31,7 +30,6 @@ public class ArticleController {
     public List<Article> findAllArticles(HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
-        FindAllArticleSpecification findAll = new FindAllArticleSpecification();
         return articleService.findAll();
     }
 
