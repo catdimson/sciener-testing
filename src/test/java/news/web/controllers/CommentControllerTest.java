@@ -2,9 +2,8 @@ package news.web.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import news.NewsApplication;
-import news.model.Article;
-import news.model.ArticleImage;
-import news.model.Tag;
+import news.model.Comment;
+import news.model.CommentAttachment;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,19 +30,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("Тестирование контроллера для Article")
+@DisplayName("Тестирование контроллера для Comment")
 @Testcontainers
 @SpringBootTest(classes = NewsApplication.class)
-@ContextConfiguration(initializers = ArticleControllerTest.Initializer.class)
+@ContextConfiguration(initializers = CommentControllerTest.Initializer.class)
 @AutoConfigureMockMvc
-class ArticleControllerTest {
-    private static Timestamp createDateArticle;
-    private static Timestamp editDateArticle;
+class CommentControllerTest {
+    private static Timestamp createDateComment;
+    private static Timestamp editDateComment;
 
     @BeforeAll
     static void setUp() {
-        createDateArticle = new Timestamp(1561410000000L);
-        editDateArticle = new Timestamp(1561410000000L);
+        createDateComment = new Timestamp(1561410000000L);
+        editDateComment = new Timestamp(1561410000000L);
     }
 
     @Autowired
@@ -72,108 +71,98 @@ class ArticleControllerTest {
     }
 
     @DisplayName("Получение всех сущностей")
-    @Sql(scripts = "classpath:repository-scripts/deployment/article.sql")
-    @Sql(scripts = "classpath:repository-scripts/generate-data/article.sql")
+    @Sql(scripts = "classpath:repository-scripts/deployment/comment.sql")
+    @Sql(scripts = "classpath:repository-scripts/generate-data/comment.sql")
     @Test
-    void findAllArticles() throws Exception {
+    void findAllComments() throws Exception {
         this.mockMvc.perform(
-                get("/article/")
+                get("/comment/")
                 .contentType(MediaType.APPLICATION_JSON)
         )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string(new String(Files.readAllBytes(Paths.get("src/test/resources/controllers/json/article_find_all.json")))));
+                .andExpect(content().string(new String(Files.readAllBytes(Paths.get("src/test/resources/controllers/json/comment_find_all.json")))));
     }
 
-    @DisplayName("Получение по заголовку")
-    @Sql(scripts = "classpath:repository-scripts/deployment/article.sql")
-    @Sql(scripts = "classpath:repository-scripts/generate-data/article.sql")
+    @DisplayName("Получение сущностей по идентификатору пользователя")
+    @Sql(scripts = "classpath:repository-scripts/deployment/comment.sql")
+    @Sql(scripts = "classpath:repository-scripts/generate-data/comment.sql")
     @Test
-    void findArticlesByTitle() throws Exception {
+    void findCommentsByUserId() throws Exception {
         this.mockMvc.perform(
-                get("/article/?title=Заголовок 1")
+                get("/comment/?userid=1")
                         .contentType(MediaType.APPLICATION_JSON)
         )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string(new String(Files.readAllBytes(Paths.get("src/test/resources/controllers/json/article_find_by_title.json")))));
+                .andExpect(content().string(new String(Files.readAllBytes(Paths.get("src/test/resources/controllers/json/comment_find_by_user_id.json")))));
     }
 
     @DisplayName("Получение по ID")
-    @Sql(scripts = "classpath:repository-scripts/deployment/article.sql")
-    @Sql(scripts = "classpath:repository-scripts/generate-data/article.sql")
+    @Sql(scripts = "classpath:repository-scripts/deployment/comment.sql")
+    @Sql(scripts = "classpath:repository-scripts/generate-data/comment.sql")
     @Test
-    void findArticleById() throws Exception {
+    void findCommentById() throws Exception {
         this.mockMvc.perform(
-                get("/article/1/")
+                get("/comment/1/")
                         .contentType(MediaType.APPLICATION_JSON)
         )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string(new String(Files.readAllBytes(Paths.get("src/test/resources/controllers/json/article_find_id.json")))));
+                .andExpect(content().string(new String(Files.readAllBytes(Paths.get("src/test/resources/controllers/json/comment_find_id.json")))));
     }
 
     @DisplayName("Создание сущности")
-    @Sql(scripts = "classpath:repository-scripts/deployment/article.sql")
+    @Sql(scripts = "classpath:repository-scripts/deployment/comment.sql")
     @Test
-    void createArticle() throws Exception {
-        // статьи
-        Article article = new Article("Заголовок 1", "Лид 1", createDateArticle,
-                editDateArticle, "Текст 1", true, 1, 1, 1);
-        // изображения
-        ArticleImage articleImage1 = new ArticleImage("Изображение 1", "/static/images/image1.png");
-        article.addNewImage(articleImage1);
-        articleImage1.setArticle(article);
-        // тэги
-        Tag tag1 = new Tag("Тег 1");
-        article.addNewTag(tag1);
-        tag1.addNewArticle(article);
+    void createComment() throws Exception {
+        Comment comment = new Comment("Текст 1", createDateComment, editDateComment, 1, 1);
+        CommentAttachment commentAttachment1 = new CommentAttachment("Прикрепление 1", "/static/attachments/attachment1.png");
+        CommentAttachment commentAttachment2 = new CommentAttachment("Прикрепление 2", "/static/attachments/attachment2.png");
+        comment.addNewAttachment(commentAttachment1);
+        comment.addNewAttachment(commentAttachment2);
+        commentAttachment1.setComment(comment);
+        commentAttachment2.setComment(comment);
         this.mockMvc.perform(
-                post("/article/")
+                post("/comment/")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(article))
+                        .content(objectMapper.writeValueAsString(comment))
         )
                 .andDo(print())
                 .andExpect(status().isCreated());
     }
 
     @DisplayName("Обновление сущности")
-    @Sql(scripts = "classpath:repository-scripts/deployment/article.sql")
-    @Sql(scripts = "classpath:repository-scripts/generate-data/article.sql")
+    @Sql(scripts = "classpath:repository-scripts/deployment/comment.sql")
+    @Sql(scripts = "classpath:repository-scripts/generate-data/comment.sql")
     @Test
-    void updateArticle() throws Exception {
-        // статьи
-        Article article = new Article(1,"Заголовок 1 update", "Лид 1 update", createDateArticle,
-                editDateArticle, "Текст 1", true, 1, 1, 1);
-        // изображения
-        ArticleImage articleImage1 = new ArticleImage("Изображение 1", "/static/images/image1.png");
-        article.addNewImage(articleImage1);
-        articleImage1.setArticle(article);
-        // тэги
-        Tag tag1 = new Tag("Тег 1");
-        article.addNewTag(tag1);
-        tag1.addNewArticle(article);
+    void updateComment() throws Exception {
+        Comment comment = new Comment(1,"Текст 1", createDateComment, editDateComment, 1, 1);
+        CommentAttachment commentAttachment1 = new CommentAttachment("Прикрепление 1", "/static/attachments/attachment1.png");
+        CommentAttachment commentAttachment2 = new CommentAttachment("Прикрепление 2", "/static/attachments/attachment2.png");
+        comment.addNewAttachment(commentAttachment1);
+        comment.addNewAttachment(commentAttachment2);
+        commentAttachment1.setComment(comment);
+        commentAttachment2.setComment(comment);
         this.mockMvc.perform(
-                put("/article/1/")
+                put("/comment/1/")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(article))
+                        .content(objectMapper.writeValueAsString(comment))
         )
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }
-
 
     @DisplayName("Удаление сущности")
-    @Sql(scripts = "classpath:repository-scripts/deployment/article.sql")
-    @Sql(scripts = "classpath:repository-scripts/generate-data/article.sql")
+    @Sql(scripts = "classpath:repository-scripts/deployment/comment.sql")
+    @Sql(scripts = "classpath:repository-scripts/generate-data/comment.sql")
     @Test
-    void deleteArticle() throws Exception {
+    void deleteComment() throws Exception {
         this.mockMvc.perform(
-                delete("/article/1/")
+                delete("/comment/1/")
                         .contentType(MediaType.APPLICATION_JSON)
         )
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }
-
 }

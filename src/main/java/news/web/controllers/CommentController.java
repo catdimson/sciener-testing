@@ -37,7 +37,7 @@ public class CommentController {
     }
 
     @GetMapping(value = "/", params = {"userid"})
-    public List<Comment> findCommentsByTitle(HttpServletRequest request, HttpServletResponse response) {
+    public List<Comment> findCommentsByUserId(HttpServletRequest request, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Type", "application/json");
         return commentService.findByUserId(Integer.parseInt(request.getParameter("userid")));
