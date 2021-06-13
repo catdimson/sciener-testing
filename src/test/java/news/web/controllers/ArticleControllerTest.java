@@ -1,9 +1,6 @@
-/*
 package news.web.controllers;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import news.NewsApplication;
 import news.model.Article;
 import news.model.ArticleImage;
@@ -29,8 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -131,43 +127,49 @@ class ArticleControllerTest {
         // тэги
         Tag tag1 = new Tag("Тег 1");
         article.addNewTag(tag1);
-        JsonMapper jsonMapper = new JsonMapper();
-
         tag1.addNewArticle(article);
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        System.out.println("objectMapper.writeValueAsString(article): " + objectMapper.writeValueAsString(article));
         this.mockMvc.perform(
                 post("/article/")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonMapper.writeValueAsString(article))
+                        .content(objectMapper.writeValueAsString(article))
         )
                 .andDo(print())
                 .andExpect(status().isCreated());
     }
 
-@DisplayName("Обновление сущности")
-    @Sql(scripts = "classpath:repository-scripts/deployment/tag.sql")
-    @Sql(statements = "INSERT INTO tag(title) values ('Балет'), ('Политика');")
+    @DisplayName("Обновление сущности")
+    @Sql(scripts = "classpath:repository-scripts/deployment/article.sql")
+    @Sql(scripts = "classpath:repository-scripts/generate-data/article.sql")
     @Test
     void updateArticle() throws Exception {
-        Article tag = new Article(1,"UFC");
+        // статьи
+        Article article = new Article(1,"Заголовок 1 update", "Лид 1 update", createDateArticle,
+                editDateArticle, "Текст 1", true, 1, 1, 1);
+        // изображения
+        ArticleImage articleImage1 = new ArticleImage("Изображение 1", "/static/images/image1.png");
+        article.addNewImage(articleImage1);
+        articleImage1.setArticle(article);
+        // тэги
+        Tag tag1 = new Tag("Тег 1");
+        article.addNewTag(tag1);
+        tag1.addNewArticle(article);
         this.mockMvc.perform(
-                put("/tag/1/")
+                put("/article/1/")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(tag))
+                        .content(objectMapper.writeValueAsString(article))
         )
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }
 
 
-@DisplayName("Удаление сущности")
-    @Sql(scripts = "classpath:repository-scripts/deployment/tag.sql")
-    @Sql(statements = "INSERT INTO tag(title) values ('Балет'), ('Политика');")
+    @DisplayName("Удаление сущности")
+    @Sql(scripts = "classpath:repository-scripts/deployment/article.sql")
+    @Sql(scripts = "classpath:repository-scripts/generate-data/article.sql")
     @Test
     void deleteArticle() throws Exception {
         this.mockMvc.perform(
-                delete("/tag/1/")
+                delete("/article/1/")
                         .contentType(MediaType.APPLICATION_JSON)
         )
                 .andDo(print())
@@ -175,4 +177,3 @@ class ArticleControllerTest {
     }
 
 }
-*/
