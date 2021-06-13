@@ -26,7 +26,7 @@ public class Tag {
     @JsonProperty
     private String title;
 
-    @ManyToMany(mappedBy = "tags", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
     private Collection<Article> articles = new HashSet<>();
 
     public void addNewArticle(Article article) {

@@ -54,12 +54,13 @@ public class ArticleController {
     @PostMapping(value = "/")
     public void createArticle(@RequestBody Article article, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
-        try {
+        /*try {*/
+            System.out.println(article);
             articleService.createArticle(article);
             response.setStatus(HttpStatus.CREATED.value());
-        } catch (Exception e) {
+        /*} catch (Exception e) {
             throw new ServerErrorException();
-        }
+        }*/
     }
 
     @PutMapping(value = "/{id}/")
