@@ -145,8 +145,7 @@ class ArticleControllerTest {
                 .andExpect(status().isCreated());
     }
 
-    */
-/*@DisplayName("Обновление сущности")
+@DisplayName("Обновление сущности")
     @Sql(scripts = "classpath:repository-scripts/deployment/tag.sql")
     @Sql(statements = "INSERT INTO tag(title) values ('Балет'), ('Политика');")
     @Test
@@ -159,11 +158,10 @@ class ArticleControllerTest {
         )
                 .andDo(print())
                 .andExpect(status().isNoContent());
-    }*//*
+    }
 
 
-    */
-/*@DisplayName("Удаление сущности")
+@DisplayName("Удаление сущности")
     @Sql(scripts = "classpath:repository-scripts/deployment/tag.sql")
     @Sql(statements = "INSERT INTO tag(title) values ('Балет'), ('Политика');")
     @Test
@@ -174,6 +172,7 @@ class ArticleControllerTest {
         )
                 .andDo(print())
                 .andExpect(status().isNoContent());
-    }*//*
+    }
 
-}*/
+}
+*/

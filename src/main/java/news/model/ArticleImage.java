@@ -30,7 +30,9 @@ public class ArticleImage {
     private String path;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonProperty
     @JoinColumn(name = "article_id", referencedColumnName = "id")
+    @JsonIgnore
     Article article;
 
     public ArticleImage() {}

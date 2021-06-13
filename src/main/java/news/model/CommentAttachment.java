@@ -31,7 +31,12 @@ public class CommentAttachment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id", referencedColumnName = "id")
+    @JsonIgnore
     Comment comment;
+
+    public Comment getComment() {
+        return comment;
+    }
 
     public CommentAttachment() {}
 

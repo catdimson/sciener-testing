@@ -47,7 +47,7 @@ public class Comment {
     @JsonProperty
     private int articleId;
 
-    @OneToMany(mappedBy = "comment", orphanRemoval=true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private final Collection<CommentAttachment> attachments = new ArrayList<>();
 
     public Comment() {}

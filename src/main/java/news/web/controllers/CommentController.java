@@ -1,15 +1,18 @@
 package news.web.controllers;
 
 import news.model.Comment;
+import news.model.CommentAttachment;
 import news.service.CommentService;
 import news.web.controllers.exceptions.InstanceNotFoundException;
 import news.web.controllers.exceptions.ServerErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,9 +54,14 @@ public class CommentController {
         return comment;
     }
 
+    @Transactional
     @PostMapping(value = "/")
     public void createComment(@RequestBody Comment comment, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
+        Collection<CommentAttachment> commentAttachmentList = comment.getAttachments();
+        for (CommentAttachment ca : commentAttachmentList) {
+            ca.setComment(comment);
+        }
         try {
             commentService.createComment(comment);
             response.setStatus(HttpStatus.CREATED.value());
@@ -65,6 +73,10 @@ public class CommentController {
     @PutMapping(value = "/{id}/")
     public void updateComment(@RequestBody Comment comment, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
+        Collection<CommentAttachment> commentAttachmentList = comment.getAttachments();
+        for (CommentAttachment ca : commentAttachmentList) {
+            ca.setComment(comment);
+        }
         try {
             commentService.updateComment(comment);
             response.setStatus(HttpStatus.NO_CONTENT.value());

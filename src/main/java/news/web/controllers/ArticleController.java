@@ -1,6 +1,8 @@
 package news.web.controllers;
 
 import news.model.Article;
+import news.model.ArticleImage;
+import news.model.Tag;
 import news.service.ArticleService;
 import news.web.controllers.exceptions.InstanceNotFoundException;
 import news.web.controllers.exceptions.ServerErrorException;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,18 +57,33 @@ public class ArticleController {
     @PostMapping(value = "/")
     public void createArticle(@RequestBody Article article, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
-        /*try {*/
-            System.out.println(article);
+        Collection<ArticleImage> articleImageCollection = article.getImages();
+        for (ArticleImage ai : articleImageCollection) {
+            ai.setArticle(article);
+        }
+        Collection<Tag> articleTagCollection = article.getTags();
+        for (Tag at : articleTagCollection) {
+            at.addNewArticle(article);
+        }
+        try {
             articleService.createArticle(article);
             response.setStatus(HttpStatus.CREATED.value());
-        /*} catch (Exception e) {
+        } catch (Exception e) {
             throw new ServerErrorException();
-        }*/
+        }
     }
 
     @PutMapping(value = "/{id}/")
     public void updateArticle(@RequestBody Article article, HttpServletResponse response) {
         response.setHeader("Content-Type", "application/json");
+        Collection<ArticleImage> articleImageCollection = article.getImages();
+        for (ArticleImage ai : articleImageCollection) {
+            ai.setArticle(article);
+        }
+        Collection<Tag> articleTagCollection = article.getTags();
+        for (Tag at : articleTagCollection) {
+            at.addNewArticle(article);
+        }
         try {
             articleService.updateArticle(article);
             response.setStatus(HttpStatus.NO_CONTENT.value());
